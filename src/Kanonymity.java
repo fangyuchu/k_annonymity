@@ -274,8 +274,12 @@ public class Kanonymity {
 
     public static void main(String[] args){
         //Points p=new Points(500);
-        Kanonymity k=new Kanonymity(25,"C:/Users/Administrator/Desktop/实验室/k匿名划分数据/result20081023025304/"+"20081023025304"+".xls");//C:\Users\Administrator\Desktop\实验室\k匿名划分数据\result20081023025304
-       /* k.partitionAverage(k.p);
+        String[] trajectory={    "001-0：00-12：00","002-0：00-12：00","003-0：00-12：00","006-0：00-12：00","011-2：00-11：00","012-1：00-12：00","013-0：00-11：00","014-0：00-12：00","015-4：00-12：00","016-9：00-12：00","017-5：00-12：00"
+        };//"20081112023003"
+        Kanonymity k = new Kanonymity(20, DrawPoint.file(trajectory));
+        k.p.quickSort(k.p,0,k.p.num-1,0);
+        //k.partitionAverage(k.p,1);
+        /*
         System.out.println(k.numRegion);
         System.out.println(k.numCuttingLine);
         System.out.printf("%f,%f",k.cuttingLine[0][0],k.cuttingLine[0][1]);*/

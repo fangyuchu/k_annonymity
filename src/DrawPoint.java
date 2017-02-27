@@ -20,7 +20,7 @@ public class DrawPoint {
 
         String title="2008-12-3 0：00-12：00";
         //String[] trajectory={"001-20081023（08-12）"};
-        Kanonymity k=new Kanonymity(50,file(trajectory));
+        Kanonymity k=new Kanonymity(20,file(trajectory));
         k.partitionMedian(k.p,1);
         k.calDistance();
         //k.print();

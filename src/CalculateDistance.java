@@ -7,7 +7,7 @@ public class CalculateDistance {
         String[] trajectory={    "001-0：00-12：00","002-0：00-12：00","003-0：00-12：00","006-0：00-12：00","011-2：00-11：00","012-1：00-12：00","013-0：00-11：00","014-0：00-12：00","015-4：00-12：00","016-9：00-12：00","017-5：00-12：00"
         };//"20081112023003"
         String title="2008-12-3 0：00-12：00";
-        for(int kNum=10;kNum<=100;kNum=kNum+10) {
+        for(int kNum=1010;kNum<=1200;kNum=kNum+10) {
             Kanonymity k = new Kanonymity(kNum, DrawPoint.file(trajectory));
             Double[] writtenData = new Double[6];
 
