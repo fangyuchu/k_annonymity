@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../../java jar包/jexcelapi" />
+          <root url="file://$MODULE_DIR$/../../java jar包/jexcelapi" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="file://$MODULE_DIR$/../../java jar包/jexcelapi/docs" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../../java jar包/jexcelapi/build" />
+          <root url="file://$MODULE_DIR$/../../java jar包/jexcelapi/src" />
+        </SOURCES>
+        <jarDirectory url="file://$MODULE_DIR$/../../java jar包/jexcelapi" recursive="false" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../../java jar包/poi-3.15" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="file://$MODULE_DIR$/../../java jar包/poi-3.15/docs/apidocs" />
+        </JAVADOC>
+        <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/../../java jar包/poi-3.15" recursive="false" />
+      </library>
+    </orderEntry>
+  </component>
+</module>
