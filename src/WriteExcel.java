@@ -47,7 +47,7 @@ public class WriteExcel {
             tra=tra+trajectory[i]+",";
         }*/
         write("/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/distance.xls",title,row,0);
-        for(int i=1;i<6;i++) {
+        for(int i=1;i<7;i++) {
             write("/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/distance.xls", String.valueOf(data[i-1]), row, i);
         }
     }
