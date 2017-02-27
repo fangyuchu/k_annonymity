@@ -86,7 +86,7 @@ class ReadExcel {
     }
 }
 
-/*    //使用POI创建excel工作簿 哈哈
+/*    //使用POI创建excel工作簿
     public static void createWorkBook() throws IOException {
         //创建excel工作簿
         Workbook wb = new HSSFWorkbook();
@@ -94,7 +94,7 @@ class ReadExcel {
         Sheet sheet = wb.createSheet("new sheet1");
         //Row 行
         //Cell 方格
-        // Row 和 Cell 都是从0开始计数的a
+        // Row 和 Cell 都是从0开始计数的
 
         // 创建一行，在页sheet上
         Row row = sheet.createRow((short) 0);
