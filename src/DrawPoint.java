@@ -13,14 +13,16 @@ public class DrawPoint {
         long startRun = System.currentTimeMillis();
 
         //Kanonymity k=new Kanonymity(13,100);
-        String[] trajectory={"001-0：00-12：00","002-0：00-12：00","003-0：00-12：00","006-0：00-12：00","011-2：00-11：00","012-1：00-12：00","013-0：00-11：00","014-0：00-12：00","015-4：00-12：00","016-9：00-12：00","017-5：00-12：00"   //要计算的轨迹
+        String[] trajectory={"002-5：00-11：00","003-5：00-15：00","004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","013-7：00-10：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00"   //要计算的轨迹
                };
-        //10.23("011-20081023（08-12）","012-20081023（08-12）","013-20081023（08-12）","014-20081023（08-12）","001-20081023（08-12）", )
+        String title="2008-12-14 5：00-16：00";
+        //2008-10-23 8：00-12：00("000-20081023（08-12）","015-20081023（08-12）","011-20081023（08-12）","012-20081023（08-12）","013-20081023（08-12）","014-20081023（08-12）","001-20081023（08-12）" )
+        //2008-12-3 0：00-12：00("001-0：00-12：00","002-0：00-12：00","003-0：00-12：00","006-0：00-12：00","011-2：00-11：00","012-1：00-12：00","013-0：00-11：00","014-0：00-12：00","015-4：00-12：00","016-9：00-12：00","017-5：00-12：00")
+        //2008-12-14 5：00-16：00("002-5：00-11：00","003-5：00-15：00","004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","013-7：00-10：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00")
 
 
-        String title="2008-12-3 0：00-12：00";
         //String[] trajectory={"001-20081023（08-12）"};
-        Kanonymity k=new Kanonymity(20,file(trajectory));
+        Kanonymity k=new Kanonymity(50,file(title,trajectory));
         k.partitionMedian(k.p,1);
         k.calDistance();
         //k.print();
@@ -59,11 +61,11 @@ public class DrawPoint {
         long endRun = System.currentTimeMillis();
         System.out.println("运行时间：" + (endRun - startRun) + "ms");//应该是end - start
     }
-    public static String[] file(String[] s){
+    public static String[] file(String title,String[] s){
         String[] temp=new String[s.length];
         for(int i=0;i<s.length;i++){
             //temp[i]="/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/"+s[i]+".xls";
-            temp[i]="/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/2008-12-3 0：00-12：00/"+s[i]+".xls";
+            temp[i]="/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/"+title+"/"+s[i]+".xls";
         }
         return temp;
     }//

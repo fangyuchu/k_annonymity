@@ -50,6 +50,7 @@ public class Kanonymity {
             roads=new Roads();
         }catch (Exception e){
             e.printStackTrace();
+
         }
     }
 
@@ -274,9 +275,10 @@ public class Kanonymity {
 
     public static void main(String[] args){
         //Points p=new Points(500);
-        String[] trajectory={    "001-0：00-12：00","002-0：00-12：00","003-0：00-12：00","006-0：00-12：00","011-2：00-11：00","012-1：00-12：00","013-0：00-11：00","014-0：00-12：00","015-4：00-12：00","016-9：00-12：00","017-5：00-12：00"
+        String[] trajectory={ "000-20081023（08-12）","015-20081023（08-12）","011-20081023（08-12）","012-20081023（08-12）","013-20081023（08-12）","014-20081023（08-12）","001-20081023（08-12）"
         };//"20081112023003"
-        Kanonymity k = new Kanonymity(20, DrawPoint.file(trajectory));
+        String title="2008-10-23 8：00-12：00";
+        Kanonymity k = new Kanonymity(20, DrawPoint.file(title,trajectory));
         k.p.quickSort(k.p,0,k.p.num-1,0);
         //k.partitionAverage(k.p,1);
         /*

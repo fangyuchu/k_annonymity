@@ -69,7 +69,13 @@ class ReadExcel {
             row=sheet.getRow(i);
             for(int j=0;j<2;j++){
                 cell=row.getCell(j);
-                result[i][j]=Double.valueOf(cell.toString());
+                try {
+                    result[i][j] = Double.valueOf(cell.toString());
+                }catch (Exception e){
+                    System.out.println(s);
+                    System.out.printf("%d %d\n",i,j);
+                    e.printStackTrace();
+                }
                 //System.out.println(result[i][j]);
             }
             //System.out.println();

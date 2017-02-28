@@ -4,11 +4,12 @@
 public class CalculateDistance {
     public static void main(String[] args) throws  Exception {
         long startRun = System.currentTimeMillis();
-        String[] trajectory={    "001-0：00-12：00","002-0：00-12：00","003-0：00-12：00","006-0：00-12：00","011-2：00-11：00","012-1：00-12：00","013-0：00-11：00","014-0：00-12：00","015-4：00-12：00","016-9：00-12：00","017-5：00-12：00"
-        };//"20081112023003"
-        String title="2008-12-3 0：00-12：00";
-        for(int kNum=1010;kNum<=1200;kNum=kNum+10) {
-            Kanonymity k = new Kanonymity(kNum, DrawPoint.file(trajectory));
+        String[] trajectory={"002-5：00-11：00","003-5：00-15：00","004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","013-7：00-10：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00"   //要计算的轨迹
+        };
+        String title="2008-12-14 5：00-16：00";
+        for(int kNum=30;kNum<=1300;kNum=kNum+10) {
+            System.out.printf("\n\n\n\n%d\n\n\n\n",kNum);
+            Kanonymity k = new Kanonymity(kNum, DrawPoint.file(title,trajectory));
             Double[] writtenData = new Double[6];
 
             k.partitionRound(k.p, 1);
