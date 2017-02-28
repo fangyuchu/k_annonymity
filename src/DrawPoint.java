@@ -22,8 +22,9 @@ public class DrawPoint {
 
 
         //String[] trajectory={"001-20081023（08-12）"};
-        Kanonymity k=new Kanonymity(50,file(title,trajectory));
-        k.partitionMedian(k.p,1);
+        Kanonymity k=new Kanonymity(10,file(title,trajectory));
+
+        /*k.partitionMedian(k.p,1);
         k.calDistance();
         //k.print();
         //WriteExcel.writeResult(title,k,"数值中线");
@@ -31,7 +32,7 @@ public class DrawPoint {
         System.out.print("数值中线：");
         System.out.println(k.sumDistance);
         k.delete();
-
+*/
         k.partitionCentralLine(k.p,1);
         k.calDistance();
         new DrawSee(k,title+"地理中线");
@@ -49,12 +50,19 @@ public class DrawPoint {
         System.out.print("取整划分：");
         System.out.println(k.sumDistance);
         k.delete();
-
+/*
         k.partitionAverage(k.p,1);
         k.calDistance();
         //WriteExcel.writeResult(title,k,"平均划分");
         new DrawSee(k,title+"平均划分");
         System.out.print("平均划分：");
+        System.out.println(k.sumDistance);
+        k.delete();
+*/
+        k.partitonCentralLineRound(k.p,1);
+        k.calDistance();
+        new DrawSee(k,title+"地理中线+取整划分");
+        System.out.print("地理中线+取整划分:");
         System.out.println(k.sumDistance);
         k.delete();
 

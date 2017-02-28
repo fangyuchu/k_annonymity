@@ -9,6 +9,7 @@ public class Roads {
     public int numColumn;
     public int rowSize;                     //容量
     public int columnSize;
+    public Character last;                  //记录最近一次增加的是行还是列
 
 
     public Roads(){
@@ -40,6 +41,7 @@ public class Roads {
     }
 
     public void getCuttingLine(Points p,int start,int last,char c,int numCut){  //在start和last中切割，c为r表示按行切，c为c表示按列切。
+        this.last=c;
         if(c=='r'){
             roadRow[numRow++]=new Line().setLine(p.xmin,(p.getY(start)+p.getY(last))/2,p.xmax,(p.getY(start)+p.getY(last))/2,numCut);
             numCuttingLine++;
@@ -49,6 +51,16 @@ public class Roads {
             numCuttingLine++;
             expand();
         }else System.out.println("error input in getCuttingLine");
+    }
+    public void deleteLast(){
+        numCuttingLine--;
+        if(this.last=='r'){
+            numRow--;
+            roadRow[numRow]=null;
+        }else if(this.last=='c'){
+            numColumn--;
+            roadColumn[numColumn]=null;
+        }else System.out.println("error in deleting the cutting line");
     }
     public class Line{
         public Double[] line;               //分割线，一行为一条线共四个元素，分别为起始点坐标和结束点坐标

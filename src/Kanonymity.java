@@ -167,6 +167,67 @@ public class Kanonymity {
         partitionRound(p2,numCut+1);
     }
 
+    public boolean partitonCentralLineRound(Points p,int numCut){
+        if(p.num<2*k){
+            if(p.num<k){
+                //System.out.printf("region %d has less than %d points.\n",numRegion,k);
+                /*unqualified[unqualifiedRegionNum]=numRegion;
+                unqualifiedPointNum+=region[numRegion-1].num;
+                unqualifiedRegionNum++;*/
+                return false;
+            }
+            copy(p);
+            return true;
+        }
+        Points p1;//划分为p1,p2两个区域
+        Points p2;
+        if((p.xmax-p.xmin)>(p.ymax-p.ymin)) {
+            int i = p.search((p.xmax+p.xmin)/2,0);
+            p.quickSort(p,0,p.num-1,0);
+            if(i!=p.num-1) {
+                p1 = p.cut(p, 0, i);                          //处于中线上的分给前一个界面
+                p2 = p.cut(p, i + 1, p.num - 1);
+                roads.getCuttingLine(p,i,i+1,'c',numCut);//(p,i,i+1,'c');
+            }else{
+                p1=p.cut(p,0,i-1);                            //当切割线位于最后一个点之前时，将最后一个点划为新的聚集区
+                p2=p.cut(p,i,p.num-1);
+                roads.getCuttingLine(p,i-1,i,'c',numCut);
+            }
+        }else{
+            int i = p.search((p.ymax+p.ymin)/2,1);
+            p.quickSort(p,0,p.num-1,1);
+            if(i!=p.num-1) {
+                p1 = p.cut(p, 0, i);                          //处于中线上的分给前一个界面
+                p2 = p.cut(p, i + 1, p.num - 1);
+                roads.getCuttingLine(p,i,i+1,'r',numCut);
+            }else{
+                p1=p.cut(p,0,i-1);                            //当切割线位于最后一个点之前时，将最后一个点划为新的聚集区
+                p2=p.cut(p,i,p.num-1);
+                roads.getCuttingLine(p,i-1,i,'r',numCut);
+            }
+        }
+        if(!partitonCentralLineRound(p1,numCut+1)||!partitonCentralLineRound(p2,numCut+1)){
+            roads.deleteLast();
+            int d=p.num/k;
+            int r=p.num-k*d;
+            if((p.xmax-p.xmin)>(p.ymax-p.ymin)) {
+                p.quickSort(p,0,p.num-1,0);
+                p1=p.cut(p,0,d/2*k+r/2-1);
+                p2=p.cut(p,d/2*k+r/2,p.num-1);
+                roads.getCuttingLine(p,d/2*k+r/2-1,d/2*k+r/2,'c',numCut);
+            }else{
+                p.quickSort(p,0,p.num-1,1);
+                p1=p.cut(p,0,d/2*k+r/2-1);
+                p2=p.cut(p,d/2*k+r/2,p.num-1);
+                roads.getCuttingLine(p,d/2*k+r/2-1,d/2*k+r/2,'r',numCut);
+            }
+            partitonCentralLineRound(p1,numCut+1);
+            partitonCentralLineRound(p2,numCut+1);
+        }
+        return true;
+
+    }
+
     public void partitionCentralLine(Points p, int numCut){
         unqualified=new int[p.num/k];
         unqualifiedRegionNum=0;
