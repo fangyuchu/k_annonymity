@@ -195,7 +195,7 @@ public class Points {
         System.out.printf("num is %d\n",num);
     }
     public void deletePoint(Point[] p){
-        boolean find=false;
+        boolean find;
         for(int i=0;i<p.length;i++){
             find =false;
             for(int j=0;j<num;j++){

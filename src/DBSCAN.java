@@ -10,6 +10,8 @@ public class DBSCAN {
     public Integer minPts;
     public ArrayList<Points> cluster;
     public Double[][] distance;                            //上半三角有数据
+    //public Integer[] cluster;                              //和点集中的点一一对应，0表示噪声点
+    //public Integer clusterNum;
 
     DBSCAN(String s[], Double E, Integer minPts){
         try{
@@ -20,7 +22,9 @@ public class DBSCAN {
             this.E=E;
             this.minPts=minPts;
             distance=new Double[p.num][p.num];
-            cluster=new ArrayList<>();
+            calDistance();
+            //cluster=new Integer[p.num];
+            //clusterNum=0;
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -28,6 +32,40 @@ public class DBSCAN {
     public Double calDistance(Points.Point a, Points.Point b){                 //翻译两点之间点欧氏距离
         return Math.pow(Math.pow(a.x()-b.x(),2)+Math.pow(a.y()-b.y(),2),0.5);
     }
+    /*public void calDistance(){
+        for(int i=0;i<800;i++){
+            for(int j=0;j<800;j++){
+                System.out.printf(" %d ",j);
+                //distance[i][j]=Math.pow(Math.pow(p.getX(i)-p.getX(j),2)+Math.pow(p.getY(i)-p.getY(j),2),0.5);
+                distance[i][j]=1.0;
+            }
+        }
+        System.out.print("1");
+    }*/
+    public void calDistance(){
+        for(int i=0;i<p.num;i++){
+            for(int j=0;j<p.num;j++){
+                distance[i][j]=0.1;
+            }
+            System.out.println(i);
+        }
+    }
+    /*public void run(){
+        Points unvisited=new Points();
+        unvisited.copy(p);
+        while(unvisited.num!=0){
+            Points.Point center=unvisited.assemble[0];
+            unvisited.deletePoint(unvisited.assemble[0]);
+            Points candidate=new Points();
+            ArrayList<Integer> temp=findPoint(0);
+            if(temp.size()>=minPts) {
+                for (Integer x : temp) {
+                    candidate.add(unvisited.assemble[x]);                          //将可达的点加入候选集
+                    unvisited.deletePoint(unvisited.assemble[x]);
+                }
+            }
+        }
+    }*/
     public void run(){
         Points unvisited=new Points();
         unvisited.copy(p);
@@ -35,7 +73,7 @@ public class DBSCAN {
             Points.Point center=unvisited.assemble[0];
             unvisited.deletePoint(unvisited.assemble[0]);
             Points candidate=new Points();
-            ArrayList<Integer> temp=findPoint(unvisited,center);
+            ArrayList<Integer> temp=findPoint(center);
             if(temp.size()>=minPts) {
                 for (Integer x : temp) {
                     candidate.add(unvisited.assemble[x]);                          //将可达的点加入候选集
@@ -51,19 +89,42 @@ public class DBSCAN {
                 center=candidate.assemble[0];                                      //将候选集第一个点从候选集移入簇内
                 cluster.get(0).add(center);                                        //并将其可达点加入候选集
                 candidate.deletePoint(center);
+                temp=findPoint(center);
+                if(temp.size()>=minPts){
+                    for(Integer x:temp){
+                        candidate.add(unvisited.assemble[x]);
+                        unvisited.deletePoint(unvisited.assemble[x]);
+                    }
+                }
 
             }
         }
     }
-    public ArrayList<Integer> findPoint(Points unvisited,Points.Point center){     //找到center点直接密度可达的点并
+    public ArrayList<Integer> findPoint(Points.Point center){     //找到center点直接密度可达的点并
         ArrayList<Integer> result=new ArrayList<>();
-        for(int i=0;i<unvisited.num;i++){
-            if(calDistance(unvisited.assemble[i],center)<=E){
+        for(int i=0;i<p.num;i++){
+            if(calDistance(p.assemble[i],center)<=E&&!center.equal(p.assemble[i])){
                 result.add(i);
             }
         }
         return result;
     }
+    /*public ArrayList<Integer> findPoint(int i) {                                     //查找下标为i的点的可达点，返回可达点的下标数组
+        ArrayList<Integer> result=new ArrayList<>();
+        for(int j=0;j<p.num;j++){
+            if(distance[i][j]<=E&&j!=i){
+                result.add(j);
+            }
+        }
+        return result;
+    }*/
 
+    public static void main(String[] args){
+        String[] trajectory={"002-5：00-11：00","003-5：00-15：00"  //要计算的轨迹
+        };
+        String title="2008-12-14 5：00-16：00";
 
+        DBSCAN d=new DBSCAN(DrawPoint.file(title,trajectory),(double)20,10);
+        d.run();
+    }
 }
