@@ -61,6 +61,13 @@ public class Points {
         ymax = assemble[num-1].point[1];
 
     }
+    public void add(Points.Point a){
+        Point[] temp=new Point[num+1];
+        for(int i=0;i<num;i++){
+            temp[i]=assemble[i];
+        }
+        temp[temp.length-1]=a;
+    }
     public void add(Double[][] p,int belonging){                                                    //将新的点坐标集加入数据集
         /*int i=0;
         Double[][] temp=new Double[num+p.length][2];
@@ -179,11 +186,7 @@ public class Points {
     }
     public void output(){//输出
         for(int i=0;i<num;i++){
-            System.out.print(assemble[i].point[0]);
-            System.out.print("  ");
-            System.out.print(assemble[i].point[1]);
-            System.out.print("  ");
-            System.out.printf("属于：%d\n",assemble[i].belonging);
+            assemble[i].output();
         }
         System.out.printf("xmin is %f\n",xmin);
         System.out.printf("xmax is %f\n",xmax);
@@ -192,20 +195,29 @@ public class Points {
         System.out.printf("num is %d\n",num);
     }
     public void deletePoint(Point[] p){
+        boolean find=false;
         for(int i=0;i<p.length;i++){
+            find =false;
             for(int j=0;j<num;j++){
                 if(p[i].equal(assemble[j])){
+                    find=true;
                     for(int k=j;k<num-1;k++){
                         assemble[k].setPoint(assemble[k+1]);
                     }
-                   // System.out.println("yes");
                     num--;
-                    //assemble[num]=null;
+                }
+                if(!find){
+                    p[i].output();
+                    throw new NoSuchElementException("no such point");
                 }
             }
         }
         copy(this.cut(this,0,num-1));
         reset();
+    }
+    public void deletePoint(Point p){
+        Points.Point[] temp={p};
+        deletePoint(temp);
     }
     public class Point{
         private Double point[];                          //该点坐标
@@ -224,6 +236,19 @@ public class Points {
             point[1]=p.point[1];
             belonging=p.belonging;
             return this;
+        }
+        public Double x(){
+            return point[0];
+        }
+        public Double y(){
+            return point[1];
+        }
+        public void output(){
+            System.out.print(point[0]);
+            System.out.print("  ");
+            System.out.print(point[1]);
+            System.out.print("  ");
+            System.out.printf("属于：%d\n",belonging);
         }
         public boolean equal(Point p){
             return (p.point[0]==point[0]&&p.point[1]==point[1]&&p.belonging==belonging);
