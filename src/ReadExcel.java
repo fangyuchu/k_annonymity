@@ -51,8 +51,8 @@ class ReadExcel {
         //关闭输入流
         inp.close();
     }
-    public static Double[][] readCell(String s) throws Exception{
-        Double result[][];
+    public static double[][] readCell(String s) throws Exception{
+        double result[][];
         // poi读取excel
         //创建要读入的文件的输入流
         InputStream inp = new FileInputStream(s);//"C:/Users/Administrator/Desktop/test.xls"
@@ -64,7 +64,7 @@ class ReadExcel {
         Sheet sheet = wb.getSheetAt(0);
         Row row;
         Cell cell;
-        result=new Double[sheet.getLastRowNum()+1][2];
+        result=new double[sheet.getLastRowNum()+1][2];
         for(int i=0;i<=sheet.getLastRowNum();i++){
             row=sheet.getRow(i);
             for(int j=0;j<2;j++){

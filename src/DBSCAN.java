@@ -9,7 +9,7 @@ public class DBSCAN {
     public Double E;                                       //领域半径
     public Integer minPts;
     public ArrayList<Points> cluster;
-    public Double[][] distance;                            //上半三角有数据
+    public double[][] distance;                            //上半三角有数据
     //public Integer[] cluster;                              //和点集中的点一一对应，0表示噪声点
     //public Integer clusterNum;
 
@@ -21,7 +21,7 @@ public class DBSCAN {
             }
             this.E=E;
             this.minPts=minPts;
-            distance=new Double[p.num][p.num];
+            distance=new double[p.num][p.num];
             calDistance();
             //cluster=new Integer[p.num];
             //clusterNum=0;
@@ -32,24 +32,17 @@ public class DBSCAN {
     public Double calDistance(Points.Point a, Points.Point b){                 //翻译两点之间点欧氏距离
         return Math.pow(Math.pow(a.x()-b.x(),2)+Math.pow(a.y()-b.y(),2),0.5);
     }
-    /*public void calDistance(){
-        for(int i=0;i<800;i++){
-            for(int j=0;j<800;j++){
-                System.out.printf(" %d ",j);
-                //distance[i][j]=Math.pow(Math.pow(p.getX(i)-p.getX(j),2)+Math.pow(p.getY(i)-p.getY(j),2),0.5);
-                distance[i][j]=1.0;
-            }
-        }
-        System.out.print("1");
-    }*/
     public void calDistance(){
         for(int i=0;i<p.num;i++){
             for(int j=0;j<p.num;j++){
-                distance[i][j]=0.1;
+                //System.out.printf(" %d ",j);
+                distance[i][j]=Math.pow(Math.pow(p.getX(i)-p.getX(j),2)+Math.pow(p.getY(i)-p.getY(j),2),0.5);
+                //distance[i][j]=1.0;
             }
-            System.out.println(i);
         }
+        System.out.print("1");
     }
+
     /*public void run(){
         Points unvisited=new Points();
         unvisited.copy(p);
@@ -70,15 +63,16 @@ public class DBSCAN {
         Points unvisited=new Points();
         unvisited.copy(p);
         while(unvisited.num!=0){
-            Points.Point center=unvisited.assemble[0];
+            Points.Point center=new Points().new Point().copy(unvisited.assemble[0]);
             unvisited.deletePoint(unvisited.assemble[0]);
             Points candidate=new Points();
             ArrayList<Integer> temp=findPoint(center);
             if(temp.size()>=minPts) {
                 for (Integer x : temp) {
                     candidate.add(unvisited.assemble[x]);                          //将可达的点加入候选集
-                    unvisited.deletePoint(unvisited.assemble[x]);
                 }
+                System.out.println("1");
+                unvisited.deletePoint(candidate.assemble);
                 Points tempCluster=new Points();
                 tempCluster.add(center);
                 cluster.add(tempCluster);
@@ -124,7 +118,7 @@ public class DBSCAN {
         };
         String title="2008-12-14 5：00-16：00";
 
-        DBSCAN d=new DBSCAN(DrawPoint.file(title,trajectory),(double)20,10);
+        DBSCAN d=new DBSCAN(DrawPoint.file(title,trajectory),(double)0.005,10);
         d.run();
     }
 }
