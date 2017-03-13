@@ -66,12 +66,12 @@ public class DBSCAN {
             Points.Point center=new Points().new Point().copy(unvisited.assemble[0]);
             unvisited.deletePoint(unvisited.assemble[0]);
             Points candidate=new Points();
-            ArrayList<Integer> temp=findPoint(center);
+            unvisited.quickSort(unvisited,0,unvisited.num-1,1);
+            ArrayList<Integer> temp=findPoint(center,unvisited);
             if(temp.size()>=minPts) {
                 for (Integer x : temp) {
                     candidate.add(unvisited.assemble[x]);                          //将可达的点加入候选集
                 }
-                System.out.println("1");
                 unvisited.deletePoint(candidate.assemble);
                 Points tempCluster=new Points();
                 tempCluster.add(center);
@@ -83,7 +83,7 @@ public class DBSCAN {
                 center=candidate.assemble[0];                                      //将候选集第一个点从候选集移入簇内
                 cluster.get(0).add(center);                                        //并将其可达点加入候选集
                 candidate.deletePoint(center);
-                temp=findPoint(center);
+                temp=findPoint(center,unvisited);
                 if(temp.size()>=minPts){
                     for(Integer x:temp){
                         candidate.add(unvisited.assemble[x]);
@@ -94,10 +94,10 @@ public class DBSCAN {
             }
         }
     }
-    public ArrayList<Integer> findPoint(Points.Point center){     //找到center点直接密度可达的点并
+    public ArrayList<Integer> findPoint(Points.Point center,Points unvisited){     //找到center点直接密度可达的点并
         ArrayList<Integer> result=new ArrayList<>();
-        for(int i=0;i<p.num;i++){
-            if(calDistance(p.assemble[i],center)<=E&&!center.equal(p.assemble[i])){
+        for(int i=0;i<unvisited.num;i++){
+            if(calDistance(unvisited.assemble[i],center)<=E&&!center.equal(unvisited.assemble[i])){
                 result.add(i);
             }
         }

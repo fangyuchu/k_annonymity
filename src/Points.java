@@ -64,7 +64,7 @@ public class Points {
     public void add(Points.Point a){
         Point[] temp=new Point[num+1];
         for(int i=0;i<num;i++){
-            temp[i]=assemble[i];
+            temp[i]=new Point().setPoint(assemble[i]);
         }
         temp[temp.length-1]=a.copy(a);
         assemble=temp;
@@ -149,7 +149,7 @@ public class Points {
         int i;
         int first=0;
         int last=num;
-        quickSort(this,0,num-1,w);
+        quickSort(this,0,num-1,w);                  //quicksort有问题！！！！！！！！！！！！！！！！！
         while (first < last) {
             i = (first + last) / 2;
             if (assemble[i].point[w] > aim){
@@ -162,7 +162,7 @@ public class Points {
     public int search(Point aim){                     //默认所有点纵坐标相同
         int place=search(aim.y(),1);
         if(!assemble[place].equal(aim)){
-            throw new NoSuchElementException("no such point or more than one point share one y");
+            throw new NoSuchElementException();
         }
         return place;
     }
@@ -185,7 +185,10 @@ public class Points {
                 }
                 num--;
             }catch (NoSuchElementException e){
-                System.out.println("no such point or more than one point share one y");
+                System.out.println(i);
+                System.out.print("no such point as ");
+                p[i].output();
+                System.out.println("or more than one point share the same y");
             }
         }
         copy(this.cut(this,0,num-1));
