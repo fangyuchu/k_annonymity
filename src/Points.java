@@ -14,7 +14,7 @@ public class Points {
     public double xmax;
     public double ymin;
     public double ymax;
-    public double signal;                  //0表示已按x排序，1表示已按y排序，2表示未排序
+    //public double signal;                  //0表示已按x排序，1表示已按y排序，2表示未排序
     public Points(){}
     /*public Points(int num)
     {
@@ -34,7 +34,6 @@ public class Points {
             System.out.println(i);
             assemble[i]=new Point().setPoint(p[i],0);
         }
-        signal=2;
         reset();
     }
     public Points(double p[][],int b){
@@ -68,7 +67,6 @@ public class Points {
         }
         temp[temp.length-1]=a.copy(a);
         assemble=temp;
-        signal=2;                                                              //排序被打乱
         reset();
     }
     public void add(double[][] p,int belonging){                                                    //将新的点坐标集加入数据集
@@ -81,7 +79,6 @@ public class Points {
             temp[i]=new Point().setPoint(p[j],belonging);
         }
         assemble=temp;
-        signal=2;
         reset();
     }
     public Points cut(Points p,int start,int end) {//从下标start到end切割点集P
@@ -107,7 +104,6 @@ public class Points {
         this.ymax=temp.ymax;
         this.ymin=temp.ymin;
         this.num=temp.num;
-        this.signal=temp.signal;
         return this;
     }
     public void exchangePoint(Point a,Point b){//交换点
@@ -118,38 +114,42 @@ public class Points {
     }
 
     public void quickSort(Points p,int first,int last,int w){//对下标从first到last的点进行快速排序      //w 0是x 1是y
-        if(last-first<1)return;
-        if(signal!=w) {
-            Random random = new Random();
-            int j = random.nextInt(last - first);
-            p.exchangePoint(p.assemble[first], p.assemble[first + j]);
-            Point base = new Point();
-            base.setPoint(p.assemble[first]);
-            int start = first;
-            int end = last;
-            int place = first;                      //base点最后所在的坐标
-            while (start < end) {
-                while (p.assemble[end].point[w] >= base.point[w] && start < end) {
-                    end--;
-                }
-                p.exchangePoint(p.assemble[end], p.assemble[place]);
-                place = end;
-                while (p.assemble[start].point[w] <= base.point[w] && start < end) {
-                    start++;
-                }
-                p.exchangePoint(p.assemble[start], p.assemble[place]);
-                place = start;
+        if (last - first < 1) return;
+        Random random = new Random();
+        int j = random.nextInt(last - first);
+        p.exchangePoint(p.assemble[first], p.assemble[first + j]);
+        Point base = new Point();
+        base.setPoint(p.assemble[first]);
+        int start = first;
+        int end = last;
+        int place = first;                      //base点最后所在的坐标
+        while (start < end) {
+            while (p.assemble[end].point[w] >= base.point[w] && start < end) {
+                end--;
             }
-            p.quickSort(p, first, place - 1, w);
-            p.quickSort(p, place + 1, last, w);
+            p.exchangePoint(p.assemble[end], p.assemble[place]);
+            place = end;
+            while (p.assemble[start].point[w] <= base.point[w] && start < end) {
+                start++;
+            }
+            p.exchangePoint(p.assemble[start], p.assemble[place]);
+            place = start;
         }
-        signal=w;
+        p.quickSort(p, first, place - 1, w);
+        p.quickSort(p, place + 1, last, w);
+    }
+    public void detect(int w){
+        for(int i=0;i<num-1;i++){
+            if(assemble[i].point[w]>assemble[i+1].point[w]){
+                System.out.println("error in quicksort");
+            }
+        }
     }
     public int search(double aim,int w){  //查询。返回值为第一个大于所查询值的位置
         int i;
         int first=0;
         int last=num;
-        quickSort(this,0,num-1,w);                  //quicksort有问题！！！！！！！！！！！！！！！！！
+        quickSort(this,0,num-1,w);
         while (first < last) {
             i = (first + last) / 2;
             if (assemble[i].point[w] > aim){
@@ -159,13 +159,13 @@ public class Points {
         }
         return first-1;
     }
-    public int search(Point aim){                     //默认所有点纵坐标相同
+    /*public int search(Point aim){                     //默认所有点纵坐标相同
         int place=search(aim.y(),1);
         if(!assemble[place].equal(aim)){
             throw new NoSuchElementException();
         }
         return place;
-    }
+    }*/
     public void output(){//输出
         for(int i=0;i<num;i++){
             assemble[i].output();
@@ -176,22 +176,40 @@ public class Points {
         System.out.printf("ymax is %f\n",ymax);
         System.out.printf("num is %d\n",num);
     }
-    public void deletePoint(Point[] p){
-        for(int i=0;i<p.length;i++){
-            try{
-                int j=search(p[i]);
-                for(int k=j;k<num-1;k++){
-                    assemble[k].setPoint(assemble[k+1]);
-                }
-                num--;
-            }catch (NoSuchElementException e){
-                System.out.println(i);
-                System.out.print("no such point as ");
-                p[i].output();
-                System.out.println("or more than one point share the same y");
-            }
+    public void deletePoint(Point[] p) {
+        if(p.length>num){
+            System.out.println("too much points");
+            throw new NoSuchElementException();
         }
-        copy(this.cut(this,0,num-1));
+        if(num==1&&p[0].equal(assemble[0])){
+            assemble=null;
+            num=0;
+            xmin=0;
+            xmax=0;
+            ymin=0;
+            ymax=0;
+            return;
+        }
+        boolean find=false;
+        for (int i = 0; i < p.length; i++) {                          //要删除的点集p的索引
+            for (int j = 0; j < num ; j++) {                       //全点集的索引
+                if (p[i].equal(assemble[j])) {
+                    find=true;
+                    for (int k = j; k < num - 1; k++) {
+                        assemble[k].setPoint(assemble[k + 1]);
+                    }
+                    num--;
+                    break;
+                }
+            }
+            if(!find){
+                System.out.print("no such point as");
+                p[i].output();
+                throw new NoSuchElementException();
+            }
+            find=false;
+        }
+        copy(this.cut(this, 0, num - 1));
         reset();
     }
     public void deletePoint(Point p){
@@ -243,14 +261,17 @@ public class Points {
     public static void main(String[] args)
     {
         long startRun = System.currentTimeMillis();
-        String trajectory="011-20081023（08-12）";
+        String[] trajectory={"002-5：00-11：00","003-5：00-15：00"  //要计算的轨迹
+        };
+        String title="2008-12-14 5：00-16：00";
+        String s[]=DrawPoint.file(title,trajectory);
         try {
-            Points p = new Points(ReadExcel.readCell("C:/Users/Administrator/Desktop/实验室/k匿名划分数据/" + trajectory + ".xls"));
+            Points p=new Points(ReadExcel.readCell(s[0]),0);
+            for(int i=1;i<s.length;i++){
+                p.add(ReadExcel.readCell(s[i]),i);
+            }
             p.quickSort(p,0,p.num-1,1);
-            p.output();
-           // p.deletePoint(p.cut(p,p.num-2,p.num-1).assemble);
-            p.add(ReadExcel.readCell("C:/Users/Administrator/Desktop/实验室/k匿名划分数据/" + trajectory + ".xls"),1);
-            p.output();
+            p.detect(1);
         }catch (Exception e){
             e.printStackTrace();
         }

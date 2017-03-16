@@ -19,10 +19,13 @@ public class DBSCAN {
             for(int i=1;i<s.length;i++){
                 p.add(ReadExcel.readCell(s[i]),i);
             }
+            //p.signal=2;
+            //p.quickSort(p,0,p.num-1,1);
             this.E=E;
             this.minPts=minPts;
             distance=new double[p.num][p.num];
-            calDistance();
+            cluster=new ArrayList<>();
+            //calDistance();
             //cluster=new Integer[p.num];
             //clusterNum=0;
         }catch (Exception e){
@@ -40,7 +43,6 @@ public class DBSCAN {
                 //distance[i][j]=1.0;
             }
         }
-        System.out.print("1");
     }
 
     /*public void run(){
@@ -59,21 +61,22 @@ public class DBSCAN {
             }
         }
     }*/
-    public void run(){
+    public void run(){                                           //有问题
         Points unvisited=new Points();
         unvisited.copy(p);
         while(unvisited.num!=0){
             Points.Point center=new Points().new Point().copy(unvisited.assemble[0]);
             unvisited.deletePoint(unvisited.assemble[0]);
             Points candidate=new Points();
-            unvisited.quickSort(unvisited,0,unvisited.num-1,1);
+            //unvisited.quickSort(unvisited,0,unvisited.num-1,1);
             ArrayList<Integer> temp=findPoint(center,unvisited);
             if(temp.size()>=minPts) {
-                for (Integer x : temp) {
-                    candidate.add(unvisited.assemble[x]);                          //将可达的点加入候选集
+                for (int x=0;x<temp.size();x++) {
+                    candidate.add(unvisited.assemble[temp.get(x)]);                          //将可达的点加入候选集
                 }
+                //unvisited.detect(1);
                 unvisited.deletePoint(candidate.assemble);
-                Points tempCluster=new Points();
+                Points tempCluster = new Points();
                 tempCluster.add(center);
                 cluster.add(tempCluster);
             }else{                                                                 //是噪声点就直接略过
@@ -90,7 +93,6 @@ public class DBSCAN {
                         unvisited.deletePoint(unvisited.assemble[x]);
                     }
                 }
-
             }
         }
     }
@@ -118,7 +120,7 @@ public class DBSCAN {
         };
         String title="2008-12-14 5：00-16：00";
 
-        DBSCAN d=new DBSCAN(DrawPoint.file(title,trajectory),(double)0.005,10);
+        DBSCAN d=new DBSCAN(DrawPoint.file(title,trajectory),(double)0.00005,10);
         d.run();
     }
 }
