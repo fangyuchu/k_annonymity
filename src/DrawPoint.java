@@ -13,42 +13,52 @@ public class DrawPoint {
         long startRun = System.currentTimeMillis();
 
         //Kanonymity k=new Kanonymity(13,100);
-        String[] trajectory={"002-5：00-11：00","003-5：00-15：00","004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","013-7：00-10：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00"   //要计算的轨迹
+        String[] trajectory={"20081024000126","20081024000805","20081024002706","20081024004733","20081024010406","20081024011938","20081024015454","20081024020227","20081024020959","20081024041230","20081024080126"   //要计算的轨迹
                };
-        String title="2008-12-14 5：00-16：00";
+        String title="20081024";
         //2008-10-23 8：00-12：00("000-20081023（08-12）","015-20081023（08-12）","011-20081023（08-12）","012-20081023（08-12）","013-20081023（08-12）","014-20081023（08-12）","001-20081023（08-12）" )
         //2008-12-3 0：00-12：00("001-0：00-12：00","002-0：00-12：00","003-0：00-12：00","006-0：00-12：00","011-2：00-11：00","012-1：00-12：00","013-0：00-11：00","014-0：00-12：00","015-4：00-12：00","016-9：00-12：00","017-5：00-12：00")
         //2008-12-14 5：00-16：00("002-5：00-11：00","003-5：00-15：00","004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","013-7：00-10：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00")
-
+        //20081024("20081024000126","20081024000805","20081024002706","20081024004733","20081024010406","20081024011938","20081024015454","20081024020227","20081024020959","20081024041230","20081024080126")
 
         //String[] trajectory={"001-20081023（08-12）"};
-        Kanonymity k=new Kanonymity(10,file(title,trajectory));
+        Kanonymity k=new Kanonymity(1000,file(title,trajectory));
 
-        /*k.partitionMedian(k.p,1);
+        k.partitionCentroid(k.p,1);
         k.calDistance();
-        //k.print();
-        //WriteExcel.writeResult(title,k,"数值中线");
-        new DrawSee(k,title+"数值中线");
-        System.out.print("数值中线：");
-        System.out.println(k.sumDistance);
+        k.calArea();
+        new DrawSee(k,title+"质心");
+        System.out.printf("质心:中点距离：%f,区域面积：%f,区域数量：%d\n",
+                k.sumDistance,k.sumArea*1000000,k.region.size());
         k.delete();
-*/
+
+
+        k.partitionCentralLineK(k.p,1);
+        k.calDistance();
+        k.calArea();
+        new DrawSee(k,title+"地理中线+平衡");
+        System.out.printf("地理中线+平衡:中点距离：%f,区域面积：%f,区域数量：%d\n",
+                k.sumDistance,k.sumArea*1000000,k.region.size());
+        k.delete();
+
+
         k.partitionCentralLine(k.p,1);
         k.calDistance();
+        k.calArea();
         new DrawSee(k,title+"地理中线");
-        //k.print();;
+        System.out.printf("地理中线:中点距离：%f,区域面积：%f,区域数量：%d\n",
+                k.sumDistance,k.sumArea*1000000,k.region.size());
         System.out.printf("点数不合格率：%f %%\n",(100*(float)k.unqualifiedPointNum/(float)k.p.num));
         k.calDistance();
-        System.out.printf("地理中线：%f\n",k.sumDistance);
         k.delete();
 
         k.partitionRound(k.p,1);
         k.calDistance();
+        k.calArea();
         //WriteExcel.writeResult(title,k,"取整划分");
         new DrawSee(k,title+"取整划分");
-        //k.print();
-        System.out.print("取整划分：");
-        System.out.println(k.sumDistance);
+        System.out.printf("取整划分:中点距离：%f,区域面积：%f,区域数量：%d\n",
+                k.sumDistance,k.sumArea*1000000,k.region.size());
         k.delete();
 /*
         k.partitionAverage(k.p,1);
@@ -59,12 +69,13 @@ public class DrawPoint {
         System.out.println(k.sumDistance);
         k.delete();
 */
-        k.partitonCentralLineRound(k.p,1);
+        /*k.partitionCentralLineRound(k.p,1);
         k.calDistance();
         new DrawSee(k,title+"地理中线+取整划分");
         System.out.print("地理中线+取整划分:");
         System.out.println(k.sumDistance);
-        k.delete();
+        k.delete();*/
+
 
         long endRun = System.currentTimeMillis();
         System.out.println("运行时间：" + (endRun - startRun) + "ms");//应该是end - start
@@ -110,16 +121,16 @@ class DrawSee extends JFrame {
         // 获取专门用于在窗口界面上绘图的对象
         jg =  this.getGraphics();
 
-        //paintCuttingLine(jg,k);
+        paintCuttingLine(jg,k);
         for(int i=0;i<k.numRegion;i++) {
-            paintRegionRectangle(jg, k.region[i],k.p.xmax,k.p.xmin,k.p.ymax,k.p.ymin);
+            paintRegionRectangle(jg, k.region.get(i),k.p.xmax,k.p.xmin,k.p.ymax,k.p.ymin);
         }
         try{
             for(int i=0;i<k.numRegion;i++){
                 if(k.unqualified[i]==0){
                     break;
                 }
-                paintRegionUnqualified(jg, k.region[k.unqualified[i]-1],k.p.xmax,k.p.xmin,k.p.ymax,k.p.ymin);
+                paintRegionUnqualified(jg, k.region.get(k.unqualified[i]-1),k.p.xmax,k.p.xmin,k.p.ymax,k.p.ymin);
             }
         }catch (java.lang.NullPointerException e){
 

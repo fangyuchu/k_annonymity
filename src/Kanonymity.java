@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -5,12 +6,14 @@ import java.util.Random;
  */
 
 public class Kanonymity {
-    public Integer k;
-    public Integer numRegion;               //区域数量
+    public int k;
+    public int numRegion;               //区域数量
     public Points p;                         //点集合
-    public Points region[];                //划分后的区域点集合数组
-    public Double distance[];              //元素为某匿名区域中的点离该区域中点的欧式距离和
-    public Double sumDistance;
+    public ArrayList<Points> region;                //划分后的区域点集合数组
+    public double distance[] = null;              //元素为某匿名区域中的点离该区域中点的欧式距离和
+    public double sumDistance;
+    public double area[];
+    public double sumArea;
     Roads roads;
 
     public int[] unqualified;              //点数小于K的区域号（数组下标+1）
@@ -33,7 +36,7 @@ public class Kanonymity {
             //this.num=p.num;
             this.k=k;
             this.numRegion=0;
-            region=new Points[p.num];
+            region=new ArrayList<>();
             roads=new Roads();
         }catch(Exception e){}
     }
@@ -46,7 +49,7 @@ public class Kanonymity {
            // this.num=p.num;
             this.k=k;
             this.numRegion=0;
-            region=new Points[p.num];
+            region=new ArrayList<>();
             roads=new Roads();
         }catch (Exception e){
             e.printStackTrace();
@@ -62,21 +65,24 @@ public class Kanonymity {
             }catch (java.lang.NullPointerException e){
 
             }
-            region[i].output();
+            region.get(i).output();
             System.out.printf("\n");
         }
     }
 
     public void copy(Points p){//将划分好的点对象赋给re数组
-        region[numRegion]=p;
+        region.add(p);
         numRegion++;
     }
 
     public void delete(){
         this.numRegion=0;
+        region=new ArrayList<>();
         roads=new Roads();
         distance=null;
-        sumDistance=null;
+        sumDistance=0;
+        area=null;
+        sumArea=0;
         unqualified=null;
         unqualifiedRegionNum=null;
         unqualifiedPointNum=null;
@@ -107,12 +113,10 @@ public class Kanonymity {
         if(extra>0){                      //有多余点时就将k+1个点切到点集中
             copy(p.cut(p,0,k));
             roads.getCuttingLine(p,k,k+1,c,numCut);
-            //cuttingLine[numCuttingLine]=getCuttingLine(p,k,k+1,c,numCut++);
             start=k+1;
         }else{
             copy(p.cut(p,start,k-1));     //否则就切k个点
             roads.getCuttingLine(p,k-1,k,c,numCut);
-            //cuttingLine[numCuttingLine]=getCuttingLine(p,k-1,k,c,numCut++);
             start=k;
         }
         partitionAverage(p.cut(p,start,p.num-1),numCut+1);
@@ -132,14 +136,12 @@ public class Kanonymity {
             p1=p.cut(p,0,i);                          //处于中线上的分给前一个界面
             p2=p.cut(p,i+1,p.num-1);
             roads.getCuttingLine(p,i,i+1,'c',numCut);
-            //cuttingLine[numCuttingLine]=getCuttingLine(p,i,i+1,'c');
         }else{
             int i = p.num/2;
             p.quickSort(p,0,p.num-1,1);
             p1=p.cut(p,0,i);                          //处于中线上的分给前一个界面
             p2=p.cut(p,i+1,p.num-1);
             roads.getCuttingLine(p,i,i+1,'r',numCut);
-            //cuttingLine[numCuttingLine]=getCuttingLine(p,i,i+1,'r');
         }
         partitionMedian(p1,numCut+1);
         partitionMedian(p2,numCut+1);
@@ -154,11 +156,17 @@ public class Kanonymity {
         Points p1,p2;
         if((p.xmax-p.xmin)>(p.ymax-p.ymin)) {
             p.quickSort(p,0,p.num-1,0);
+
+            p.detect(0);
+
             p1=p.cut(p,0,d/2*k+r/2-1);
             p2=p.cut(p,d/2*k+r/2,p.num-1);
             roads.getCuttingLine(p,d/2*k+r/2-1,d/2*k+r/2,'c',numCut);
         }else{
             p.quickSort(p,0,p.num-1,1);
+
+            p.detect(1);
+
             p1=p.cut(p,0,d/2*k+r/2-1);
             p2=p.cut(p,d/2*k+r/2,p.num-1);
             roads.getCuttingLine(p,d/2*k+r/2-1,d/2*k+r/2,'r',numCut);
@@ -167,13 +175,9 @@ public class Kanonymity {
         partitionRound(p2,numCut+1);
     }
 
-    public boolean partitonCentralLineRound(Points p,int numCut){
+    public boolean partitionCentralLineRound(Points p,int numCut){
         if(p.num<2*k){
             if(p.num<k){
-                //System.out.printf("region %d has less than %d points.\n",numRegion,k);
-                /*unqualified[unqualifiedRegionNum]=numRegion;
-                unqualifiedPointNum+=region[numRegion-1].num;
-                unqualifiedRegionNum++;*/
                 return false;
             }
             copy(p);
@@ -206,7 +210,7 @@ public class Kanonymity {
                 roads.getCuttingLine(p,i-1,i,'r',numCut);
             }
         }
-        if(!partitonCentralLineRound(p1,numCut+1)||!partitonCentralLineRound(p2,numCut+1)){
+        if(!partitionCentralLineRound(p1,numCut+1)||!partitionCentralLineRound(p2,numCut+1)){
             roads.deleteLast();
             int d=p.num/k;
             int r=p.num-k*d;
@@ -221,11 +225,105 @@ public class Kanonymity {
                 p2=p.cut(p,d/2*k+r/2,p.num-1);
                 roads.getCuttingLine(p,d/2*k+r/2-1,d/2*k+r/2,'r',numCut);
             }
-            partitonCentralLineRound(p1,numCut+1);
-            partitonCentralLineRound(p2,numCut+1);
+            partitionCentralLineRound(p1,numCut+1);
+            partitionCentralLineRound(p2,numCut+1);
         }
         return true;
+    }
 
+    public void partitionCentroid(Points p,int numCut){             //在质心处划分
+        if(p.num<2*k){
+            copy(p);
+            return;
+        }
+        Points p1;//划分为p1,p2两个区域
+        Points p2;
+        double sum=0;
+        Points[] temp;
+        if((p.xmax-p.xmin)>(p.ymax-p.ymin)) {
+            for(int i=0;i<p.num;i++){
+                sum+=p.getX(i);
+            }
+            double x=sum/p.num;
+            temp=p.cutAt(p,x,0);
+            p1=temp[0];
+            p2=temp[1];
+            temp=balance(p1,p2);
+            p1=temp[0];
+            p2=temp[1];
+            roads.getCuttingLine(p,p1.num-1,p1.num+1,'c',numCut);
+        }else{
+            for(int i=0;i<p.num;i++){
+                sum+=p.getY(i);
+            }
+            double y=sum/p.num;
+            temp=p.cutAt(p,y,1);
+            p1=temp[0];
+            p2=temp[1];
+            temp=balance(p1,p2);
+            p1=temp[0];
+            p2=temp[1];
+            roads.getCuttingLine(p,p1.num-1,p1.num+1,'r',numCut);
+        }
+        partitionCentroid(p1,numCut+1);
+        partitionCentroid(p2,numCut+1);
+    }
+
+    public void partitionCentralLineK(Points p,int numCut){
+        if(p.num<2*k){
+            copy(p);
+            return;
+        }
+        Points p1;//划分为p1,p2两个区域
+        Points p2;
+        Points[] temp;
+        if((p.xmax-p.xmin)>(p.ymax-p.ymin)) {
+            temp=p.cutAt(p,(p.xmax+p.xmin)/2,0);
+            p1=temp[0];
+            p2=temp[1];
+            temp=balance(p1,p2);
+            p1=temp[0];
+            p2=temp[1];
+            roads.getCuttingLine(p,p1.num-1,p1.num+1,'c',numCut);
+        }else{
+            temp=p.cutAt(p,(p.ymax+p.ymin)/2,1);
+            p1=temp[0];
+            p2=temp[1];
+            temp=balance(p1,p2);
+            p1=temp[0];
+            p2=temp[1];
+            roads.getCuttingLine(p,p1.num - 1,p1.num + 1,'r',numCut);
+        }
+        partitionCentralLineK(p1,numCut+1);
+        partitionCentralLineK(p2,numCut+1);
+    }
+
+    public Points[] balance(Points p1,Points p2){                      //确保p1,p2点数均大于k
+        Points[] temp=new Points[2];
+        try{
+            if(p1.num+p2.num<2*k){                                     //若点数总和小于2k，则不可能切分出两个符合k匿名的区域
+                throw new Exception("p1 and p2 have no more than 2*k points together");
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        int i,j;
+        if(p1.num<k&&p2.num>=k){
+            for(i=0,j=k-p1.num;i<j;i++){
+                p1.add(p2.assemble[i],"special");
+            }
+            p2=p2.cut(p2,j,p2.num-1);
+            p1.reset();
+        }else if(p1.num>=k&&p2.num<k){
+            for(i=0,j=k-p2.num;i<j;i++){
+                p2.add(p1.assemble[p1.num-1-i],"special");
+            }
+            p1=p1.cut(p1,0,p1.num-j-1);
+            p2.reset();
+        }
+        temp[0]=p1;
+        temp[1]=p2;
+        return temp;
     }
 
     public void partitionCentralLine(Points p, int numCut){
@@ -241,7 +339,7 @@ public class Kanonymity {
             if(p.num<k){
                 //System.out.printf("region %d has less than %d points.\n",numRegion,k);
                 unqualified[unqualifiedRegionNum]=numRegion;
-                unqualifiedPointNum+=region[numRegion-1].num;
+                unqualifiedPointNum+=region.get(numRegion-1).num;
                 unqualifiedRegionNum++;
             }
             return;
@@ -277,17 +375,26 @@ public class Kanonymity {
         doPartitionCentralLine(p2,numCut+1);
     }
 
-    public void calDistance(){
-        distance=new Double[numRegion];
-        sumDistance=new Double(0);
+    public void calDistance(){                                 //计算区域内所有点距离中点的距离和
+        distance=new double[numRegion];
         for(int i=0;i<numRegion;i++){
-            Double x=(region[i].xmax+region[i].xmin)/2;
-            Double y=(region[i].ymax+region[i].ymin)/2;
+            double x=(region.get(i).xmax+region.get(i).xmin)/2;
+            double y=(region.get(i).ymax+region.get(i).ymin)/2;
             distance[i]=0.0;
-            for(int j=0;j<region[i].num;j++){
-                distance[i]+=Math.pow(Math.pow(region[i].getX(j)-x,2)+Math.pow(region[i].getY(j)-y,2),0.5);
+            for(int j=0;j<region.get(i).num;j++){
+                distance[i]+=Math.pow(Math.pow(region.get(i).getX(j)-x,2)
+                        +Math.pow(region.get(i).getY(j)-y,2),0.5);
             }
             sumDistance+=distance[i];
+        }
+    }
+
+    public void calArea(){
+        area=new double[numRegion];
+        for(int i=0;i<numRegion;i++){
+            area[i]=(region.get(i).xmax-region.get(i).xmin)
+                    *(region.get(i).ymax-region.get(i).ymin);
+            sumArea+=area[i];
         }
     }
     /*public void roundPartition2(Points p){//分为⌈d/2⌉+⌊r/2⌋和⌊d/2⌋+⌈r/2⌉

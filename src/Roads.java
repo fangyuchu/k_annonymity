@@ -43,10 +43,12 @@ public class Roads {
     public void getCuttingLine(Points p,int start,int last,char c,int numCut){  //在start和last中切割，c为r表示按行切，c为c表示按列切。
         this.last=c;
         if(c=='r'){
+            p.quickSort(p,0,p.num-1,1);
             roadRow[numRow++]=new Line().setLine(p.xmin,(p.getY(start)+p.getY(last))/2,p.xmax,(p.getY(start)+p.getY(last))/2,numCut);
             numCuttingLine++;
             expand();
         }else if(c=='c'){
+            p.quickSort(p,0,p.num-1,0);
             roadColumn[numColumn++]=new Line().setLine((p.getX(start)+p.getX(last))/2,p.ymin,(p.getX(start)+p.getX(last))/2,p.ymax,numCut);
             numCuttingLine++;
             expand();

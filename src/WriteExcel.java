@@ -31,10 +31,13 @@ public class WriteExcel {
         lastRowNum=row.getRowNum();
         inp.close();
     }
-    public static void writeDistance(String title,Kanonymity k,Double[] data)throws Exception{
+    public static void writeResult(String title,String method, double numK,
+                                   double numPoints, double numRegion,double distance,
+                                   double area)throws Exception{  //写划分后的效果
+        //要写入的文件名
+        String s="/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/result.xls";
         //创建要读入的文件的输入流
-        InputStream inp = new FileInputStream("/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/distance.xls");
-
+        InputStream inp = new FileInputStream(s);
         //根据上述创建的输入流 创建工作簿对象
         Workbook wb = WorkbookFactory.create(inp);
         //得到第一页 sheet
@@ -42,16 +45,16 @@ public class WriteExcel {
         Sheet sheet = wb.getSheetAt(0);
         int row=sheet.getLastRowNum()+1;
         inp.close();
-        /*String tra="";
-        for(int i=0;i<trajectory.length;i++){
-            tra=tra+trajectory[i]+",";
-        }*/
-        write("/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/distance.xls",title,row,0);
-        for(int i=1;i<7;i++) {
-            write("/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/distance.xls", String.valueOf(data[i-1]), row, i);
-        }
+        int i=0;
+        write(s,title,row,i++);
+        write(s,String.valueOf(numPoints),row,i++);
+        write(s,String.valueOf(numK),row,i++);
+        write(s,method,row,i++);
+        write(s,String.valueOf(numRegion),row,i++);
+        write(s,String.valueOf(area*1000000),row,i++);
+        write(s,String.valueOf(distance),row,i++);
     }
-    public static void writeResult(String trajectory,Kanonymity k,String method)throws Exception{
+    public static void writePartition(String trajectory,Kanonymity k,String method)throws Exception{   //写划分后的点集
 
         File file =new File("/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/result"+trajectory);
         //如果文件夹不存在则创建
@@ -90,17 +93,17 @@ public class WriteExcel {
             WriteExcel.write(doc, String.valueOf(i+1), lastRowNum, 1);  //习惯中区域数从1开始
             WriteExcel.write(doc,"属于",lastRowNum,3);
             WriteExcel.write(doc,"total number:",lastRowNum,4);
-            WriteExcel.write(doc,String.valueOf(k.region[i].num),lastRowNum,5);
+            WriteExcel.write(doc,String.valueOf(k.region.get(i).num),lastRowNum,5);
             try{
                 WriteExcel.write(doc,"distance:",lastRowNum,6);
                 WriteExcel.write(doc,String.valueOf(k.distance[i]),lastRowNum,7);
             }catch (java.lang.NullPointerException e){
 
             }
-            for(int j=0;j<k.region[i].num;j++){                              //j表示第几个点
-                WriteExcel.write(doc,String.valueOf(k.region[i].getX(j)),lastRowNum+1,0);
-                WriteExcel.write(doc,String.valueOf(k.region[i].getY(j)),lastRowNum,2);
-                WriteExcel.write(doc,String.valueOf(k.region[i].assemble[j].belonging),lastRowNum,3);
+            for(int j=0;j<k.region.get(i).num;j++){                              //j表示第几个点
+                WriteExcel.write(doc,String.valueOf(k.region.get(i).getX(j)),lastRowNum+1,0);
+                WriteExcel.write(doc,String.valueOf(k.region.get(i).getY(j)),lastRowNum,2);
+                WriteExcel.write(doc,String.valueOf(k.region.get(i).assemble[j].belonging),lastRowNum,3);
             }
         }
     }

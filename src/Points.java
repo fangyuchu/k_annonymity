@@ -1,6 +1,8 @@
 import java.awt.*;
 import java.util.*;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
+
 /**
  * Created by f456 on 16-11-30.
  */
@@ -69,6 +71,15 @@ public class Points {
         assemble=temp;
         reset();
     }
+    public void add(Points.Point a,String special){     //加入后不进行排序最值操作
+        Point[] temp=new Point[num+1];
+        for(int i=0;i<num;i++){
+            temp[i]=new Point().setPoint(assemble[i]);
+        }
+        temp[temp.length-1]=a.copy(a);
+        assemble=temp;
+        num++;
+    }
     public void add(double[][] p,int belonging){                                                    //将新的点坐标集加入数据集
         int i=0;
         Point[] temp=new Point[num+p.length-1];
@@ -95,6 +106,33 @@ public class Points {
         a.ymin=a.assemble[0].point[1];
         a.ymax=a.assemble[a.num-1].point[1];
         return a;
+    }
+    public Points[] cutAt(Points p,double data,int w){    //将p以data的数据点分成两个点集，w为0表示data是横坐标，1表示纵坐标
+        Points[] temp=new Points[2];
+        for(int i=0;i<2;i++){
+            temp[i]=new Points();
+        }
+        for(Point x:p.assemble){
+            if(x.point[w]<=data){                         //相等分在前面
+                temp[0].add(x,"special");
+            }else{
+                temp[1].add(x,"special");
+            }
+        }
+        try {
+            if (temp[0].num == 0 || temp[1].num == 0) {
+                throw new Exception("data is too small or large");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        temp[0].reset();
+        temp[1].reset();
+        if(w==0){
+            temp[0].quickSort(temp[0],0,temp[0].num-1,0);
+            temp[1].quickSort(temp[1],0,temp[1].num-1,0);
+        }
+        return temp;
     }
     public Points copy(Points p){
         Points temp=cut(p,0,p.num-1);
@@ -209,8 +247,7 @@ public class Points {
             }
             find=false;
         }
-        copy(this.cut(this, 0, num - 1));
-        reset();
+        copy(this.cut(this, 0, num - 1));                   //cut中已包括reset
     }
     public void deletePoint(Point p){
         Points.Point[] temp={p};
@@ -275,17 +312,6 @@ public class Points {
         }catch (Exception e){
             e.printStackTrace();
         }
-
-    /*    int num=5;
-        Points p=new Points(num);
-        for(int i=0;i<5;i++){
-            p.assemble[i][0]=(double)0;
-        }
-        p.quickSort(p,0,4,0);
-        p.output();
-        p.quickSort(p,0,num-1,0);
-        System.out.println(p.search(30,0));*/
-
 
         long endRun = System.currentTimeMillis();
         System.out.println("运行时间：" + (endRun - startRun) + "ms");//应该是end - start
