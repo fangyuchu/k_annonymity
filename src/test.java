@@ -43,7 +43,7 @@ public class test {
 
         long startRun = System.currentTimeMillis();
 
-        String[] trajectory={"003-5：00-15：00"//,"004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","013-7：00-10：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00"   //要计算的轨迹
+        /*String[] trajectory={"003-5：00-15：00"//,"004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","013-7：00-10：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00"   //要计算的轨迹
         };
         String title="2008-12-14 5：00-16：00";
         Kanonymity k=new Kanonymity(10,file(title,trajectory));
@@ -62,7 +62,12 @@ public class test {
         System.out.println(k.sumArea*1000000);
         k.sumArea=0;
         k.calArea();
-        System.out.println(k.sumArea*1000000);
+        System.out.println(k.sumArea*1000000);*/
+
+        Kanonymity k=new Kanonymity(2,5);
+        k.partitionRound(k.p,1);
+        new DrawSee(k,"取整划分");
+        k.delete();
 
         long endRun = System.currentTimeMillis();
         System.out.println("运行时间：" + (endRun - startRun) + "ms");

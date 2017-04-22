@@ -151,7 +151,9 @@ class DrawSee extends JFrame {
                 y1=50+(int)((k.roads.roadRow[i].line[1]-k.p.ymin)/yWidth*rw);
                 x2=50+(int)((k.roads.roadRow[i].line[2]-k.p.xmin)/xWidth*rw);
                 y2=50+(int)((k.roads.roadRow[i].line[3]-k.p.ymin)/yWidth*rw);
-                stokeLine   =   new   BasicStroke(   (float)(Math.pow(2,-k.roads.roadRow[i].numCut)*32)   );
+                stokeLine   =   new   BasicStroke(   (float)(Math.pow(2,-k.roads.roadRow[i].numCut)*32)
+                                                    // ,BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER
+                                                );
                 g2d.setStroke(   stokeLine   );
                 //g.setColor(color[(k.roads.roadRow[i].numCut-1)%color.length]);
                 g.setColor(Color.CYAN);

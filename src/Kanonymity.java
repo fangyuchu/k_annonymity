@@ -22,14 +22,14 @@ public class Kanonymity {
 
 
 
-   /* public Kanonymity(int k,int num){
-        this.num=num;
+    public Kanonymity(int k,int num){
+        //this.num=num;
         p=new Points(num);
         this.k=k;
         this.numRegion=0;
-        region=new Points[num];
+        region=new ArrayList<>();
         roads =new Roads();
-    }*/
+    }
     public Kanonymity(int k,String s){
         try {
             p = new Points(ReadExcel.readCell(s));

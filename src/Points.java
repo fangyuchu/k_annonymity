@@ -18,16 +18,19 @@ public class Points {
     public double ymax;
     //public double signal;                  //0表示已按x排序，1表示已按y排序，2表示未排序
     public Points(){}
-    /*public Points(int num)
+    public Points(int num)
     {
         this.num=num;
-        assemble=new Double[num][2];
+        assemble=new Point[num];
+        double[] temp=new double[2];
         for(int i=0;i<num;i++){
-            assemble[i][0]=new Random().nextDouble()*90;                              //为方便画图暂时坐标最大值设置为90
-            assemble[i][1]=new Random().nextDouble()*90;
+            temp[0]=new Random().nextDouble()*2+40;
+            temp[1]=new Random().nextDouble()*2+140;
+            assemble[i]=new Point().setPoint(temp,0);//new Random().nextDouble()+40;                              //为方便画图暂时坐标最大值设置为90
+            //assemble[i]=new Random().nextDouble()*141;
         }
         reset();
-    }*/
+    }
     public Points(double p[][]){
         assemble = new Point[p.length];
         this.num = p.length;
