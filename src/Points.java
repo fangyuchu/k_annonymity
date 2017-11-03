@@ -17,7 +17,11 @@ public class Points {
     public double ymin;
     public double ymax;
     //public double signal;                  //0表示已按x排序，1表示已按y排序，2表示未排序
-    public Points(){}
+    public Points(){
+        num=0;
+        assemble=null;
+        xmin=xmax=ymin=ymax=0;
+    }
     public Points(int num)
     {
         this.num=num;
@@ -65,6 +69,29 @@ public class Points {
         ymax = assemble[num-1].point[1];
 
     }
+    public void linkAdd(Points.Point a){
+        Point[] temp=new Point[num+1];
+        for(int i=0;i<num;i++){
+            temp[i]=new Point().setPoint(assemble[i]);
+        }
+        temp[temp.length-1]=a;
+        assemble=temp;
+        reset();
+    }
+
+    public void add(Points a){
+        if(a.num==0)return;
+        Point[] temp=new Point[num+a.num];
+        int i;
+        for(i=0;i<num;i++){
+            temp[i]=new Point().setPoint(assemble[i]);
+        }
+        for(int j=0;j<a.num;i++,j++){
+            temp[i]=new Points.Point().copy(a.assemble[j]);
+        }
+        assemble=temp;
+        reset();
+    }
     public void add(Points.Point a){
         Point[] temp=new Point[num+1];
         for(int i=0;i<num;i++){
@@ -93,6 +120,18 @@ public class Points {
             temp[i]=new Point().setPoint(p[j],belonging);
         }
         assemble=temp;
+        reset();
+    }
+    public void screening(double xmi,double xma,double ymi,double yma){
+        //筛选出在上述范围内的点.将在范围外的点删除
+        ArrayList<Point> temp=new ArrayList<>();
+        for(int i=0;i<num;i++){
+            if(assemble[i].x()>=xmi&&assemble[i].x()<=xma&&assemble[i].y()>=ymi&&assemble[i].y()<=yma){
+                temp.add(assemble[i]);
+            }
+        }
+        Point[] tempPoint=new Point[temp.size()];
+        assemble=temp.toArray(tempPoint);
         reset();
     }
     public Points cut(Points p,int start,int end) {//从下标start到end切割点集P

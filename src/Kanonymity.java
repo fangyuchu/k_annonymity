@@ -20,10 +20,15 @@ public class Kanonymity {
     public Integer unqualifiedRegionNum;
     public Integer unqualifiedPointNum;
 
-
+    public Kanonymity(int k,Points p){
+        this.p=p;
+        this.k=k;
+        this.numRegion=0;
+        region=new ArrayList<>();
+        roads =new Roads();
+    }
 
     public Kanonymity(int k,int num){
-        //this.num=num;
         p=new Points(num);
         this.k=k;
         this.numRegion=0;
@@ -33,7 +38,6 @@ public class Kanonymity {
     public Kanonymity(int k,String s){
         try {
             p = new Points(ReadExcel.readCell(s));
-            //this.num=p.num;
             this.k=k;
             this.numRegion=0;
             region=new ArrayList<>();
@@ -46,7 +50,6 @@ public class Kanonymity {
             for(int i=1;i<s.length;i++){
                 p.add(ReadExcel.readCell(s[i]),i);
             }
-           // this.num=p.num;
             this.k=k;
             this.numRegion=0;
             region=new ArrayList<>();
@@ -442,12 +445,14 @@ public class Kanonymity {
 
 
     public static void main(String[] args){
-        //Points p=new Points(500);
-        String[] trajectory={ "000-20081023（08-12）","015-20081023（08-12）","011-20081023（08-12）","012-20081023（08-12）","013-20081023（08-12）","014-20081023（08-12）","001-20081023（08-12）"
-        };//"20081112023003"
-        String title="2008-10-23 8：00-12：00";
-        Kanonymity k = new Kanonymity(20, DrawPoint.file(title,trajectory));
-        k.p.quickSort(k.p,0,k.p.num-1,0);
+        String[] trajectory = {"002-5：00-11：00","003-5：00-15：00","004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","013-7：00-10：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00"   //要计算的轨迹
+        };
+        String title="2008-12-14 5：00-16：00";
+        Kanonymity k = new Kanonymity(180, DrawPoint.file(title,trajectory));
+        k.p.screening(39.943623,39.969028,116.412167,116.455862);
+        k.partitionCentralLineK(k.p, 0);
+        k.calDistance();
+        new DrawSee(k,title+"地理中线再平衡");
         //k.partitionAverage(k.p,1);
         /*
         System.out.println(k.numRegion);

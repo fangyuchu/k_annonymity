@@ -1,8 +1,27 @@
+import java.util.ArrayList;
+
 /**
  * Created by fangyc on 19/04/2017.
  */
 public class test {
     public static void main(String[] args){
+        ArrayList<Integer> t=new ArrayList<>();
+        t.add(0,null);
+        t.add(9,9);
+        t.add(0);
+        t.add(1);
+        /*boolean[][] a;
+        a=new boolean[3][3];
+        a[0][1]=true;*/
+       /* ArrayList<ArrayList<Points>> t=new ArrayList<>();
+        ArrayList<Points> te=new ArrayList<>();
+        Points a=new Points(3);
+        Points b=new Points(5);
+        te.add(a);
+        te.add(b);
+        a.deletePoint(a.assemble[0]);
+        t.add(te);
+
        /* double[][] testPoints=new double[10][2];
         int i=0;
         testPoints[i][0]=49.234;
@@ -39,11 +58,11 @@ public class test {
         p.output();
         System.out.println();
         p.reset();
-        p.output();*/
+        p.output();
 
         long startRun = System.currentTimeMillis();
 
-        /*String[] trajectory={"003-5：00-15：00"//,"004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","013-7：00-10：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00"   //要计算的轨迹
+        String[] trajectory={"003-5：00-15：00"//,"004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","013-7：00-10：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00"   //要计算的轨迹
         };
         String title="2008-12-14 5：00-16：00";
         Kanonymity k=new Kanonymity(10,file(title,trajectory));
@@ -62,7 +81,7 @@ public class test {
         System.out.println(k.sumArea*1000000);
         k.sumArea=0;
         k.calArea();
-        System.out.println(k.sumArea*1000000);*/
+        System.out.println(k.sumArea*1000000);
 
         Kanonymity k=new Kanonymity(2,5);
         k.partitionRound(k.p,1);
@@ -70,7 +89,7 @@ public class test {
         k.delete();
 
         long endRun = System.currentTimeMillis();
-        System.out.println("运行时间：" + (endRun - startRun) + "ms");
+        System.out.println("运行时间：" + (endRun - startRun) + "ms");*/
 
     }
 
