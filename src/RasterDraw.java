@@ -6,13 +6,24 @@ import java.awt.*;
  */
 public class RasterDraw {
     public static void main(String[] args) {
-        String[] trajectory = {"002-5：00-11：00","003-5：00-15：00","004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","013-7：00-10：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00"  //要计算的轨迹
+        String[] trajectory = {"20081025000438","20081025005444","20081025010205","20081025013736","20081025022807","20081025030906","20081025032809","20081025034918","20081025041051","20081025041134","20081025041708","20081025043904","20081025044159","20081025045755","20081025045800","20081025060840","20081025065431","20081025074142","20081025080705","20081025080833"
 
         };
-        String title = "2008-12-14 5：00-16：00";
-        Raster test = new Raster(180, DrawPoint.file(title, trajectory));
+        String title="20081025";
+        //Raster test = new Raster(200, DrawPoint.file(title, trajectory));
+        //test.screening(39.955,40.036,116.315,116.36);
+        /*String title="random";
+        String doc="/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/random1.xls";
+
+        Raster test=new Raster(15,doc);*/
+        //test.screening(40.974,41.948,140.00,140.97);
+
+        Raster test=new Raster(80, DrawPoint.file(title, trajectory));
+        //test.print();
         test.partition();
+        System.out.println((double)(test.mtk+test.ltk)/(double)test.ek);
         test.testShow();
+        //System.out.println(test.p.num);
         new DrawRaster(test, title);
     }
 
@@ -50,6 +61,7 @@ class DrawRaster extends JFrame {
         // 获取专门用于在窗口界面上绘图的对象
         jg = this.getGraphics();
         paint(jg,r);
+        //paintTest(jg,r);
         System.out.println("over");
     }
     public void paint(Graphics g,Raster r){
@@ -66,23 +78,26 @@ class DrawRaster extends JFrame {
             xu=50+(int)((r.pixel[1].length*len)/xWidth*rw);
             yu=50+(int)((r.pixel.length*len)/yWidth*rw);
             g.setColor(Color.cyan);
+            stokeLine   =   new   BasicStroke(  (float)0.5 );
+            g2d.setStroke(   stokeLine   );
+            g.setFont(new Font("宋体",Font.BOLD,10));    //改变字体大小
             for(int i=0;i<=r.pixel.length;i++){
                 y=50+(int)((i*len)/yWidth*rw);
                 g.drawLine(xb,y,xu,y);
+                g.drawString(Double.toString(r.p.ymin+i*len).substring(0,6),xu+5,y);
             }
             for(int i=0;i<=r.pixel[1].length;i++){
                 x=50+(int)((i*len)/xWidth*rw);
                 g.drawLine(x,yb,x,yu);
+                g.drawString(Double.toString(r.p.xmin+i*len).substring(0,6),x-20,yb-5);
             }
             int radius=8;//点的半径r
             for(int i=0;i<r.kResult.size();i++){
                g.setColor(color[(i)%color.length]);
-               g.drawString(Integer.toString(i),50+((int)((r.kResult.get(i).p.assemble[0].x()-r.p.xmin)/(xWidth)*rw))-radius/2,50+(int)((r.kResult.get(i).p.assemble[0].y()-r.p.ymin)/(yWidth)*rw)-radius/2);
+              // g.drawString(Integer.toString(i),50+((int)((r.kResult.get(i).p.assemble[0].x()-r.p.xmin)/(xWidth)*rw))-radius/2,50+(int)((r.kResult.get(i).p.assemble[0].y()-r.p.ymin)/(yWidth)*rw)-radius/2);
                for(int j=0;j<r.kResult.get(i).p.num;j++){
-
                    g.drawOval(50+((int)((r.kResult.get(i).p.assemble[j].x()-r.p.xmin)/(xWidth)*rw))-radius/2,50+(int)((r.kResult.get(i).p.assemble[j].y()-r.p.ymin)/(yWidth)*rw)-radius/2,radius,radius);
                }
-               System.out.print(i);
             }
             for(int i=0;i<r.kResult.size();i++){
                 for(int j=0;j<r.kResult.get(i).numRegion;j++){
@@ -93,6 +108,46 @@ class DrawRaster extends JFrame {
             e.printStackTrace();
         }
 
+    }
+    public void paintTest(Graphics g,Raster r){             //论文作图用的，试一下就知道
+        try{
+            Graphics2D   g2d   =   (   Graphics2D   )g;
+            BasicStroke stokeLine;
+            g.setFont(new Font("Arial",Font.BOLD,20));
+            // g.drawRect(sx, sy, rw, rw);
+            double xWidth=r.p.xmax-r.p.xmin;      //regionXmax-regionXmin;
+            double yWidth=r.p.ymax-r.p.ymin;
+            double len=Math.sqrt(r.pA);
+            int x,y,xb,xu,yb,yu;
+            xb=yb=50;
+            xu=50+(int)((r.pixel[1].length*len)/xWidth*rw);
+            yu=50+(int)((r.pixel.length*len)/yWidth*rw);
+            g.setColor(Color.black);
+            stokeLine   =   new   BasicStroke(  (float)0.5 );
+            g2d.setStroke(   stokeLine   );
+            g.setFont(new Font("宋体",Font.BOLD,10));    //改变字体大小
+            for(int i=0;i<=r.pixel.length;i++){
+                y=50+(int)((i*len)/yWidth*rw);
+                g.drawLine(xb,y,xu,y);
+                g.drawString(Double.toString(r.p.ymin+i*len).substring(0,6),xu+5,y);
+            }
+            for(int i=0;i<=r.pixel[1].length;i++){
+                x=50+(int)((i*len)/xWidth*rw);
+                g.drawLine(x,yb,x,yu);
+                g.drawString(Double.toString(r.p.xmin+i*len).substring(0,6),x-20,yb-5);
+            }
+            int radius=10;//点的半径r
+            for(int i=0;i<r.kResult.size();i++){
+                //g.setColor(color[(i)%color.length]);
+                // g.drawString(Integer.toString(i),50+((int)((r.kResult.get(i).p.assemble[0].x()-r.p.xmin)/(xWidth)*rw))-radius/2,50+(int)((r.kResult.get(i).p.assemble[0].y()-r.p.ymin)/(yWidth)*rw)-radius/2);
+                for(int j=0;j<r.kResult.get(i).p.num;j++){
+                    g.drawOval(50+((int)((r.kResult.get(i).p.assemble[j].x()-r.p.xmin)/(xWidth)*rw))-radius/2,50+(int)((r.kResult.get(i).p.assemble[j].y()-r.p.ymin)/(yWidth)*rw)-radius/2,radius,radius);
+                }
+                //System.out.print(i);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     public void paintKRegionRectangle(Graphics g,Points p,double regionXmax,double regionXmin,double regionYmax,double regionYmin) {
         try{

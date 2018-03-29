@@ -1,18 +1,24 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by fangyc on 19/04/2017.
  */
 public class test {
     public static void main(String[] args){
-        ArrayList<Integer> t=new ArrayList<>();
+        HashMap<Integer,Integer> test=new HashMap<>();
+        test.put(1,2);
+        Integer a=test.get(1);
+        Integer b=test.get(2);
+
+        /*ArrayList<Integer> t=new ArrayList<>();
         t.add(0,null);
         t.add(9,9);
         t.add(0);
         t.add(1);
         /*boolean[][] a;
         a=new boolean[3][3];
-        a[0][1]=true;*/
+        a[0][1]=true;
        /* ArrayList<ArrayList<Points>> t=new ArrayList<>();
         ArrayList<Points> te=new ArrayList<>();
         Points a=new Points(3);

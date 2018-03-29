@@ -61,6 +61,7 @@ public class Points {
     }
     public void reset(){
         num=assemble.length;
+        if(num==0)return;
         quickSort(this, 0, num - 1, 0);                                              //按x排序
         xmin = assemble[0].point[0];
         xmax = assemble[num-1].point[0];
@@ -75,6 +76,30 @@ public class Points {
             temp[i]=new Point().setPoint(assemble[i]);
         }
         temp[temp.length-1]=a;
+        assemble=temp;
+        reset();
+    }
+
+    public void linkAdd(Points.Point a,String special){         //加入后不排序
+        Point[] temp=new Point[num+1];
+        for(int i=0;i<num;i++){
+            temp[i]=new Point().setPoint(assemble[i]);
+        }
+        temp[temp.length-1]=a;
+        assemble=temp;
+        num++;
+    }
+
+    public void linkAdd(ArrayList<Double[]> a){
+        Point[] temp=new Point[num+a.size()];
+        int i;
+        for(i=0;i<num;i++){
+            temp[i]=new Point().setPoint(assemble[i]);
+        }
+        for(int j=0;j<a.size();j++,i++){
+            double[] tempD={a.get(j)[0],a.get(j)[1]};
+            temp[i]=new Point().setPoint(tempD,0);
+        }
         assemble=temp;
         reset();
     }
