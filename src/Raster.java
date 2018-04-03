@@ -29,10 +29,13 @@ public class Raster {
     public ArrayList<Points> region;                //划分后的区域点集合数组
     public DrawSee draw;
     public double sumDistance=0;
-    public double sumArea=0;
+    public double sumArea=0;                        //划分后区域的面积和
+    public int regionNum=0;                         //划分后区域的数量
     int mtk;                                      //more than 2k,多于2k的栅格个数
     int ltk;                                      //less than k
     int ek;                                       //equal k，在k到2k之间的栅格个数
+    int cutNum=0;                                 //分割的次数
+    int unionNum=0;                               //合并的栅格数(先合并，后又被吞并的栅格算多次)
     public Raster(int k,String  s[]){
         try{
             this.k=k;
@@ -111,7 +114,7 @@ public class Raster {
     }
     public void findK(int min,int max){                     //给定k值范围[min,max]
         double T=5;                //初始温度
-        double delta=0.85;           //降温速度,0.7时为15次
+        double delta=0.6;           //降温速度,0.7时为15次
         double endT=0.000001;               //结束温度
         int step=20;                  //每次下降的范围为[1,1+step)
         int sol[]=new int[4];        //分4个范围进行退火尝试
@@ -133,17 +136,11 @@ public class Raster {
                 if(newSol==sol[i])newSol--;
                 if(repeat[i]<=stopTime&&newSol>i*range+min&&newSol<=(i+1)*range+min){            //确保不会迭代到上下一个范围内
                     double newRes=getKResult(newSol);
-                    if(i==0){
-                        i=i;
-                    }
                     if(newRes-res[i]<0){
                         sol[i]=newSol;
                         res[i]=newRes;
                         repeat[i]=0;
                     }else{
-                        /*if(i==0){
-                            i=i;
-                        }*/
                         if(new Random().nextDouble()< Math.exp(-(newRes-res[i]) / T)){
                             sol[i]=newSol;
                             res[i]=newRes;
@@ -168,10 +165,14 @@ public class Raster {
         this.k=minK;
         init();
     }
-    public double getKResult(int k){        //获得评价指标
+    public double getKResult(int k){        //获得评价指标，指标需要越小越好
+        /*this.k=k;
+        init();
+        return (double)(mtk+ltk)/(double)ek;*/  //评价指标为栅格数为k的个数的多少
         this.k=k;
         init();
-        return (double)(mtk+ltk)/(double)ek;
+        partition();
+        return calAreaCV();                     //评价指标为划分完后的差异系数
     }
     public void screening(double xmi,double xma,double ymi,double yma){
         //通过raster.screening调用，不得直接调用Points.screening
@@ -219,6 +220,8 @@ public class Raster {
             kResult.get(i).calDistance();
             sumDistance+=kResult.get(i).sumDistance;
             kResult.get(i).calArea();
+            cutNum+=kResult.get(i).roads.numCuttingLine;
+            regionNum+=kResult.get(i).region.size();
             sumArea+=kResult.get(i).sumArea;
         }
     }
@@ -369,6 +372,7 @@ public class Raster {
             for(int y=0;y<col;y++){
                 index[stCoor[0]+x][stCoor[1]+y]=ind;
                 visit[stCoor[0]+x][stCoor[1]+y]=true;
+                unionNum++;
             }
         }
         ind++;
@@ -503,24 +507,36 @@ public class Raster {
         }
     }*/
     public static void main(String[] args){
-        String[] trajectory = {"004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00"   //要计算的轨迹
+        //2008-10-23 8：00-12：00("000-20081023（08-12）","015-20081023（08-12）","011-20081023（08-12）","012-20081023（08-12）","013-20081023（08-12）","014-20081023（08-12）","001-20081023（08-12）" )
+        //2008-12-3 0：00-12：00("001-0：00-12：00","002-0：00-12：00","003-0：00-12：00","006-0：00-12：00","011-2：00-11：00","012-1：00-12：00","013-0：00-11：00","014-0：00-12：00","015-4：00-12：00","016-9：00-12：00","017-5：00-12：00")
+        //2008-12-14 5：00-16：00("002-5：00-11：00","003-5：00-15：00","004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","013-7：00-10：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00")
+        //20081024("20081024000126","20081024000805","20081024002706","20081024004733","20081024010406","20081024011938","20081024015454","20081024020227","20081024020959","20081024041230","20081024080126")
+        //20081025("20081025000438","20081025005444","20081025010205","20081025013736","20081025022807","20081025030906","20081025032809","20081025034918","20081025041051","20081025041134","20081025041708","20081025043904","20081025044159","20081025045755","20081025045800","20081025060840","20081025065431","20081025074142","20081025080705","20081025080833")
+        long startRun = System.currentTimeMillis();
+        String[] trajectory = {"002-5：00-11：00","003-5：00-15：00","004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","013-7：00-10：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00"   //要计算的轨迹
         };
-
+        String title="2008-12-14 5：00-16：00";
         //第一个试验的"002-5：00-11：00","003-5：00-15：00","004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","013-7：00-10：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00"
         //
-        String title="2008-12-14 5：00-16：00";
+       /* String[] trajectory = {"20081024000126","20081024000805","20081024002706","20081024004733","20081024010406","20081024011938","20081024015454","20081024020227","20081024020959","20081024041230","20081024080126"
+        };
+        String title="20081024";*/
         /*String[] trajectory = {"20081025000438","20081025005444","20081025010205","20081025013736","20081025022807","20081025030906","20081025032809","20081025034918","20081025041051","20081025041134","20081025041708","20081025043904","20081025044159","20081025045755","20081025045800","20081025060840","20081025065431","20081025074142","20081025080705","20081025080833"
 
         };
         String title="20081025";*/
-       // test.findK(10,200);
-        //System.out.println(test.k);
+        /*Raster test=new Raster(200, DrawPoint.file(title, trajectory));
+        test.findK(10,200);
+        System.out.println(test.k);*/
+        //需不需要记录分割的数量和合并的数量，栅格面积小并没有明显改变运行速度
         for(int k=10;k<=200;k++){
+            long start=System.currentTimeMillis();
             Raster test = new Raster(k, DrawPoint.file(title, trajectory));
             test.partition();
+            long time=System.currentTimeMillis()-start;
             double eqNum=(double)(test.mtk+test.ltk)/(double)test.ek;
             double cv=test.calAreaCV();
-            System.out.printf("%d,%f,%f\n",k,eqNum,cv);
+            System.out.printf("%d,%f,%f,%d,%d,%d,%d,%d\n",k,eqNum,cv,test.cutNum,test.unionNum,test.cutNum+test.unionNum,test.regionNum,test.pixel.length*test.pixel[0].length);
         }
         //test.testShow();
 
@@ -542,6 +558,9 @@ public class Raster {
             new DrawSee(testk, title + "中线");
         //}
 */
+        long endRun = System.currentTimeMillis();
+        System.out.println("运行时间：" + (endRun - startRun) + "ms");//应该是end - start
+
     }
 }
 
