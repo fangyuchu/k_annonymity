@@ -23,7 +23,7 @@ public class Raster {
     public int k;                                   //k值
     public Points[][] pixel;                        //像素矩阵
     public int[][] index;                           //指引合并后的结果，0表示未合并
-    private int ind=1;                              //自增的索引
+    public int ind=1;                              //自增的索引
     boolean[][] visit;                              //是否处理过
     public ArrayList<Kanonymity> kResult;
     public ArrayList<Points> region;                //划分后的区域点集合数组

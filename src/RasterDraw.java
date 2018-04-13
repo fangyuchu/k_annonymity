@@ -30,6 +30,7 @@ public class RasterDraw {
         //new DrawRaster(test, title);
         Raster test=new Raster(10,200);             //论文图1
         test.partition();
+        test.testShow();
         new DrawRaster(test,"200个点，k为10");
 
     }
@@ -59,6 +60,7 @@ class DrawRaster extends JFrame {
         setBounds(100, 50, 1100, 1100);
         setVisible(true);
         p.setBackground(rectColor);
+        p.setBackground(Color.white);
         setLayout(null);
         setResizable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -69,7 +71,8 @@ class DrawRaster extends JFrame {
         }
         // 获取专门用于在窗口界面上绘图的对象
         jg = this.getGraphics();
-        paintPicture1(jg,r,rwx,rwy);
+        //paintPicture1(jg,r,rwx,rwy);
+        paintPicture2(jg,r,rwx,rwy);
         //paint(jg,r,rwx,rwy);
         //paintTest(jg,r);
         System.out.println("over");
@@ -116,9 +119,82 @@ class DrawRaster extends JFrame {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+    public void paintPicture2(Graphics g,Raster r,int rwx,int rwy){     //论文图2，展示合并后的栅格
+        try{
+            Graphics2D   g2d   =   (   Graphics2D   )g;
+            g.setFont(new Font("Arial",Font.BOLD,11));
+            BasicStroke stokeLine;
+            double xWidth=r.p.xmax-r.p.xmin;      //regionXmax-regionXmin;
+            double yWidth=r.p.ymax-r.p.ymin;
+            double len=Math.sqrt(r.pA);
+            int x,y,xb,xu,yb,yu;
+            xb=yb=50;
+            xu=50+(int)((r.pixel[1].length*len)/xWidth*rwx);
+            yu=50+(int)((r.pixel.length*len)/yWidth*rwy);
+            g.setColor(Color.black);
+            float[] dash={5,5}; //短划线图案
+            stokeLine = new BasicStroke(1,BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER, 10.0f,dash,0.0f); //实例化新画刷
+            g2d.setStroke(stokeLine); //设置新的画刷
+            g.setFont(new Font("宋体",Font.BOLD,10));    //改变字体大小
+            for(int i=0;i<=r.pixel.length;i++){
+                y=50+(int)((i*len)/yWidth*rwy);
+                g.drawLine(xb,y,xu,y);
+                g.drawString(Double.toString(r.p.ymin+i*len).substring(0,6),xu+5,y);
+            }
+            for(int i=0;i<=r.pixel[1].length;i++){
+                x=50+(int)((i*len)/xWidth*rwx);
+                g.drawLine(x,yb,x,yu);
+                g.drawString(Double.toString(r.p.xmin+i*len).substring(0,6),x-20,yb-5);
+            }
+            int radius=8;//点的半径r
+            stokeLine=new BasicStroke((float)0.5);
+            g2d.setStroke(stokeLine);
+            for(int i=0;i<r.kResult.size();i++){
+                for(int j=0;j<r.kResult.get(i).p.num;j++){
+                    g.drawOval(50+((int)((r.kResult.get(i).p.assemble[j].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,50+(int)((r.kResult.get(i).p.assemble[j].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
+                }
+            }
+            for(int ind=1;ind<r.ind;ind++){
+                boolean find=false;
+                for(int i=0;i<r.index.length;i++){
+                    for(int j=0;j<r.index[0].length;j++){
+                        if(r.index[i][j]==ind) {
+                            find=true;
+                            int row, col;
+                            row = col = 1;
+                            while (i+row<r.index.length&&r.index[i + row][j] == ind) row++;
+                            while (j+col<r.index[0].length&&r.index[i][j + col] == ind) col++;
+                            int y1=50+(int)((i*len)/yWidth*rwy);
+                            int y2=50+(int)(((i+row)*len)/yWidth*rwy);
+                            int x1=50+(int)((j*len)/xWidth*rwx);
+                            int x2=50+(int)(((j+col)*len)/xWidth*rwx);
+                            g.setColor(Color.white);
+                            for(int clear=1;clear<row;clear++){
+                                g.drawLine(x1,y1+(int)((clear*len)/yWidth*rwy),x2,y1+(int)((clear*len)/yWidth*rwy));
+                            }
+                            for(int clear=1;clear<col;clear++){
+                                g.drawLine(x1+(int)((clear*len)/xWidth*rwx),y1,x1+(int)((clear*len)/xWidth*rwx),y2);
+                            }
+                            g.setColor(Color.black);
+                            g.drawLine(x1,y1,x1,y2);
+                            g.drawLine(x1,y1,x2,y1);
+                            g.drawLine(x1,y2,x2,y2);
+                            g.drawLine(x2,y1,x2,y2);
+                            break;
+                        }
+                    }
+                    if(find){
+                        break;
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
-   public void paint(Graphics g,Raster r,int rwx,int rwy){
+    public void paint(Graphics g,Raster r,int rwx,int rwy){
         try{
             Graphics2D   g2d   =   (   Graphics2D   )g;
             BasicStroke stokeLine;
