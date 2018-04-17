@@ -120,7 +120,7 @@ public class DBSCAN {
         };
         String title="2008-12-14 5：00-16：00";
 
-        DBSCAN d=new DBSCAN(DrawPoint.file(title,trajectory),(double)0.00005,10);
+        DBSCAN d=new DBSCAN(importFile.file(title,trajectory),(double)0.00005,10);
         d.run();
     }
 }

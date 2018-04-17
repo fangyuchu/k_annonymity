@@ -16,7 +16,7 @@ public class GetResult {
         for(int kNum=1300;kNum>=30;kNum=kNum-10) {
             System.out.printf("\n\n\n\n%d\n\n\n\n",kNum);
 
-            Kanonymity k = new Kanonymity(kNum, DrawPoint.file(title,trajectory));
+            Kanonymity k = new Kanonymity(kNum, importFile.file(title,trajectory));
 
             k.partitionRound(k.p, 1);
             k.calDistance();

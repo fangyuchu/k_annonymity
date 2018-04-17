@@ -22,7 +22,7 @@ public class DrawPoint {
         //20081024("20081024000126","20081024000805","20081024002706","20081024004733","20081024010406","20081024011938","20081024015454","20081024020227","20081024020959","20081024041230","20081024080126")
         //20081025("20081025000438","20081025005444","20081025010205","20081025013736","20081025022807","20081025030906","20081025032809","20081025034918","20081025041051","20081025041134","20081025041708","20081025043904","20081025044159","20081025045755","20081025045800","20081025060840","20081025065431","20081025074142","20081025080705","20081025080833")
         //String[] trajectory={"001-20081023（08-12）"};
-        Kanonymity k=new Kanonymity(100,file(title,trajectory));
+        Kanonymity k=new Kanonymity(100,importFile.file(title,trajectory));
 
         k.partitionCentroid(k.p,1);
         k.calDistance();
@@ -80,14 +80,6 @@ public class DrawPoint {
         long endRun = System.currentTimeMillis();
         System.out.println("运行时间：" + (endRun - startRun) + "ms");//应该是end - start
     }
-    public static String[] file(String title,String[] s){
-        String[] temp=new String[s.length];
-        for(int i=0;i<s.length;i++){
-            //temp[i]="/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/"+s[i]+".xls";
-            temp[i]="/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/"+title+"/"+s[i]+".xls";
-        }
-        return temp;
-    }//
 }
 class DrawSee extends JFrame {
     private static final int sx = 50;//小方格位置宽度
@@ -246,8 +238,6 @@ class DrawSee extends JFrame {
             BasicStroke stokeLine;
             stokeLine   =   new   BasicStroke( (float)0.5  );
             g2d.setStroke(   stokeLine   );
-
-
             double xWidth=regionXmax-regionXmin;
             double yWidth=regionYmax-regionYmin;
             // 设置线条颜色为红色

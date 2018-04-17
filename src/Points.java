@@ -368,7 +368,7 @@ public class Points {
         String[] trajectory={"002-5：00-11：00","003-5：00-15：00"  //要计算的轨迹
         };
         String title="2008-12-14 5：00-16：00";
-        String s[]=DrawPoint.file(title,trajectory);
+        String s[]=importFile.file(title,trajectory);
         try {
             Points p=new Points(ReadExcel.readCell(s[0]),0);
             for(int i=1;i<s.length;i++){

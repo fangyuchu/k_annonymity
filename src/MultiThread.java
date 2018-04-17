@@ -39,7 +39,7 @@ public class MultiThread {
         String[] trajectory = {"004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00"   //要计算的轨迹
         };
         String title="2008-12-14 5：00-16：00";
-        Raster test=new Raster(200, DrawPoint.file(title, trajectory));
+        Raster test=new Raster(200, importFile.file(title, trajectory));
         RunnableDemo R1 = new RunnableDemo( "Thread-1");
         R1.start();
 

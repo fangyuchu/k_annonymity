@@ -531,7 +531,7 @@ public class Raster {
         //需不需要记录分割的数量和合并的数量，栅格面积小并没有明显改变运行速度
         for(int k=10;k<=200;k++){
             long start=System.currentTimeMillis();
-            Raster test = new Raster(k, DrawPoint.file(title, trajectory));
+            Raster test = new Raster(k, importFile.file(title, trajectory));
             test.partition();
             long time=System.currentTimeMillis()-start;
             //是不是应该算k的栅格占总体栅格数的比例？

@@ -448,7 +448,7 @@ public class Kanonymity {
         String[] trajectory = {"002-5：00-11：00","003-5：00-15：00","004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","013-7：00-10：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00"   //要计算的轨迹
         };
         String title="2008-12-14 5：00-16：00";
-        Kanonymity k = new Kanonymity(180, DrawPoint.file(title,trajectory));
+        Kanonymity k = new Kanonymity(180, importFile.file(title,trajectory));
         k.p.screening(39.943623,39.969028,116.412167,116.455862);
         k.partitionCentralLineK(k.p, 0);
         k.calDistance();
