@@ -14,9 +14,6 @@ public class importFile {
         for(int i=0;i<s.length;i++){
             f[i]=route+title+"/"+s[i]+".xls";
         }
-        if(true){
-            System.out.println("ha ha");
-        }
         return f;
     }
     //test git on windows

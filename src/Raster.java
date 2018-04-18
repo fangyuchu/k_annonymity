@@ -1,16 +1,4 @@
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-
-import javax.swing.*;
-import java.awt.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Random;
 
 /**
@@ -27,7 +15,6 @@ public class Raster {
     boolean[][] visit;                              //是否处理过
     public ArrayList<Kanonymity> kResult;
     public ArrayList<Points> region;                //划分后的区域点集合数组
-    public DrawSee draw;
     public double sumDistance=0;
     public double sumArea=0;                        //划分后区域的面积和
     public int regionNum=0;                         //划分后区域的数量
