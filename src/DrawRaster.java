@@ -1,19 +1,22 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.URL;
 
 /**
  * Created by fangyc on 13/10/2017.
  */
-public class RasterDraw {
-    public static void main(String[] args) {
-        /*String[] trajectory = {"20081025000438","20081025005444","20081025010205","20081025013736","20081025022807","20081025030906","20081025032809","20081025034918","20081025041051","20081025041134","20081025041708","20081025043904","20081025044159","20081025045755","20081025045800","20081025060840","20081025065431","20081025074142","20081025080705","20081025080833"
 
+
+
+class DrawRaster extends JFrame {
+    public static void main(String[] args) {
+
+        String[] trajectory = {"20081024000126","20081024000805","20081024002706","20081024004733","20081024010406","20081024011938","20081024015454","20081024020227","20081024020959","20081024041230","20081024080126"
         };
-        String title="20081025";*/
-        String[] trajectory = {"004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00"   //要计算的轨迹
-        };
-        String title="2008-12-14 5：00-16：00";
-        //Raster test = new Raster(200, DrawPoint.file(title, trajectory));
+        String title="20081024";
+        Raster test = new Raster(100, importFile.file(title, trajectory));
         //test.screening(39.955,40.036,116.315,116.36);
         /*String title="random";
         String doc="/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/random1.xls";
@@ -28,7 +31,7 @@ public class RasterDraw {
         test.testShow();*/
         //System.out.println(test.p.num);
         //new DrawRaster(test, title);
-        Raster test=new Raster(10,200);             //论文图1
+        // Raster test=new Raster(10,200);             //论文图1
         test.partition();
         test.testShow();
         new DrawRaster(test,"200个点，k为10");
@@ -36,14 +39,13 @@ public class RasterDraw {
     }
 
 
-}
-class DrawRaster extends JFrame {
     private static final int sx = 50;//小方格位置宽度
     private static final int sy = 50;//小方格位置高度
     //private static final int w = 10;
     //private static final int rw = 650;
     private Graphics jg;
     private Color rectColor = new Color(0xf5f5f5);
+    public JPanel j;
     /**
      * DrawSee构造方法
      */
@@ -54,7 +56,7 @@ class DrawRaster extends JFrame {
 
     public DrawRaster( Raster r,String s) {
         this.setTitle(s + "k=" + String.valueOf(r.k));
-        int rwx=650;                                                    //x的宽度
+        int rwx=800;                                                    //x的宽度
         int rwy=(int)(rwx/(r.p.xmax-r.p.xmin)*(r.p.ymax-r.p.ymin));     //同比例下的y的宽度
         Container p = getContentPane();
         setBounds(100, 50, 1100, 1100);
@@ -64,16 +66,21 @@ class DrawRaster extends JFrame {
         setLayout(null);
         setResizable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        try {
-            Thread.sleep(500);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        JButton rp=new JButton("repaint");
+        rp.setBounds(950,55,100,50);
+        ActionListener a=new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                paint(jg,r,rwx,rwy);
+            }
+        };
+        rp.addActionListener(a);
+        this.add(rp);
         // 获取专门用于在窗口界面上绘图的对象
         jg = this.getGraphics();
         //paintPicture1(jg,r,rwx,rwy);
-        paintPicture2(jg,r,rwx,rwy);
-        //paint(jg,r,rwx,rwy);
+        //paintPicture2(jg,r,rwx,rwy);
+        paint(jg,r,rwx,rwy);
         //paintTest(jg,r);
         System.out.println("over");
     }
@@ -311,5 +318,4 @@ class DrawRaster extends JFrame {
             e.printStackTrace();
         }
     }
-
 }

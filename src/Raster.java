@@ -516,16 +516,17 @@ public class Raster {
         test.findK(10,200);
         System.out.println(test.k);*/
         //需不需要记录分割的数量和合并的数量，栅格面积小并没有明显改变运行速度
+        System.out.println("k pixelNUm ek cutNum unionNum");
         for(int k=10;k<=200;k++){
             long start=System.currentTimeMillis();
             Raster test = new Raster(k, importFile.file(title, trajectory));
             test.partition();
-            long time=System.currentTimeMillis()-start;
+            test.testShow();
             //是不是应该算k的栅格占总体栅格数的比例？
             double eqNum=(double)(test.mtk+test.ltk)/(double)test.ek;
             double cv=test.calAreaCV();
-            double ekall=(double)test.ek/(test.pixel.length*test.pixel[0].length);
-            System.out.println(ekall);
+            int pixelNUm=(test.pixel.length*test.pixel[0].length);
+            System.out.printf("%d %d %d %d %d\n",k,pixelNUm,test.ek,test.cutNum,test.unionNum);
             //System.out.printf("%d,%f,%f,%d,%d,%d,%d,%d\n",k,eqNum,cv,test.cutNum,test.unionNum,test.cutNum+test.unionNum,test.regionNum,test.pixel.length*test.pixel[0].length);
         }
         //test.testShow();

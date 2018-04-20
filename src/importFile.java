@@ -2,7 +2,8 @@
  * Created by fangyc on 17/04/2018.
  */
 public class importFile {
-    static String route="/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/";                                                   //文件的系统路径
+    static String route="D:/实验室/k匿名划分数据/";
+    //文件的系统路径
     importFile(String title,String trajectory){
     }
     public static String file(String title,String s){
@@ -16,5 +17,4 @@ public class importFile {
         }
         return f;
     }
-    //test git on windows
 }
