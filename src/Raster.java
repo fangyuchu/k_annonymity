@@ -534,7 +534,7 @@ public class Raster {
         test.findK(10,200);
         System.out.println(test.k);*/
         //需不需要记录分割的数量和合并的数量，栅格面积小并没有明显改变运行速度
-        System.out.println("k pixelNUm peopleNum(有人在的栅格) ek cutNum unionNum pointNum");
+        System.out.println("k pixelNum peopleNum(有人在的栅格) ek cutNum unionNum pointNum");
         for(int k=10;k<=200;k++){
             Raster test = new Raster(k, importFile.file(title));
             test.screening(30,90,116.23,200);
@@ -543,8 +543,8 @@ public class Raster {
             double eqNum=(double)(test.mtk+test.ltk)/(double)test.ek;
             double cv=test.calAreaCV();
             int peopleNum=test.ek+test.mtk+test.ltk;
-            int pixelNUm=(test.pixel.length*test.pixel[0].length);
-            System.out.printf("%d %d %d %d %d %d %d\n",k,pixelNUm,peopleNum,test.ek,test.cutNum,test.unionNum,test.p.num);
+            int pixelNum=(test.pixel.length*test.pixel[0].length);
+            System.out.printf("%d %d %d %d %d %d %d\n",k,pixelNum,peopleNum,test.ek,test.cutNum,test.unionNum,test.p.num);
             //System.out.printf("%d,%f,%f,%d,%d,%d,%d,%d\n",k,eqNum,cv,test.cutNum,test.unionNum,test.cutNum+test.unionNum,test.regionNum,test.pixel.length*test.pixel[0].length);
         }
         //test.testShow();
