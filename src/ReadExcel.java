@@ -76,9 +76,7 @@ class ReadExcel {
                     System.out.printf("%d %d\n",i,j);
                     e.printStackTrace();
                 }
-                //System.out.println(result[i][j]);
             }
-            //System.out.println();
         }
         //关闭输入流
         inp.close();

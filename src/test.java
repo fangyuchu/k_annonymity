@@ -1,16 +1,39 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.io.File;
 
 /**
  * Created by fangyc on 19/04/2017.
  */
 public class test {
-    public static void main(String[] args){
-        HashMap<Integer,Integer> test=new HashMap<>();
-        test.put(1,2);
-        Integer a=test.get(1);
-        Integer b=test.get(2);
 
+    public  void getFileAndDirectory(File file){
+        int countDirectory = 0;
+        int countFile = 0;
+        if(file.isDirectory()){
+            File []files = file.listFiles();
+            for(File fileIndex:files){
+                if(fileIndex.isDirectory()){
+                    countDirectory++;
+                    getFileAndDirectory(fileIndex);
+                }else {
+                    countFile++;
+                    System.out.println(fileIndex.getAbsolutePath());
+                }
+            }
+        }
+        System.out.println("目录文件数目为："+countDirectory);
+        System.out.println("普通文件数目为："+countFile);
+    }
+
+    public static void main(String[] args){
+        //HashMap<Integer,Integer> test=new HashMap<>();
+        //test.put(1,2);
+       // Integer a=test.get(1);
+        //Integer b=test.get(2);
+        test a=new test();
+        File f=new File("D:/实验室/k匿名划分数据/20081026");
+        a.getFileAndDirectory(f);
         /*ArrayList<Integer> t=new ArrayList<>();
         t.add(0,null);
         t.add(9,9);
@@ -100,15 +123,4 @@ public class test {
     }
 
 
-
-
-
-    public static String[] file(String title,String[] s){
-        String[] temp=new String[s.length];
-        for(int i=0;i<s.length;i++){
-            //temp[i]="/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/"+s[i]+".xls";
-            temp[i]="/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/"+title+"/"+s[i]+".xls";
-        }
-        return temp;
-    }//
 }
