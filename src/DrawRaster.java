@@ -14,8 +14,11 @@ class DrawRaster extends JFrame {
     public static void main(String[] args) {
 
 
-        String title="20081026";
-        Raster test = new Raster(100, importFile.file(title));
+        String title="20081025";
+        String[] trajectory = {"20081025000438","20081025005444","20081025010205","20081025013736","20081025022807","20081025030906","20081025032809","20081025034918","20081025041051","20081025041134","20081025041708","20081025043904","20081025044159","20081025045755","20081025045800","20081025060840","20081025065431","20081025074142","20081025080705","20081025080833"
+
+        };
+        Raster test = new Raster(500, importFile.file(title,trajectory));
         //test.screening(39.955,40.036,116.315,116.36);
         /*String title="random";
         String doc="/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/random1.xls";
@@ -31,7 +34,7 @@ class DrawRaster extends JFrame {
         //System.out.println(test.p.num);
         //new DrawRaster(test, title);
         // Raster test=new Raster(10,200);             //论文图1
-        test.p.screening(30,90,116.23,200);
+        test.screening(30,90,116.35,200);
         test.partition();
         test.testShow();
         System.out.println(1);

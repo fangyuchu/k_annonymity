@@ -94,6 +94,10 @@ public class Raster {
             }
         }
     }
+    public void screen(double xmi,double xma,double ymi,double yma){
+        p.screening(xmi,xma,ymi,yma);
+        init();
+    }
     public void print(){
         for(int i=0;i<p.num;i++){
             System.out.printf("%f\n%f\n",p.assemble[i].x(),p.assemble[i].y());
@@ -505,8 +509,8 @@ public class Raster {
         //20081025("20081025000438","20081025005444","20081025010205","20081025013736","20081025022807","20081025030906","20081025032809","20081025034918","20081025041051","20081025041134","20081025041708","20081025043904","20081025044159","20081025045755","20081025045800","20081025060840","20081025065431","20081025074142","20081025080705","20081025080833")long startRun = System.currentTimeMillis();
         /*String[] trajectory = {"002-5：00-11：00","003-5：00-15：00","004-5：00-10：00","007-5：00-16：00","009-5：00-12：00","011-7：00-12：00","013-7：00-10：00","016-5：00-12：00","017-8：00-12：00","018-9：00-15：00"   //要计算的轨迹
         };
-        String title="2008-12-14 5：00-16：00";*/
-                /*String[] trajectory ={
+
+        /*String[] trajectory ={
                 "000-20081023（08-12）","001-20081023（08-12）","011-20081023（08-12）","012-20081023（08-12）","013-20081023（08-12）","014-20081023（08-12）","015-20081023（08-12）"
         };
         String[] trajectory={
@@ -519,7 +523,7 @@ public class Raster {
         };
         */
 
-
+        //String title="2008-12-14 5：00-16：00";*/
         //String title="2008-12-3 0：00-12：00";
         //String title="2008-10-23 8：00-12：00";
         //String title="20081024";
@@ -533,7 +537,7 @@ public class Raster {
         System.out.println("k pixelNUm peopleNum(有人在的栅格) ek cutNum unionNum pointNum");
         for(int k=10;k<=200;k++){
             Raster test = new Raster(k, importFile.file(title));
-            test.p.screening(30,90,116.23,200);
+            test.screening(30,90,116.23,200);
             test.partition();
             //是不是应该算k的栅格占总体栅格数的比例？
             double eqNum=(double)(test.mtk+test.ltk)/(double)test.ek;
