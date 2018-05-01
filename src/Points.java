@@ -22,8 +22,7 @@ public class Points {
         assemble=null;
         xmin=xmax=ymin=ymax=0;
     }
-    public Points(int num)
-    {
+    public Points(int num) {
         this.num=num;
         assemble=new Point[num];
         double[] temp=new double[2];
@@ -217,7 +216,6 @@ public class Points {
         b.setPoint(a);
         a.setPoint(c);
     }
-
     public void quickSort(Points p,int first,int last,int w){//对下标从first到last的点进行快速排序      //w 0是x 1是y
         if (last - first < 1) return;
         Random random = new Random();
@@ -264,13 +262,6 @@ public class Points {
         }
         return first-1;
     }
-    /*public int search(Point aim){                     //默认所有点纵坐标相同
-        int place=search(aim.y(),1);
-        if(!assemble[place].equal(aim)){
-            throw new NoSuchElementException();
-        }
-        return place;
-    }*/
     public void output(){//输出
         for(int i=0;i<num;i++){
             assemble[i].output();
@@ -362,8 +353,14 @@ public class Points {
             return (p.point[0]==point[0]&&p.point[1]==point[1]&&p.belonging==belonging);
         }
     }
-    public static void main(String[] args)
-    {
+    /*public int search(Point aim){                     //默认所有点纵坐标相同
+    int place=search(aim.y(),1);
+    if(!assemble[place].equal(aim)){
+        throw new NoSuchElementException();
+    }
+    return place;
+}*/
+    public static void main(String[] args) {
         long startRun = System.currentTimeMillis();
         String[] trajectory={"002-5：00-11：00","003-5：00-15：00"  //要计算的轨迹
         };

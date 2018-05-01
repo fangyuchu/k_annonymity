@@ -13,10 +13,9 @@ import java.net.URL;
 class DrawRaster extends JFrame {
     public static void main(String[] args) {
 
-        String[] trajectory = {"20081024000126","20081024000805","20081024002706","20081024004733","20081024010406","20081024011938","20081024015454","20081024020227","20081024020959","20081024041230","20081024080126"
-        };
-        String title="20081024";
-        Raster test = new Raster(100, importFile.file(title, trajectory));
+
+        String title="20081026";
+        Raster test = new Raster(100, importFile.file(title));
         //test.screening(39.955,40.036,116.315,116.36);
         /*String title="random";
         String doc="/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/random1.xls";
@@ -32,8 +31,10 @@ class DrawRaster extends JFrame {
         //System.out.println(test.p.num);
         //new DrawRaster(test, title);
         // Raster test=new Raster(10,200);             //论文图1
+        test.p.screening(30,90,116.23,200);
         test.partition();
         test.testShow();
+        System.out.println(1);
         new DrawRaster(test,"200个点，k为10");
 
     }
@@ -94,7 +95,7 @@ class DrawRaster extends JFrame {
             double len=Math.sqrt(r.pA);
             int x,y,xb,xu,yb,yu;
             xb=yb=50;
-            xu=50+(int)((r.pixel[1].length*len)/xWidth*rwx);
+            xu=50+(int)((r.pixel[0].length*len)/xWidth*rwx);
             yu=50+(int)((r.pixel.length*len)/yWidth*rwy);
             g.setColor(Color.black);
             float[] dash={5,5}; //短划线图案
@@ -106,7 +107,7 @@ class DrawRaster extends JFrame {
                 g.drawLine(xb,y,xu,y);
                 g.drawString(Double.toString(r.p.ymin+i*len).substring(0,6),xu+5,y);
             }
-            for(int i=0;i<=r.pixel[1].length;i++){
+            for(int i=0;i<=r.pixel[0].length;i++){
                 x=50+(int)((i*len)/xWidth*rwx);
                 g.drawLine(x,yb,x,yu);
                 g.drawString(Double.toString(r.p.xmin+i*len).substring(0,6),x-20,yb-5);
@@ -137,7 +138,7 @@ class DrawRaster extends JFrame {
             double len=Math.sqrt(r.pA);
             int x,y,xb,xu,yb,yu;
             xb=yb=50;
-            xu=50+(int)((r.pixel[1].length*len)/xWidth*rwx);
+            xu=50+(int)((r.pixel[0].length*len)/xWidth*rwx);
             yu=50+(int)((r.pixel.length*len)/yWidth*rwy);
             g.setColor(Color.black);
             float[] dash={5,5}; //短划线图案
@@ -149,7 +150,7 @@ class DrawRaster extends JFrame {
                 g.drawLine(xb,y,xu,y);
                 g.drawString(Double.toString(r.p.ymin+i*len).substring(0,6),xu+5,y);
             }
-            for(int i=0;i<=r.pixel[1].length;i++){
+            for(int i=0;i<=r.pixel[0].length;i++){
                 x=50+(int)((i*len)/xWidth*rwx);
                 g.drawLine(x,yb,x,yu);
                 g.drawString(Double.toString(r.p.xmin+i*len).substring(0,6),x-20,yb-5);
@@ -212,7 +213,7 @@ class DrawRaster extends JFrame {
             double len=Math.sqrt(r.pA);
             int x,y,xb,xu,yb,yu;
             xb=yb=50;
-            xu=50+(int)((r.pixel[1].length*len)/xWidth*rwx);
+            xu=50+(int)((r.pixel[0].length*len)/xWidth*rwx);
             yu=50+(int)((r.pixel.length*len)/yWidth*rwy);
             g.setColor(Color.cyan);
             float[] dash={5,5}; //短划线图案
@@ -222,12 +223,14 @@ class DrawRaster extends JFrame {
             for(int i=0;i<=r.pixel.length;i++){
                 y=50+(int)((i*len)/yWidth*rwy);
                 g.drawLine(xb,y,xu,y);
-                g.drawString(Double.toString(r.p.ymin+i*len).substring(0,6),xu+5,y);
+                String sy=Double.toString(r.p.ymin+i*len);
+                g.drawString(sy.substring(0,Math.min(6,sy.length())),xu+5,y);
             }
-            for(int i=0;i<=r.pixel[1].length;i++){
+            for(int i=0;i<=r.pixel[0].length;i++){
                 x=50+(int)((i*len)/xWidth*rwx);
                 g.drawLine(x,yb,x,yu);
-                g.drawString(Double.toString(r.p.xmin+i*len).substring(0,6),x-20,yb-5);
+                String sx=Double.toString(r.p.xmin + i * len);
+                g.drawString(sx.substring(0, Math.min(6,sx.length())), x - 20, yb - 5);
             }
             int radius=8;//点的半径r
             for(int i=0;i<r.kResult.size();i++){
@@ -258,7 +261,7 @@ class DrawRaster extends JFrame {
             double len=Math.sqrt(r.pA);
             int x,y,xb,xu,yb,yu;
             xb=yb=50;
-            xu=50+(int)((r.pixel[1].length*len)/xWidth*rwx);
+            xu=50+(int)((r.pixel[0].length*len)/xWidth*rwx);
             yu=50+(int)((r.pixel.length*len)/yWidth*rwy);
             g.setColor(Color.black);
             stokeLine   =   new   BasicStroke(  (float)0.5 );
@@ -269,7 +272,7 @@ class DrawRaster extends JFrame {
                 g.drawLine(xb,y,xu,y);
                 g.drawString(Double.toString(r.p.ymin+i*len).substring(0,6),xu+5,y);
             }
-            for(int i=0;i<=r.pixel[1].length;i++){
+            for(int i=0;i<=r.pixel[0].length;i++){
                 x=50+(int)((i*len)/xWidth*rwx);
                 g.drawLine(x,yb,x,yu);
                 g.drawString(Double.toString(r.p.xmin+i*len).substring(0,6),x-20,yb-5);

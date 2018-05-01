@@ -19,7 +19,7 @@ public class importFile {
         }
         return f;
     }
-    public static String[] file(String title){                      //自动获取titile文件夹中的所有文件
+    public static String[] file(String title){                      //自动获取titile文件夹中的所有文件的文件名，在这个项目中要求这个文件夹中均为excel文件
         File t=new File(route+title);
         File []files = t.listFiles();
         String[] f=new String[files.length];

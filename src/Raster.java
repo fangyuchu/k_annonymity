@@ -82,8 +82,8 @@ public class Raster {
                 pixel[i][j].linkAdd(tempPixel.get(i).get(j));
             }
         }
-        visit=new boolean[pixel.length][pixel[1].length];
-        index=new int[pixel.length][pixel[1].length];
+        visit=new boolean[pixel.length][pixel[0].length];
+        index=new int[pixel.length][pixel[0].length];
         kResult=new ArrayList<>();
         mtk=ltk=ek=0;
         for(int i=0;i<pixel.length;i++){
@@ -228,7 +228,7 @@ public class Raster {
             stCoor[1]--;
             find=true;
         }else{
-            while (!(stCoor[0] + row == pixel.length  && stCoor[1] + col == pixel[1].length )) {//扩展到右下角
+            while (!(stCoor[0] + row == pixel.length  && stCoor[1] + col == pixel[0].length )) {//扩展到右下角
                 for (int z = 0; z < col; z++) {              //尝试和下层合并
                     if (stCoor[0]+row==visit.length||visit[stCoor[0] + row][stCoor[1] + z]) {     //stCoor[0]+(row-1)+1
                         flag = false;
@@ -248,10 +248,14 @@ public class Raster {
                 }
                 flag = true;
                 for (int z = 0; z < row; z++) {             //尝试和右侧合并
-                    if (stCoor[1]+col==visit[1].length||visit[stCoor[0] + z][stCoor[1] + col]) {
-                        flag = false;
-                        break;
-                    }
+                    //try {
+                        if (stCoor[1] + col == visit[0].length || visit[stCoor[0] + z][stCoor[1] + col]) {
+                            flag = false;
+                            break;
+                        }
+                    //}catch (Exception e){
+                    //    System.out.println();
+                   // }
                 }
                 if (flag == true){                          //右侧可合并
                     for(int z=0;z<row;z++){
@@ -418,7 +422,7 @@ public class Raster {
     }
     public void testShow(){                         //展示合并后栅格的情况
         for(int i=0;i<index.length;i++){
-            for(int j=0;j<index[1].length;j++){
+            for(int j=0;j<index[0].length;j++){
                 if(pixel[i][j].num==0){
                     System.out.printf("%dz\t\t",index[i][j]);
                 }else if(pixel[i][j].num<k){
@@ -520,7 +524,7 @@ public class Raster {
         //String title="2008-10-23 8：00-12：00";
         //String title="20081024";
         //String title="20081025";
-        String title="20081026";
+        String title="20081026"; //screening(30,90,116.23,200)
 
         /*Raster test=new Raster(200, DrawPoint.file(title, trajectory));
         test.findK(10,200);
@@ -529,6 +533,7 @@ public class Raster {
         System.out.println("k pixelNUm peopleNum(有人在的栅格) ek cutNum unionNum pointNum");
         for(int k=10;k<=200;k++){
             Raster test = new Raster(k, importFile.file(title));
+            test.p.screening(30,90,116.23,200);
             test.partition();
             //是不是应该算k的栅格占总体栅格数的比例？
             double eqNum=(double)(test.mtk+test.ltk)/(double)test.ek;
