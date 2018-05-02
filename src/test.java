@@ -31,9 +31,15 @@ public class test {
         //test.put(1,2);
        // Integer a=test.get(1);
         //Integer b=test.get(2);
-        test a=new test();
-        File f=new File("D:/实验室/k匿名划分数据/20081026");
-        a.getFileAndDirectory(f);
+       // test a=new test();
+        ArrayList<Points> t=new ArrayList<>();
+        Points a=new Points(2);
+        t.add(a);
+        Points b=new Points().copy(a);
+        a.assemble[0].setX(0);
+
+        //File f=new File("D:/实验室/k匿名划分数据/20081026");
+        //a.getFileAndDirectory(f);
         /*ArrayList<Integer> t=new ArrayList<>();
         t.add(0,null);
         t.add(9,9);

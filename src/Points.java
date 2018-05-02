@@ -52,6 +52,11 @@ public class Points {
         }
         reset();
     }
+    /*public Points(String[] s){
+        for(int i=0;i<s.length;i++){
+
+        }
+    }*/
     public double getX(int i){
         return assemble[i].point[0];
     }
@@ -327,6 +332,14 @@ public class Points {
             point[0]=p.x();
             point[1]=p.y();
             belonging=p.belonging;
+            return this;
+        }
+        public Point setX(double x){                     //注意，使用后，Points需要reset
+            point[0]=x;
+            return this;
+        }
+        public Point setY(double y){                     //注意，使用后，Points需要reset
+            point[1]=y;
             return this;
         }
         public Point copy(Point source){      //返回拷贝了source数据的点

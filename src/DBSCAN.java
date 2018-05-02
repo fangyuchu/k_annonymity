@@ -6,28 +6,38 @@ import java.util.DoubleSummaryStatistics;
  */
 public class DBSCAN {
     public Points p;
-    public Double E;                                       //领域半径
-    public Integer minPts;
-    public ArrayList<Points> cluster;
-    public double[][] distance;                            //上半三角有数据
+    public double E;                                       //领域半径
+    public int minPts;
+    //public ArrayList<Points> cluster;
+    //public double[][] distance;                            //上半三角有数据
+    public boolean visit[];
+    public int[] index;                                     //聚类结果的索引，0为噪声
+    public int ind=0;
     //public Integer[] cluster;                              //和点集中的点一一对应，0表示噪声点
     //public Integer clusterNum;
-
-    DBSCAN(String s[], Double E, Integer minPts){
+    DBSCAN(Points p,double E, int minPts){
+        try{
+            this.p=new Points().copy(p);
+            this.E=E;
+            this.minPts=minPts;
+            //distance=new double[p.num][p.num];
+            visit=new boolean[p.num];
+            index=new int[p.num];
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    DBSCAN(String s[], double E, int minPts){
         try{
             p=new Points(ReadExcel.readCell(s[0]),0);
             for(int i=1;i<s.length;i++){
                 p.add(ReadExcel.readCell(s[i]),i);
             }
-            //p.signal=2;
-            //p.quickSort(p,0,p.num-1,1);
             this.E=E;
             this.minPts=minPts;
-            distance=new double[p.num][p.num];
-            cluster=new ArrayList<>();
-            //calDistance();
-            //cluster=new Integer[p.num];
-            //clusterNum=0;
+            //distance=new double[p.num][p.num];
+            visit=new boolean[p.num];
+            index=new int[p.num];
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -35,7 +45,7 @@ public class DBSCAN {
     public Double calDistance(Points.Point a, Points.Point b){                 //翻译两点之间点欧氏距离
         return Math.pow(Math.pow(a.x()-b.x(),2)+Math.pow(a.y()-b.y(),2),0.5);
     }
-    public void calDistance(){
+    /*public void calDistance(){
         for(int i=0;i<p.num;i++){
             for(int j=0;j<p.num;j++){
                 //System.out.printf(" %d ",j);
@@ -43,6 +53,74 @@ public class DBSCAN {
                 //distance[i][j]=1.0;
             }
         }
+    }*/
+
+    public void runDB(){
+        /*C = 0
+        foreach point P in dataset D {
+            ifP is visited
+            continue next point
+            mark P as visited
+            NeighborPts = regionQuery(P, eps)
+            ifsizeof(NeighborPts) < MinPts
+            mark P as NOISE
+            else {
+                C = next cluster
+                expandCluster(P, NeighborPts, C, eps, MinPts)
+            }
+        }*/
+        for(int i=0;i<p.num;i++){
+            if(visit[i]){
+                continue;
+            }
+            visit[i]=true;
+            ArrayList<Integer> neighborPts=findPoint(p.assemble[i]);
+            if(neighborPts.size()<minPts){
+                index[i]=0;
+            }else{
+                ind++;
+                expandCluster(i,neighborPts);
+            }
+        }
+    }
+    public void expandCluster(int i,ArrayList<Integer> neighborPts){
+        /*
+        add Pto cluster C
+        foreach point P' in NeighborPts {
+            ifP' is not visited {
+                 mark P' as visited
+                 NeighborPts' = regionQuery(P', eps)
+                 if sizeof(NeighborPts') >= MinPts
+                    NeighborPts = NeighborPts joined with NeighborPts'
+                 }
+           ifP' is not yet member of any cluster
+                    add P' to cluster C
+            }
+         */
+        index[i]=ind;
+        for(int k=0;k<neighborPts.size();k++){
+            if(!visit[neighborPts.get(k)]){
+                visit[neighborPts.get(k)]=true;
+                ArrayList<Integer> neighborPts2=findPoint(p.assemble[neighborPts.get(k)]);
+                if(neighborPts2.size()>=k){
+                    neighborPts.addAll(neighborPts2);
+                }
+            }
+            if(index[neighborPts.get(k)]==0){
+                index[neighborPts.get(k)]=ind;
+            }
+        }
+    }
+
+    public ArrayList<Integer> findPoint(Points.Point center){     //找到center点直接密度可达的点,返回其在assemble中的下标
+        // returnall points within P's eps-neighborhood (including P)
+        ArrayList<Integer> result=new ArrayList<>();
+        for(int i=0;i<p.num;i++){
+            if(calDistance(p.assemble[i],center)<=E){
+                result.add(i);
+            }
+        }
+        return result;
     }
 
     /*public void run(){
@@ -61,7 +139,7 @@ public class DBSCAN {
             }
         }
     }*/
-    public void run(){                                           //有问题
+    /*public void run(){                                           //有问题
         Points unvisited=new Points();
         unvisited.copy(p);
         while(unvisited.num!=0){
@@ -95,16 +173,8 @@ public class DBSCAN {
                 }
             }
         }
-    }
-    public ArrayList<Integer> findPoint(Points.Point center,Points unvisited){     //找到center点直接密度可达的点并
-        ArrayList<Integer> result=new ArrayList<>();
-        for(int i=0;i<unvisited.num;i++){
-            if(calDistance(unvisited.assemble[i],center)<=E&&!center.equal(unvisited.assemble[i])){
-                result.add(i);
-            }
-        }
-        return result;
-    }
+    }*/
+
     /*public ArrayList<Integer> findPoint(int i) {                                     //查找下标为i的点的可达点，返回可达点的下标数组
         ArrayList<Integer> result=new ArrayList<>();
         for(int j=0;j<p.num;j++){
@@ -121,6 +191,8 @@ public class DBSCAN {
         String title="2008-12-14 5：00-16：00";
 
         DBSCAN d=new DBSCAN(importFile.file(title,trajectory),(double)0.00005,10);
-        d.run();
+        d.runDB();
+        System.out.printf("finish");
+        //d.run();
     }
 }

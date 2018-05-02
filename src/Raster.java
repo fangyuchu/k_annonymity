@@ -23,6 +23,7 @@ public class Raster {
     int ek;                                       //equal k，在k到2k之间的栅格个数
     int cutNum=0;                                 //分割的次数
     int unionNum=0;                               //合并的栅格数(先合并，后又被吞并的栅格算多次)
+    int[] cluster;                                //聚类结果的索引，0为噪声
     public Raster(int k,String  s[]){
         try{
             this.k=k;
@@ -457,6 +458,11 @@ public class Raster {
 
         return CV;
     }
+    public void dbscan(double E, int minPts){
+        DBSCAN d=new DBSCAN(p,E,minPts);
+        d.runDB();
+        cluster=d.index;
+    }
     public void Draw(String title){
         new DrawRaster(this,title);
     }
@@ -527,7 +533,7 @@ public class Raster {
         //String title="2008-12-3 0：00-12：00";
         //String title="2008-10-23 8：00-12：00";
         //String title="20081024";
-        //String title="20081025";
+        //String title="20081025"; excel表中不对，新增了别的数据了
         String title="20081026"; //screening(30,90,116.23,200)
 
         /*Raster test=new Raster(200, DrawPoint.file(title, trajectory));

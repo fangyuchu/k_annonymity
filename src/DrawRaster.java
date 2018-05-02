@@ -14,6 +14,7 @@ class DrawRaster extends JFrame {
     public static void main(String[] args) {
 
 
+
         String title="20081024";
         Raster test = new Raster(50, importFile.file(title));
         //test.screening(39.955,40.036,116.315,116.36);
@@ -31,9 +32,10 @@ class DrawRaster extends JFrame {
         //System.out.println(test.p.num);
         //new DrawRaster(test, title);
         // Raster test=new Raster(10,200);             //论文图1
-        test.screening(30,90,116.35,200);
-        test.partition();
-        test.testShow();
+        //test.screening(30,90,116.35,200);
+        //test.partition();
+        //test.testShow();
+        test.dbscan((double)0.05,10);
         System.out.println(1);
         new DrawRaster(test,"200个点，k为10");
 
@@ -81,9 +83,41 @@ class DrawRaster extends JFrame {
         jg = this.getGraphics();
         //paintPicture1(jg,r,rwx,rwy);
         //paintPicture2(jg,r,rwx,rwy);
-        paint(jg,r,rwx,rwy);
+        paintPoints(jg,r,rwx,rwy);
         //paintTest(jg,r);
         System.out.println("over");
+    }
+    public void paintPoints(Graphics g,Raster r,int rwx,int rwy){
+        try{
+            Graphics2D   g2d   =   (   Graphics2D   )g;
+            g.setFont(new Font("Arial",Font.BOLD,11));
+            BasicStroke stokeLine;
+            double xWidth=r.p.xmax-r.p.xmin;      //regionXmax-regionXmin;
+            double yWidth=r.p.ymax-r.p.ymin;
+            double len=Math.sqrt(r.pA);
+            int x,y,xb,xu,yb,yu;
+            xb=yb=50;
+            xu=50+(int)((r.pixel[0].length*len)/xWidth*rwx);
+            yu=50+(int)((r.pixel.length*len)/yWidth*rwy);
+            g.setColor(Color.black);
+            float[] dash={5,5}; //短划线图案
+            stokeLine = new BasicStroke(1,BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER, 10.0f,dash,0.0f); //实例化新画刷
+            g2d.setStroke(stokeLine); //设置新的画刷
+            g.setFont(new Font("宋体",Font.BOLD,10));    //改变字体大小
+            int radius=8;//点的半径r
+            stokeLine=new BasicStroke((float)0.5);
+            g2d.setStroke(stokeLine);
+            for(int i=0;i<r.p.num;i++){
+                g.setColor(color[r.cluster[i]%color.length]);
+                g.drawOval(50+((int)((r.p.assemble[i].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,50+(int)((r.p.assemble[i].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
+            }
+            g.drawLine(50,50,50,50+rwy);                 //画出点的边界
+            g.drawLine(50+rwx,50,50+rwx,50+rwy);
+            g.drawLine(50,50,50+rwx,50);
+            g.drawLine(50,50+rwy,50+rwx,50+rwy);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     public void paintPicture1(Graphics g,Raster r,int rwx,int rwy){             //论文图1
         try{
@@ -234,7 +268,7 @@ class DrawRaster extends JFrame {
             }
             int radius=8;//点的半径r
             for(int i=0;i<r.kResult.size();i++){
-               g.setColor(color[(i)%color.length]);
+               //g.setColor(color[(i)%color.length]);
               // g.drawString(Integer.toString(i),50+((int)((r.kResult.get(i).p.assemble[0].x()-r.p.xmin)/(xWidth)*rw))-radius/2,50+(int)((r.kResult.get(i).p.assemble[0].y()-r.p.ymin)/(yWidth)*rw)-radius/2);
                for(int j=0;j<r.kResult.get(i).p.num;j++){
                    g.drawOval(50+((int)((r.kResult.get(i).p.assemble[j].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,50+(int)((r.kResult.get(i).p.assemble[j].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
