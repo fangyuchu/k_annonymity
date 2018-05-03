@@ -23,7 +23,8 @@ public class Raster {
     int ek;                                       //equal k，在k到2k之间的栅格个数
     int cutNum=0;                                 //分割的次数
     int unionNum=0;                               //合并的栅格数(先合并，后又被吞并的栅格算多次)
-    int[] cluster;                                //聚类结果的索引，0为噪声
+    boolean stateCluster=false;                   //聚类操作后变为true
+    boolean statePartition=false;                 //划分操作后变为true
     public Raster(int k,String  s[]){
         try{
             this.k=k;
@@ -65,6 +66,17 @@ public class Raster {
                 pixel[i][j]=new Points();
             }
         }
+        for(int i=0;i<p.num;i++){
+            int r=(int)((p.assemble[i].y()-p.ymin)/len);
+            int c=(int)((p.assemble[i].x()-p.xmin)/len);
+            pixel[r][c].linkAdd(p.assemble[i],"special");
+        }
+        for(int i=0;i<pixel.length;i++){
+            for(int j=0;j<pixel[0].length;j++){
+                pixel[i][j].reset();
+            }
+        }
+        /*
         ArrayList<ArrayList<ArrayList<Double[]>>> tempPixel=new ArrayList<>();
         for(int i=0;i<row;i++){
             tempPixel.add(new ArrayList<>());
@@ -83,6 +95,7 @@ public class Raster {
                 pixel[i][j].linkAdd(tempPixel.get(i).get(j));
             }
         }
+        */
         visit=new boolean[pixel.length][pixel[0].length];
         index=new int[pixel.length][pixel[0].length];
         kResult=new ArrayList<>();
@@ -172,6 +185,7 @@ public class Raster {
         init();
     }
     public void partition(){        //对栅格化后的数据进行处理，栅格点数不足k进行合并。对处理后对数据默认用地理中线划分
+        statePartition=true;
         Kanonymity temp;
         for(int i=0;i<pixel.length;i++){
             for(int j=0;j<pixel[i].length;j++){
@@ -217,6 +231,28 @@ public class Raster {
             sumArea+=kResult.get(i).sumArea;
         }
     }
+    public ArrayList<Integer> findClusterInPixel(int i,int j){              //找到pixel[i][j]中的点包含在哪些聚类中
+        try {
+            if (!stateCluster) {
+                throw new Exception("尚未聚类过");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        ArrayList<Integer> clus=new ArrayList<>();
+        for(int k=0;k<pixel[i][j].num;k++){
+            if(clus.indexOf(pixel[i][j].assemble[k].cluster)!=-1){
+                clus.add(pixel[i][j].assemble[k].cluster);
+            }
+        }
+        return clus;
+    }
+    public boolean comparePixelCluster(ArrayList<Integer>a,ArrayList<Integer>b){    //比较a，b两个pixel中是否有相同聚类的点，是为true
+        for(int i=0;i<a.size();i++){
+            if(b.indexOf(a.get(i))!=-1)return true;
+        }
+        return false;
+    }
     public void reunion(int i,int j){
         boolean find=false;
         boolean flag=true;
@@ -233,6 +269,117 @@ public class Raster {
             stCoor[1]--;
             find=true;
         }else{
+
+            ArrayList<Integer> clus=findClusterInPixel(i,j);
+            ArrayList<Integer> clus1;
+            int temp[]=null;
+            for(;;) {
+                boolean clusFind=false;
+                for (int r = 0; r < row&&!clusFind&&stCoor[1]+col<pixel[0].length; r++) {
+                    clus1 = findClusterInPixel(stCoor[0] + r, stCoor[1] + col);   //原来是  田  的话，包含其右边从上到下2格
+                    if(comparePixelCluster(clus,clus1)){
+                        clusFind=true;
+                        temp = checkIndex(stCoor[0], stCoor[1], row, col + 1);
+                        break;
+                    }
+                }
+                for (int c = 0; c < col&&!clusFind&&stCoor[0]+row<pixel.length; c++) {
+                    System.out.printf("");
+                    clus1 = findClusterInPixel(stCoor[0] + row,stCoor[1] + c);     //原来是  田  的话，包含其下边从左到右2格
+                    if(comparePixelCluster(clus,clus1)){
+                        clusFind=true;
+                        temp = checkIndex(stCoor[0], stCoor[1], row+1, col);
+                        break;
+                    }
+                }
+                for(int r = 0; r < row&&!clusFind&&stCoor[1]-1>=0; r++){
+                    clus1 = findClusterInPixel(stCoor[0] + r, stCoor[1] - 1);     //原来是  田  的话，包含其左边从上到下2格
+                    if(comparePixelCluster(clus,clus1)){
+                        clusFind=true;
+                        temp = checkIndex(stCoor[0], stCoor[1]-1, row, col + 1);
+                        break;
+                    }
+                }
+                for (int c = 0; c < col&&!clusFind&&stCoor[0]-1>=0; c++) {
+                    clus1 = findClusterInPixel(stCoor[0] - 1,stCoor[1] + c);     //原来是  田  的话，包含其上边从左到右2格
+                    if(comparePixelCluster(clus,clus1)){
+                        clusFind=true;
+                        temp = checkIndex(stCoor[0]-1, stCoor[1], row+1, col);
+                        break;
+                    }
+                }
+                if(!clusFind&&stCoor[1]-1>=0&&stCoor[0]-1>=0) {
+                    clus1=findClusterInPixel(stCoor[0] - 1, stCoor[1] - 1);                //左上角
+                    if(comparePixelCluster(clus,clus1)){
+                        clusFind=true;
+                        temp = checkIndex(stCoor[0]-1, stCoor[1]-1, row+1, col+1);
+                    }
+                }
+                if(!clusFind&&stCoor[1]-1>=0&&stCoor[0]+row<pixel.length) {
+                    clus1=findClusterInPixel(stCoor[0] + row, stCoor[1] - 1);              //左下角
+                    if(comparePixelCluster(clus,clus1)){
+                        clusFind=true;
+                        temp = checkIndex(stCoor[0], stCoor[1]-1, row+1, col+1);
+                    }
+                }
+                if(!clusFind&&stCoor[0]-1>=0&&stCoor[1]+col<pixel[0].length) {
+                    clus1=findClusterInPixel(stCoor[0] - 1, stCoor[1] + col);              //右上角
+                    if(comparePixelCluster(clus,clus1)){
+                        clusFind=true;
+                        temp = checkIndex(stCoor[0]-1, stCoor[1], row+1, col+1);
+                    }
+                }
+                if(!clusFind&&stCoor[1]+col<pixel[0].length&&stCoor[0]+row<pixel.length) {
+                    clus1=findClusterInPixel(stCoor[0] + row, stCoor[1] + col);            //右下角
+                    if(comparePixelCluster(clus,clus1)){
+                        clusFind=true;
+                        temp = checkIndex(stCoor[0], stCoor[1], row+1, col+1);
+                    }
+                }
+                if(!clusFind){
+                    break;
+                }
+                while (temp[0] != stCoor[0] || temp[1] != stCoor[1] || temp[2] != stCoor[0] + row - 1 || temp[3] != stCoor[1] + col - 1) {
+                    row = Math.max(stCoor[0] + row - 1, temp[2]) - Math.min(stCoor[0], temp[0]) + 1;
+                    col = Math.max(stCoor[1] + col - 1, temp[3]) - Math.min(stCoor[1], temp[1]) + 1;
+                    stCoor[0] = Math.min(stCoor[0], temp[0]);
+                    stCoor[1] = Math.min(stCoor[1], temp[1]);
+                    temp = checkIndex(stCoor[0], stCoor[1], row, col);
+                }
+                if(checkSum(stCoor[0],stCoor[1],row,col)){
+                    System.out.println();
+                    break;
+                }
+            }
+
+
+           /* while (!(stCoor[0] + row == pixel.length  && stCoor[1] + col == pixel[0].length )){
+                boolean clusFind=false;
+                for (int z = 0; z < col; z++) {              //尝试和下层合并
+                    if (stCoor[0]+row==visit.length||visit[stCoor[0] + row][stCoor[1] + z]) {     //stCoor[0]+(row-1)+1
+                        flag = false;
+                        break;
+                    }
+                    for(int k=0;k<pixel[stCoor[0] + row][stCoor[1] + z].num;k++){
+                        if(clus.indexOf(pixel[stCoor[0] + row][stCoor[1] + z].assemble[k].cluster)!=-1){
+                            clusFind=true;
+                        }
+                    }
+                }
+                if (flag == true&& clusFind==true) {                                     //下层可合并
+                    for(int z=0;z<col;z++){
+                        sum+=pixel[stCoor[0] + row][stCoor[1] + z].num;
+                    }
+                    row++;
+                }
+            }*/
+
+
+
+
+
+
+
             while (!(stCoor[0] + row == pixel.length  && stCoor[1] + col == pixel[0].length )) {//扩展到右下角
                 for (int z = 0; z < col; z++) {              //尝试和下层合并
                     if (stCoor[0]+row==visit.length||visit[stCoor[0] + row][stCoor[1] + z]) {     //stCoor[0]+(row-1)+1
@@ -459,9 +606,9 @@ public class Raster {
         return CV;
     }
     public void dbscan(double E, int minPts){
+        stateCluster=true;
         DBSCAN d=new DBSCAN(p,E,minPts);
         d.runDB();
-        cluster=d.index;
     }
     public void Draw(String title){
         new DrawRaster(this,title);

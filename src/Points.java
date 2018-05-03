@@ -19,7 +19,7 @@ public class Points {
     //public double signal;                  //0表示已按x排序，1表示已按y排序，2表示未排序
     public Points(){
         num=0;
-        assemble=null;
+        assemble=new Point[0];
         xmin=xmax=ymin=ymax=0;
     }
     public Points(int num) {
@@ -77,7 +77,7 @@ public class Points {
     public void linkAdd(Points.Point a){
         Point[] temp=new Point[num+1];
         for(int i=0;i<num;i++){
-            temp[i]=new Point().setPoint(assemble[i]);
+            temp[i]=assemble[i];
         }
         temp[temp.length-1]=a;
         assemble=temp;
@@ -87,7 +87,7 @@ public class Points {
     public void linkAdd(Points.Point a,String special){         //加入后不排序
         Point[] temp=new Point[num+1];
         for(int i=0;i<num;i++){
-            temp[i]=new Point().setPoint(assemble[i]);
+            temp[i]=assemble[i];
         }
         temp[temp.length-1]=a;
         assemble=temp;
@@ -98,7 +98,7 @@ public class Points {
         Point[] temp=new Point[num+a.size()];
         int i;
         for(i=0;i<num;i++){
-            temp[i]=new Point().setPoint(assemble[i]);
+            temp[i]=assemble[i];
         }
         for(int j=0;j<a.size();j++,i++){
             double[] tempD={a.get(j)[0],a.get(j)[1]};
@@ -319,6 +319,7 @@ public class Points {
     public class Point{
         private double point[];                          //该点坐标
         public int     belonging;                        //该点属于第几个人,从第一个人开始
+        public int     cluster;                          //聚类索引，0为噪声
         public Point(){
             point=new double[2];
         }
@@ -332,6 +333,7 @@ public class Points {
             point[0]=p.x();
             point[1]=p.y();
             belonging=p.belonging;
+            cluster=p.cluster;
             return this;
         }
         public Point setX(double x){                     //注意，使用后，Points需要reset
@@ -347,6 +349,7 @@ public class Points {
             des.point[0]=source.x();
             des.point[1]=source.y();
             des.belonging=source.belonging;
+            des.cluster=source.cluster;
             return des;
         }
         public double x(){

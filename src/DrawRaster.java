@@ -36,6 +36,7 @@ class DrawRaster extends JFrame {
         //test.partition();
         //test.testShow();
         test.dbscan((double)0.05,10);
+        test.partition();
         System.out.println(1);
         new DrawRaster(test,"200个点，k为10");
 
@@ -74,7 +75,7 @@ class DrawRaster extends JFrame {
         ActionListener a=new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                paint(jg,r,rwx,rwy);
+                paintCluster(jg,r,rwx,rwy);
             }
         };
         rp.addActionListener(a);
@@ -83,11 +84,11 @@ class DrawRaster extends JFrame {
         jg = this.getGraphics();
         //paintPicture1(jg,r,rwx,rwy);
         //paintPicture2(jg,r,rwx,rwy);
-        paintPoints(jg,r,rwx,rwy);
+        paintCluster(jg,r,rwx,rwy);
         //paintTest(jg,r);
         System.out.println("over");
     }
-    public void paintPoints(Graphics g,Raster r,int rwx,int rwy){
+    public void paintCluster(Graphics g,Raster r,int rwx,int rwy){
         try{
             Graphics2D   g2d   =   (   Graphics2D   )g;
             g.setFont(new Font("Arial",Font.BOLD,11));
@@ -104,11 +105,22 @@ class DrawRaster extends JFrame {
             stokeLine = new BasicStroke(1,BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER, 10.0f,dash,0.0f); //实例化新画刷
             g2d.setStroke(stokeLine); //设置新的画刷
             g.setFont(new Font("宋体",Font.BOLD,10));    //改变字体大小
+            for(int i=0;i<=r.pixel.length;i++){
+                y=50+(int)((i*len)/yWidth*rwy);
+                g.drawLine(xb,y,xu,y);
+                g.drawString(Double.toString(r.p.ymin+i*len).substring(0,6),xu+5,y);
+            }
+            for(int i=0;i<=r.pixel[0].length;i++){
+                x=50+(int)((i*len)/xWidth*rwx);
+                g.drawLine(x,yb,x,yu);
+                g.drawString(Double.toString(r.p.xmin+i*len).substring(0,6),x-20,yb-5);
+            }
             int radius=8;//点的半径r
             stokeLine=new BasicStroke((float)0.5);
             g2d.setStroke(stokeLine);
             for(int i=0;i<r.p.num;i++){
-                g.setColor(color[r.cluster[i]%color.length]);
+                //g.setColor(color[r.cluster[i]%color.length]);
+                g.setColor(color[r.p.assemble[i].cluster%color.length]);
                 g.drawOval(50+((int)((r.p.assemble[i].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,50+(int)((r.p.assemble[i].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
             }
             g.drawLine(50,50,50,50+rwy);                 //画出点的边界
