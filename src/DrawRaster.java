@@ -19,7 +19,7 @@ class DrawRaster extends JFrame {
         };
         String title="2008-12-14 5：00-16：00";*/
 
-        String title="20081024";
+        String title="20081027";
         Raster test = new Raster(50, importFile.file(title));
         //test.screening(30,90,116.23,200);
         //test.screening(39.955,40.036,116.315,116.36);
@@ -40,9 +40,9 @@ class DrawRaster extends JFrame {
         //test.screening(30,90,116.35,200);
         //test.partition();
         //test.testShow();
-        test.dbscan((double)0.0005,10);
-        test.partition();
-        //test.BUDE();
+        //test.dbscan((double)0.0005,10);
+       // test.partition();
+        test.BUDE();
         test.testShow();
         new DrawRaster(test,title);
 
@@ -230,18 +230,23 @@ class DrawRaster extends JFrame {
                             int y2=50+(int)(((i+row)*len)/yWidth*rwy);
                             int x1=50+(int)((j*len)/xWidth*rwx);
                             int x2=50+(int)(((j+col)*len)/xWidth*rwx);
-                            g.setColor(Color.white);
-                            for(int clear=1;clear<row;clear++){
-                                g.drawLine(x1,y1+(int)((clear*len)/yWidth*rwy),x2,y1+(int)((clear*len)/yWidth*rwy));
-                            }
-                            for(int clear=1;clear<col;clear++){
-                                g.drawLine(x1+(int)((clear*len)/xWidth*rwx),y1,x1+(int)((clear*len)/xWidth*rwx),y2);
-                            }
+                            stokeLine=new BasicStroke((float)1);
+                            g2d.setStroke(stokeLine);
                             g.setColor(Color.black);
                             g.drawLine(x1,y1,x1,y2);
                             g.drawLine(x1,y1,x2,y1);
                             g.drawLine(x1,y2,x2,y2);
                             g.drawLine(x2,y1,x2,y2);
+                            g.setColor(Color.white);
+                            stokeLine = new BasicStroke((float) 0.5); //实例化新画刷
+                            g2d.setStroke(stokeLine); //设置新的画刷
+                            for(int clear=1;clear<row;clear++){
+                               // g.drawLine(x1,y1+(int)((clear*len)/yWidth*rwy),x2,y1+(int)((clear*len)/yWidth*rwy));
+                                g.drawLine(x1,50+(int)((i+clear)*len/yWidth*rwy),x2,50+(int)((i+clear)*len/yWidth*rwy));
+                            }
+                            for(int clear=1;clear<col;clear++){
+                                g.drawLine(50+(int)((j+clear)*len/xWidth*rwx),y1,50+(int)((j+clear)*len/xWidth*rwx),y2);
+                            }
                             break;
                         }
                     }
