@@ -32,17 +32,9 @@ public class test {
        // Integer a=test.get(1);
         //Integer b=test.get(2);
        // test a=new test();
-        ArrayList<Points> t=new ArrayList<>();
-        ArrayList<Points> t2=new ArrayList<>();
-        Points a=new Points(2);
-        t.add(a);
-        t2.add(a);
-        Points b=new Points().copy(a);
-        a.assemble[0].setX(0);
-        if(t.get(0)==t2.get(0)){
-            System.out.println(t.indexOf(t2.get(0)));
-            System.out.println(t.indexOf(1));
-        }
+        Raster t=new Raster(50,importFile.file("20081024"));
+        t.BUDE();
+        t.testShow();
 
         //File f=new File("D:/实验室/k匿名划分数据/20081026");
         //a.getFileAndDirectory(f);

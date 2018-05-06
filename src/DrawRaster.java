@@ -13,10 +13,15 @@ import java.net.URL;
 class DrawRaster extends JFrame {
     public static void main(String[] args) {
 
+/*
 
+        String[] trajectory={"002-5：00-11：00","003-5：00-15：00"  //要计算的轨迹
+        };
+        String title="2008-12-14 5：00-16：00";*/
 
         String title="20081024";
         Raster test = new Raster(50, importFile.file(title));
+        //test.screening(30,90,116.23,200);
         //test.screening(39.955,40.036,116.315,116.36);
         /*String title="random";
         String doc="/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/random1.xls";
@@ -35,10 +40,11 @@ class DrawRaster extends JFrame {
         //test.screening(30,90,116.35,200);
         //test.partition();
         //test.testShow();
-        test.dbscan((double)0.05,10);
+        test.dbscan((double)0.0005,10);
         test.partition();
-        System.out.println(1);
-        new DrawRaster(test,"200个点，k为10");
+        //test.BUDE();
+        test.testShow();
+        new DrawRaster(test,title);
 
     }
 
@@ -70,12 +76,15 @@ class DrawRaster extends JFrame {
         setLayout(null);
         setResizable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JButton rp=new JButton("repaint");
+        JButton rp=new JButton("paint");
         rp.setBounds(950,55,100,50);
         ActionListener a=new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                paintCluster(jg,r,rwx,rwy);
+              //  paint(jg,r,rwx,rwy);
+               // paintCluster(jg,r,rwx,rwy);
+                //paintPicture1(jg,r,rwx,rwy);
+                paintPicture2(jg,r,rwx,rwy);
             }
         };
         rp.addActionListener(a);
@@ -84,7 +93,8 @@ class DrawRaster extends JFrame {
         jg = this.getGraphics();
         //paintPicture1(jg,r,rwx,rwy);
         //paintPicture2(jg,r,rwx,rwy);
-        paintCluster(jg,r,rwx,rwy);
+        //paintCluster(jg,r,rwx,rwy);
+        //paint(jg,r,rwx,rwy);
         //paintTest(jg,r);
         System.out.println("over");
     }
@@ -161,10 +171,8 @@ class DrawRaster extends JFrame {
             int radius=8;//点的半径r
             stokeLine=new BasicStroke((float)0.5);
             g2d.setStroke(stokeLine);
-            for(int i=0;i<r.kResult.size();i++){
-                for(int j=0;j<r.kResult.get(i).p.num;j++){
-                    g.drawOval(50+((int)((r.kResult.get(i).p.assemble[j].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,50+(int)((r.kResult.get(i).p.assemble[j].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
-                }
+            for(int i=0;i<r.p.num;i++){
+                g.drawOval(50+((int)((r.p.assemble[i].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,50+(int)((r.p.assemble[i].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
             }
             g.drawLine(50,50,50,50+rwy);                 //画出点的边界
             g.drawLine(50+rwx,50,50+rwx,50+rwy);
@@ -204,10 +212,9 @@ class DrawRaster extends JFrame {
             int radius=8;//点的半径r
             stokeLine=new BasicStroke((float)0.5);
             g2d.setStroke(stokeLine);
-            for(int i=0;i<r.kResult.size();i++){
-                for(int j=0;j<r.kResult.get(i).p.num;j++){
-                    g.drawOval(50+((int)((r.kResult.get(i).p.assemble[j].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,50+(int)((r.kResult.get(i).p.assemble[j].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
-                }
+            g.setColor(Color.CYAN);
+            for(int i=0;i<r.p.num;i++){
+                g.drawOval(50+((int)((r.p.assemble[i].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,50+(int)((r.p.assemble[i].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
             }
             for(int ind=1;ind<r.ind;ind++){
                 boolean find=false;

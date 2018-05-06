@@ -241,7 +241,7 @@ public class Raster {
         }
         ArrayList<Integer> clus=new ArrayList<>();
         for(int k=0;k<pixel[i][j].num;k++){
-            if(clus.indexOf(pixel[i][j].assemble[k].cluster)!=-1){
+            if(clus.indexOf(pixel[i][j].assemble[k].cluster)==-1){
                 clus.add(pixel[i][j].assemble[k].cluster);
             }
         }
@@ -249,7 +249,9 @@ public class Raster {
     }
     public boolean comparePixelCluster(ArrayList<Integer>a,ArrayList<Integer>b){    //比较a，b两个pixel中是否有相同聚类的点，是为true
         for(int i=0;i<a.size();i++){
-            if(b.indexOf(a.get(i))!=-1)return true;
+            if(b.indexOf(a.get(i))!=-1){
+                return true;
+            }
         }
         return false;
     }
@@ -269,6 +271,7 @@ public class Raster {
             stCoor[1]--;
             find=true;
         }else{
+
 
             ArrayList<Integer> clus=findClusterInPixel(i,j);
             ArrayList<Integer> clus1;
@@ -348,31 +351,12 @@ public class Raster {
                 }
                 if(checkSum(stCoor[0],stCoor[1],row,col)){
                     System.out.println();
+                    find=true;
                     break;
                 }
             }
 
 
-           /* while (!(stCoor[0] + row == pixel.length  && stCoor[1] + col == pixel[0].length )){
-                boolean clusFind=false;
-                for (int z = 0; z < col; z++) {              //尝试和下层合并
-                    if (stCoor[0]+row==visit.length||visit[stCoor[0] + row][stCoor[1] + z]) {     //stCoor[0]+(row-1)+1
-                        flag = false;
-                        break;
-                    }
-                    for(int k=0;k<pixel[stCoor[0] + row][stCoor[1] + z].num;k++){
-                        if(clus.indexOf(pixel[stCoor[0] + row][stCoor[1] + z].assemble[k].cluster)!=-1){
-                            clusFind=true;
-                        }
-                    }
-                }
-                if (flag == true&& clusFind==true) {                                     //下层可合并
-                    for(int z=0;z<col;z++){
-                        sum+=pixel[stCoor[0] + row][stCoor[1] + z].num;
-                    }
-                    row++;
-                }
-            }*/
 
 
 
@@ -380,7 +364,9 @@ public class Raster {
 
 
 
-            while (!(stCoor[0] + row == pixel.length  && stCoor[1] + col == pixel[0].length )) {//扩展到右下角
+
+
+            while (!find&&!(stCoor[0] + row == pixel.length  && stCoor[1] + col == pixel[0].length )) {//扩展到右下角
                 for (int z = 0; z < col; z++) {              //尝试和下层合并
                     if (stCoor[0]+row==visit.length||visit[stCoor[0] + row][stCoor[1] + z]) {     //stCoor[0]+(row-1)+1
                         flag = false;
@@ -578,9 +564,9 @@ public class Raster {
                 if(pixel[i][j].num==0){
                     System.out.printf("%dz\t\t",index[i][j]);
                 }else if(pixel[i][j].num<k){
-                    System.out.printf("%dn\t\t",index[i][j],pixel[i][j].num);
+                    System.out.printf("%dn\t\t",index[i][j]);
                 }else{
-                    System.out.printf("%d\t\t",index[i][j],pixel[i][j].num);
+                    System.out.printf("%d\t\t",index[i][j]);
                 }
             }
             System.out.println();
@@ -609,6 +595,125 @@ public class Raster {
         stateCluster=true;
         DBSCAN d=new DBSCAN(p,E,minPts);
         d.runDB();
+    }
+    public void BUDE(){
+        init();
+        for(int i=0;i<pixel.length;i++){
+            for(int j=0;j<pixel[0].length;j++){
+                if(pixel[i][j].num>0&&pixel[i][j].num<k&&index[i][j]==0){
+                    reunionBUDE(i,j);
+                }
+            }
+        }
+        for(int i=0;i<pixel.length;i++) {
+            for (int j = 0; j < pixel[0].length; j++) {
+                if(pixel[i][j].num>=k&&index[i][j]==0){
+                    index[i][j]=ind++;
+                }
+            }
+        }
+    }
+    public void reunionBUDE(int i,int j){
+        boolean find=true;
+        boolean flagA,flagB,flagL,flagR;        //above,below,left,right
+        int stCoor[]={i,j};                     //startCoordinate,左上角的坐标
+        int row,col;
+        row=col=1;
+        int sum=pixel[i][j].num;
+        int sumA,sumB,sumL,sumR;
+        boolean times=false;                    //指引是否需要按direction,true需要，false不需要
+        int direction=0;                        //指引扩充方向，0为行，1为列。
+        try {
+            while (!checkSum(stCoor[0], stCoor[1], row, col)) {
+                flagA = flagB = flagL = flagR = true;
+                sumA = sumB = sumL = sumR = 0;
+                for (int k = 0; k < col; k++) {             //上下两行
+                    if ((times && direction == 1) || stCoor[0] - 1 < 0 || index[stCoor[0] - 1][stCoor[1] + k] > 0) {
+                        flagA = false;
+                    }
+                    if ((times && direction == 1) || stCoor[0] + row == pixel.length || index[stCoor[0] + row][stCoor[1] + k] > 0) {
+                        flagB = false;
+                    }
+                }
+                for (int k = 0; k < col; k++) {
+                    if (flagA) {
+                        sumA += pixel[stCoor[0] - 1][stCoor[1] + k].num;
+                    }
+                    if (flagB) {
+                        sumB += pixel[stCoor[0] +row][stCoor[1] + k].num;
+                    }
+                }
+                for (int k = 0; k < row; k++) {
+                    if ((times && direction == 0) || stCoor[1] - 1 < 0 || index[stCoor[0] + k][stCoor[1] - 1] > 0) {
+                        flagL = false;
+                    }
+                    if ((times && direction == 0) || stCoor[1] + col == pixel[0].length || index[stCoor[0] + k][stCoor[1] + col] > 0) {
+                        flagR = false;
+                    }
+                }
+                for (int k = 0; k < row; k++) {
+                    if (flagL) {
+                        sumL += pixel[stCoor[0] + k][stCoor[1] - 1].num;
+                    }
+                    if (flagR) {
+                        sumR += pixel[stCoor[0] + k][stCoor[1] + col].num;
+                    }
+                }
+                if (!flagA && !flagB && !flagL && !flagR) {             //不成功
+                    index[i][j] = -1;
+                    find = false;
+                    break;
+                }
+                int t = maxBUDE(sumA, sumB, sumL, sumR,flagA,flagB,flagL,flagR);
+                if (t == 1) {
+                    stCoor[0] = stCoor[0] - 1;
+                    row++;
+                    direction = 1;
+                } else if (t == 2) {
+                    row++;
+                    direction = 1;
+                } else if (t == 3) {
+                    stCoor[1] = stCoor[1] - 1;
+                    col++;
+                    direction = 0;
+                } else if (t == 4) {
+                    col++;
+                    direction = 0;
+                }
+                times = !times;
+            }
+            if (find) {
+                for (int x = 0; x < row; x++) {
+                    for (int y = 0; y < col; y++) {
+                        index[stCoor[0] + x][stCoor[1] + y] = ind;
+                    }
+                }
+                ind++;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    public int maxBUDE(int a,int b,int c,int d,boolean A,boolean B,boolean C,boolean D){        //返回abcd中最大的是哪个，对应1234；
+        if(a==b&&a==c&&a==d){                           //都为0，但有些flag是false的情况
+            if(B)return 2;
+            if(D)return 4;
+            if(A)return 1;
+            if(C)return 3;
+        }
+        int temp=1;
+        if(a<b){
+            temp=2;
+            a=b;
+        }
+        if(a<c){
+            temp=3;
+            a=c;
+        }
+        if(a<d) {
+            temp = 4;
+        }
+        return temp;
     }
     public void Draw(String title){
         new DrawRaster(this,title);

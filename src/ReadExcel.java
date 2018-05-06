@@ -58,29 +58,34 @@ class ReadExcel {
         InputStream inp = new FileInputStream(s);//"C:/Users/Administrator/Desktop/test.xls"
 
         //根据上述创建的输入流 创建工作簿对象
-        Workbook wb = WorkbookFactory.create(inp);
-        //得到第一页 sheet
-        //页Sheet是从0开始索引的
-        Sheet sheet = wb.getSheetAt(0);
-        Row row;
-        Cell cell;
-        result=new double[sheet.getLastRowNum()+1][2];
-        for(int i=0;i<=sheet.getLastRowNum();i++){
-            row=sheet.getRow(i);
-            for(int j=0;j<2;j++){
-                cell=row.getCell(j);
-                try {
-                    result[i][j] = Double.valueOf(cell.toString());
-                }catch (Exception e){
-                    System.out.println(s);
-                    System.out.printf("%d %d\n",i,j);
-                    e.printStackTrace();
+        try {
+            Workbook wb = WorkbookFactory.create(inp);
+            //得到第一页 sheet
+            //页Sheet是从0开始索引的
+            Sheet sheet = wb.getSheetAt(0);
+            Row row;
+            Cell cell;
+            result = new double[sheet.getLastRowNum() + 1][2];
+            for (int i = 0; i <= sheet.getLastRowNum(); i++) {
+                row = sheet.getRow(i);
+                for (int j = 0; j < 2; j++) {
+                    cell = row.getCell(j);
+                    try {
+                        result[i][j] = Double.valueOf(cell.toString());
+                    } catch (Exception e) {
+                        System.out.println(s);
+                        System.out.printf("%d %d\n", i, j);
+                        e.printStackTrace();
+                    }
                 }
             }
+            //关闭输入流
+            inp.close();
+            return result;
+        }catch (Exception e){
+            System.out.println(s);
+            throw new Exception("error");
         }
-        //关闭输入流
-        inp.close();
-        return result;
     }
 
     public static void main(String[] args) throws Exception {
