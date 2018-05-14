@@ -17,6 +17,7 @@ public class Raster {
     public ArrayList<Points> region;                //划分后的区域点集合数组
     public double sumDistance=0;
     public double sumArea=0;                        //划分后区域的面积和
+    public double averageArea=0;                    //划分后区域的平均面积
     public int regionNum=0;                         //划分后区域的数量
     int mtk;                                      //more than 2k,多于2k的栅格个数
     int ltk;                                      //less than k
@@ -53,6 +54,7 @@ public class Raster {
         init();
     }
     public void init(){
+        statePartition=false;
         density=(p.xmax-p.xmin)*(p.ymax-p.ymin)/p.num;
         pA=k*density; //pA=k*area/num; k/num需要取整
         double len=Math.sqrt(pA);
@@ -76,26 +78,6 @@ public class Raster {
                 pixel[i][j].reset();
             }
         }
-        /*
-        ArrayList<ArrayList<ArrayList<Double[]>>> tempPixel=new ArrayList<>();
-        for(int i=0;i<row;i++){
-            tempPixel.add(new ArrayList<>());
-            for(int j=0;j<col;j++){
-                tempPixel.get(i).add(new ArrayList<>());
-            }
-        }
-        for(int i=0;i<p.num;i++){
-            int r=(int)((p.assemble[i].y()-p.ymin)/len);
-            int c=(int)((p.assemble[i].x()-p.xmin)/len);
-            Double[] temp={p.assemble[i].x(),p.assemble[i].y()};
-            tempPixel.get(r).get(c).add(temp);
-        }
-        for(int i=0;i<pixel.length;i++){
-            for(int j=0;j<pixel[0].length;j++){
-                pixel[i][j].linkAdd(tempPixel.get(i).get(j));
-            }
-        }
-        */
         visit=new boolean[pixel.length][pixel[0].length];
         index=new int[pixel.length][pixel[0].length];
         kResult=new ArrayList<>();
@@ -230,6 +212,7 @@ public class Raster {
             regionNum+=kResult.get(i).region.size();
             sumArea+=kResult.get(i).sumArea;
         }
+        averageArea=sumArea/kResult.size();
     }
     public ArrayList<Integer> findClusterInPixel(int i,int j){              //找到pixel[i][j]中的点包含在哪些聚类中
         try {
@@ -271,101 +254,89 @@ public class Raster {
             stCoor[1]--;
             find=true;
         }else{
-
-
-            ArrayList<Integer> clus=findClusterInPixel(i,j);
-            ArrayList<Integer> clus1;
-            int temp[]=null;
-            for(;;) {
-                boolean clusFind=false;
-                for (int r = 0; r < row&&!clusFind&&stCoor[1]+col<pixel[0].length; r++) {
-                    clus1 = findClusterInPixel(stCoor[0] + r, stCoor[1] + col);   //原来是  田  的话，包含其右边从上到下2格
-                    if(comparePixelCluster(clus,clus1)){
-                        clusFind=true;
-                        temp = checkIndex(stCoor[0], stCoor[1], row, col + 1);
+            if(stateCluster) {                                                      //已经聚类过，就采用聚类信息做引导
+                ArrayList<Integer> clus = findClusterInPixel(i, j);
+                ArrayList<Integer> clus1;
+                int temp[] = null;
+                for (; ; ) {
+                    boolean clusFind = false;
+                    for (int r = 0; r < row && !clusFind && stCoor[1] + col < pixel[0].length; r++) {
+                        clus1 = findClusterInPixel(stCoor[0] + r, stCoor[1] + col);   //原来是  田  的话，包含其右边从上到下2格
+                        if (comparePixelCluster(clus, clus1)) {
+                            clusFind = true;
+                            temp = checkIndex(stCoor[0], stCoor[1], row, col + 1);
+                            break;
+                        }
+                    }
+                    for (int c = 0; c < col && !clusFind && stCoor[0] + row < pixel.length; c++) {
+                        System.out.printf("");
+                        clus1 = findClusterInPixel(stCoor[0] + row, stCoor[1] + c);     //原来是  田  的话，包含其下边从左到右2格
+                        if (comparePixelCluster(clus, clus1)) {
+                            clusFind = true;
+                            temp = checkIndex(stCoor[0], stCoor[1], row + 1, col);
+                            break;
+                        }
+                    }
+                    for (int r = 0; r < row && !clusFind && stCoor[1] - 1 >= 0; r++) {
+                        clus1 = findClusterInPixel(stCoor[0] + r, stCoor[1] - 1);     //原来是  田  的话，包含其左边从上到下2格
+                        if (comparePixelCluster(clus, clus1)) {
+                            clusFind = true;
+                            temp = checkIndex(stCoor[0], stCoor[1] - 1, row, col + 1);
+                            break;
+                        }
+                    }
+                    for (int c = 0; c < col && !clusFind && stCoor[0] - 1 >= 0; c++) {
+                        clus1 = findClusterInPixel(stCoor[0] - 1, stCoor[1] + c);     //原来是  田  的话，包含其上边从左到右2格
+                        if (comparePixelCluster(clus, clus1)) {
+                            clusFind = true;
+                            temp = checkIndex(stCoor[0] - 1, stCoor[1], row + 1, col);
+                            break;
+                        }
+                    }
+                    if (!clusFind && stCoor[1] - 1 >= 0 && stCoor[0] - 1 >= 0) {
+                        clus1 = findClusterInPixel(stCoor[0] - 1, stCoor[1] - 1);                //左上角
+                        if (comparePixelCluster(clus, clus1)) {
+                            clusFind = true;
+                            temp = checkIndex(stCoor[0] - 1, stCoor[1] - 1, row + 1, col + 1);
+                        }
+                    }
+                    if (!clusFind && stCoor[1] - 1 >= 0 && stCoor[0] + row < pixel.length) {
+                        clus1 = findClusterInPixel(stCoor[0] + row, stCoor[1] - 1);              //左下角
+                        if (comparePixelCluster(clus, clus1)) {
+                            clusFind = true;
+                            temp = checkIndex(stCoor[0], stCoor[1] - 1, row + 1, col + 1);
+                        }
+                    }
+                    if (!clusFind && stCoor[0] - 1 >= 0 && stCoor[1] + col < pixel[0].length) {
+                        clus1 = findClusterInPixel(stCoor[0] - 1, stCoor[1] + col);              //右上角
+                        if (comparePixelCluster(clus, clus1)) {
+                            clusFind = true;
+                            temp = checkIndex(stCoor[0] - 1, stCoor[1], row + 1, col + 1);
+                        }
+                    }
+                    if (!clusFind && stCoor[1] + col < pixel[0].length && stCoor[0] + row < pixel.length) {
+                        clus1 = findClusterInPixel(stCoor[0] + row, stCoor[1] + col);            //右下角
+                        if (comparePixelCluster(clus, clus1)) {
+                            clusFind = true;
+                            temp = checkIndex(stCoor[0], stCoor[1], row + 1, col + 1);
+                        }
+                    }
+                    if (!clusFind) {
                         break;
                     }
-                }
-                for (int c = 0; c < col&&!clusFind&&stCoor[0]+row<pixel.length; c++) {
-                    System.out.printf("");
-                    clus1 = findClusterInPixel(stCoor[0] + row,stCoor[1] + c);     //原来是  田  的话，包含其下边从左到右2格
-                    if(comparePixelCluster(clus,clus1)){
-                        clusFind=true;
-                        temp = checkIndex(stCoor[0], stCoor[1], row+1, col);
+                    while (temp[0] != stCoor[0] || temp[1] != stCoor[1] || temp[2] != stCoor[0] + row - 1 || temp[3] != stCoor[1] + col - 1) {
+                        row = Math.max(stCoor[0] + row - 1, temp[2]) - Math.min(stCoor[0], temp[0]) + 1;
+                        col = Math.max(stCoor[1] + col - 1, temp[3]) - Math.min(stCoor[1], temp[1]) + 1;
+                        stCoor[0] = Math.min(stCoor[0], temp[0]);
+                        stCoor[1] = Math.min(stCoor[1], temp[1]);
+                        temp = checkIndex(stCoor[0], stCoor[1], row, col);
+                    }
+                    if (checkSum(stCoor[0], stCoor[1], row, col)) {
+                        find = true;
                         break;
                     }
-                }
-                for(int r = 0; r < row&&!clusFind&&stCoor[1]-1>=0; r++){
-                    clus1 = findClusterInPixel(stCoor[0] + r, stCoor[1] - 1);     //原来是  田  的话，包含其左边从上到下2格
-                    if(comparePixelCluster(clus,clus1)){
-                        clusFind=true;
-                        temp = checkIndex(stCoor[0], stCoor[1]-1, row, col + 1);
-                        break;
-                    }
-                }
-                for (int c = 0; c < col&&!clusFind&&stCoor[0]-1>=0; c++) {
-                    clus1 = findClusterInPixel(stCoor[0] - 1,stCoor[1] + c);     //原来是  田  的话，包含其上边从左到右2格
-                    if(comparePixelCluster(clus,clus1)){
-                        clusFind=true;
-                        temp = checkIndex(stCoor[0]-1, stCoor[1], row+1, col);
-                        break;
-                    }
-                }
-                if(!clusFind&&stCoor[1]-1>=0&&stCoor[0]-1>=0) {
-                    clus1=findClusterInPixel(stCoor[0] - 1, stCoor[1] - 1);                //左上角
-                    if(comparePixelCluster(clus,clus1)){
-                        clusFind=true;
-                        temp = checkIndex(stCoor[0]-1, stCoor[1]-1, row+1, col+1);
-                    }
-                }
-                if(!clusFind&&stCoor[1]-1>=0&&stCoor[0]+row<pixel.length) {
-                    clus1=findClusterInPixel(stCoor[0] + row, stCoor[1] - 1);              //左下角
-                    if(comparePixelCluster(clus,clus1)){
-                        clusFind=true;
-                        temp = checkIndex(stCoor[0], stCoor[1]-1, row+1, col+1);
-                    }
-                }
-                if(!clusFind&&stCoor[0]-1>=0&&stCoor[1]+col<pixel[0].length) {
-                    clus1=findClusterInPixel(stCoor[0] - 1, stCoor[1] + col);              //右上角
-                    if(comparePixelCluster(clus,clus1)){
-                        clusFind=true;
-                        temp = checkIndex(stCoor[0]-1, stCoor[1], row+1, col+1);
-                    }
-                }
-                if(!clusFind&&stCoor[1]+col<pixel[0].length&&stCoor[0]+row<pixel.length) {
-                    clus1=findClusterInPixel(stCoor[0] + row, stCoor[1] + col);            //右下角
-                    if(comparePixelCluster(clus,clus1)){
-                        clusFind=true;
-                        temp = checkIndex(stCoor[0], stCoor[1], row+1, col+1);
-                    }
-                }
-                if(!clusFind){
-                    break;
-                }
-                while (temp[0] != stCoor[0] || temp[1] != stCoor[1] || temp[2] != stCoor[0] + row - 1 || temp[3] != stCoor[1] + col - 1) {
-                    row = Math.max(stCoor[0] + row - 1, temp[2]) - Math.min(stCoor[0], temp[0]) + 1;
-                    col = Math.max(stCoor[1] + col - 1, temp[3]) - Math.min(stCoor[1], temp[1]) + 1;
-                    stCoor[0] = Math.min(stCoor[0], temp[0]);
-                    stCoor[1] = Math.min(stCoor[1], temp[1]);
-                    temp = checkIndex(stCoor[0], stCoor[1], row, col);
-                }
-                if(checkSum(stCoor[0],stCoor[1],row,col)){
-                    System.out.println();
-                    find=true;
-                    break;
                 }
             }
-
-
-
-
-
-
-
-
-
-
-
             while (!find&&!(stCoor[0] + row == pixel.length  && stCoor[1] + col == pixel[0].length )) {//扩展到右下角
                 for (int z = 0; z < col; z++) {              //尝试和下层合并
                     if (stCoor[0]+row==visit.length||visit[stCoor[0] + row][stCoor[1] + z]) {     //stCoor[0]+(row-1)+1
@@ -605,13 +576,38 @@ public class Raster {
                 }
             }
         }
+        ArrayList<Points> tempPoints=new ArrayList<>();
+        for(int i=0;i<pixel.length;i++) {
+            for (int j = 0; j < pixel[i].length; j++) {
+                if(index[i][j]==0||index[i][j]==-1)continue;
+                //方法为，索引为i，就将其插入到tempPoints[i]，tP长度不够就填充空点集
+                if(tempPoints.size()-1<index[i][j]){
+                    for(int k=tempPoints.size();k<=index[i][j];k++){
+                        tempPoints.add(new Points());
+                    }
+                }
+                tempPoints.get(index[i][j]).add(pixel[i][j]);
+                System.out.printf("");
+            }
+        }
+        for(int i=0;i<tempPoints.size();i++){
+            if(tempPoints.get(i).num==0)continue;
+            kResult.add(new Kanonymity(k,tempPoints.get(i)));
+        }
         for(int i=0;i<pixel.length;i++) {
             for (int j = 0; j < pixel[0].length; j++) {
                 if(pixel[i][j].num>=k&&index[i][j]==0){
                     index[i][j]=ind++;
+                    Kanonymity temp=new Kanonymity(k,pixel[i][j]);
+                    kResult.add(temp);
                 }
             }
         }
+        for(int i=0;i<kResult.size();i++){
+            kResult.get(i).areaBUDE();
+            sumArea+=kResult.get(i).sumArea;
+        }
+        averageArea=sumArea/kResult.size();
     }
     public void reunionBUDE(int i,int j){
         boolean find=true;
@@ -715,6 +711,18 @@ public class Raster {
         }
         return temp;
     }
+    public double successRateBUDE(){
+        int f=0;
+        for(int i=0;i<pixel.length;i++){
+            for(int j=0;j<pixel[0].length;j++){
+                if(index[i][j]==-1){
+                    f+=pixel[i][j].num;
+                }
+            }
+        }
+        double res=(double) (p.num-f)/p.num;
+        return res;
+    }
     public void Draw(String title){
         new DrawRaster(this,title);
     }
@@ -786,23 +794,29 @@ public class Raster {
         //String title="2008-10-23 8：00-12：00";
         //String title="20081024";
         //String title="20081025"; excel表中不对，新增了别的数据了
-        String title="20081026"; //screening(30,90,116.23,200)
+        String title="2008-12-14 5：00-16：00"; //screening(30,90,116.23,200)
 
         /*Raster test=new Raster(200, DrawPoint.file(title, trajectory));
         test.findK(10,200);
         System.out.println(test.k);*/
         //需不需要记录分割的数量和合并的数量，栅格面积小并没有明显改变运行速度
-        System.out.println("k pixelNum peopleNum(有人在的栅格) ek cutNum unionNum pointNum");
+        Raster test = new Raster(100, importFile.file(title));
+        //test.screen(30,90,116.35,200);
+        test.dbscan(0.005,10);
+        System.out.println("k sumArea sumDistance");
+        //System.out.println("k f(k) cv");
         for(int k=10;k<=200;k++){
-            Raster test = new Raster(k, importFile.file(title));
-            test.screening(30,90,116.23,200);
+            test.k=k;
+            test.init();
+            //test.screening(30,90,116.23,200);
             test.partition();
             //是不是应该算k的栅格占总体栅格数的比例？
             double eqNum=(double)(test.mtk+test.ltk)/(double)test.ek;
             double cv=test.calAreaCV();
             int peopleNum=test.ek+test.mtk+test.ltk;
             int pixelNum=(test.pixel.length*test.pixel[0].length);
-            System.out.printf("%d %d %d %d %d %d %d\n",k,pixelNum,peopleNum,test.ek,test.cutNum,test.unionNum,test.p.num);
+            //System.out.printf("%d %f %f\n",k,eqNum,cv);
+            System.out.printf("%d %f %f\n",k,test.sumArea,test.sumDistance);
             //System.out.printf("%d,%f,%f,%d,%d,%d,%d,%d\n",k,eqNum,cv,test.cutNum,test.unionNum,test.cutNum+test.unionNum,test.regionNum,test.pixel.length*test.pixel[0].length);
         }
         //test.testShow();

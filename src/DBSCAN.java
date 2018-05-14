@@ -41,8 +41,6 @@ public class DBSCAN {
     public Double calDistance(Points.Point a, Points.Point b){                 //翻译两点之间点欧氏距离
         return Math.pow(Math.pow(a.x()-b.x(),2)+Math.pow(a.y()-b.y(),2),0.5);
     }
-
-
     public void runDB(){
         /*C = 0
         foreach point P in dataset D {
@@ -90,7 +88,6 @@ public class DBSCAN {
         index[i]=ind;
         p.assemble[i].cluster=ind;
         for(int k=0;k<neighborPts.size();k++){
-            System.out.printf("k:%d,neighborPts.size:%d\n",k,neighborPts.size());
             if(!visit[neighborPts.get(k)]){
                 visit[neighborPts.get(k)]=true;
                 ArrayList<Integer> neighborPts2=findPoint(p.assemble[neighborPts.get(k)]);
@@ -100,7 +97,6 @@ public class DBSCAN {
                             neighborPts.add(neighborPts2.get(j));
                         }
                     }
-                    //neighborPts.addAll(neighborPts2);
                 }
             }
             if(index[neighborPts.get(k)]==0){
@@ -110,7 +106,8 @@ public class DBSCAN {
         }
     }
 
-    public ArrayList<Integer> findPoint(Points.Point center){     //找到center点直接密度可达的点,返回其在assemble中的下标
+    public ArrayList<Integer> findPoint(Points.Point center){
+        //找到center点直接密度可达的点,返回其在assemble中的下标
         // returnall points within P's eps-neighborhood (including P)
         ArrayList<Integer> result=new ArrayList<>();
         for(int i=0;i<p.num;i++){
@@ -120,77 +117,6 @@ public class DBSCAN {
         }
         return result;
     }
-    /*public void calDistance(){
-        for(int i=0;i<p.num;i++){
-            for(int j=0;j<p.num;j++){
-                //System.out.printf(" %d ",j);
-                distance[i][j]=Math.pow(Math.pow(p.getX(i)-p.getX(j),2)+Math.pow(p.getY(i)-p.getY(j),2),0.5);
-                //distance[i][j]=1.0;
-            }
-        }
-    }*/
-    /*public void run(){
-        Points unvisited=new Points();
-        unvisited.copy(p);
-        while(unvisited.num!=0){
-            Points.Point center=unvisited.assemble[0];
-            unvisited.deletePoint(unvisited.assemble[0]);
-            Points candidate=new Points();
-            ArrayList<Integer> temp=findPoint(0);
-            if(temp.size()>=minPts) {
-                for (Integer x : temp) {
-                    candidate.add(unvisited.assemble[x]);                          //将可达的点加入候选集
-                    unvisited.deletePoint(unvisited.assemble[x]);
-                }
-            }
-        }
-    }*/
-    /*public void run(){                                           //有问题
-        Points unvisited=new Points();
-        unvisited.copy(p);
-        while(unvisited.num!=0){
-            Points.Point center=new Points().new Point().copy(unvisited.assemble[0]);
-            unvisited.deletePoint(unvisited.assemble[0]);
-            Points candidate=new Points();
-            //unvisited.quickSort(unvisited,0,unvisited.num-1,1);
-            ArrayList<Integer> temp=findPoint(center,unvisited);
-            if(temp.size()>=minPts) {
-                for (int x=0;x<temp.size();x++) {
-                    candidate.add(unvisited.assemble[temp.get(x)]);                          //将可达的点加入候选集
-                }
-                //unvisited.detect(1);
-                unvisited.deletePoint(candidate.assemble);
-                Points tempCluster = new Points();
-                tempCluster.add(center);
-                cluster.add(tempCluster);
-            }else{                                                                 //是噪声点就直接略过
-                continue;
-            }
-            while(candidate.num!=0){
-                center=candidate.assemble[0];                                      //将候选集第一个点从候选集移入簇内
-                cluster.get(0).add(center);                                        //并将其可达点加入候选集
-                candidate.deletePoint(center);
-                temp=findPoint(center,unvisited);
-                if(temp.size()>=minPts){
-                    for(Integer x:temp){
-                        candidate.add(unvisited.assemble[x]);
-                        unvisited.deletePoint(unvisited.assemble[x]);
-                    }
-                }
-            }
-        }
-    }*/
-
-    /*public ArrayList<Integer> findPoint(int i) {                                     //查找下标为i的点的可达点，返回可达点的下标数组
-        ArrayList<Integer> result=new ArrayList<>();
-        for(int j=0;j<p.num;j++){
-            if(distance[i][j]<=E&&j!=i){
-                result.add(j);
-            }
-        }
-        return result;
-    }*/
-
     public static void main(String[] args){
         String[] trajectory={"002-5：00-11：00","003-5：00-15：00"  //要计算的轨迹
         };

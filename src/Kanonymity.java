@@ -15,11 +15,9 @@ public class Kanonymity {
     public double area[];
     public double sumArea;
     Roads roads;
-
     public int[] unqualified;              //点数小于K的区域号（数组下标+1）
     public Integer unqualifiedRegionNum;
     public Integer unqualifiedPointNum;
-
     public Kanonymity(int k,Points p){
         this.p=p;
         this.k=k;
@@ -27,7 +25,6 @@ public class Kanonymity {
         region=new ArrayList<>();
         roads =new Roads();
     }
-
     public Kanonymity(int k,int num){
         p=new Points(num);
         this.k=k;
@@ -59,7 +56,6 @@ public class Kanonymity {
 
         }
     }
-
     public void print(){//                       将刚刚划分好的点区域输出
         for(int i=0;i<numRegion;i++) {
             System.out.printf("region %d \n", i+1);
@@ -72,12 +68,10 @@ public class Kanonymity {
             System.out.printf("\n");
         }
     }
-
     public void copy(Points p){//将划分好的点对象赋给re数组
         region.add(p);
         numRegion++;
     }
-
     public void delete(){
         this.numRegion=0;
         region=new ArrayList<>();
@@ -90,12 +84,10 @@ public class Kanonymity {
         unqualifiedRegionNum=null;
         unqualifiedPointNum=null;
     }
-
     public void partitionCircle(Points p){
         int way=new Random().nextInt(2);
 
     }
-
     public void partitionAverage(Points p,int numCut){ //平均分配的思想
         if(p.num<2*k){
             copy(p);
@@ -124,8 +116,6 @@ public class Kanonymity {
         }
         partitionAverage(p.cut(p,start,p.num-1),numCut+1);
     }
-
-
     public void partitionMedian(Points p,int numCut){//沿点的中位数进行切割
         if(p.num<2*k){
             copy(p);
@@ -177,7 +167,6 @@ public class Kanonymity {
         partitionRound(p1,numCut+1);
         partitionRound(p2,numCut+1);
     }
-
     public boolean partitionCentralLineRound(Points p,int numCut){
         if(p.num<2*k){
             if(p.num<k){
@@ -233,7 +222,6 @@ public class Kanonymity {
         }
         return true;
     }
-
     public void partitionCentroid(Points p,int numCut){             //在质心处划分
         if(p.num<2*k){
             copy(p);
@@ -271,7 +259,6 @@ public class Kanonymity {
         partitionCentroid(p1,numCut+1);
         partitionCentroid(p2,numCut+1);
     }
-
     public void partitionCentralLineK(Points p,int numCut){
         if(p.num<2*k){
             copy(p);
@@ -300,7 +287,6 @@ public class Kanonymity {
         partitionCentralLineK(p1,numCut+1);
         partitionCentralLineK(p2,numCut+1);
     }
-
     public Points[] balance(Points p1,Points p2){                      //确保p1,p2点数均大于k
         Points[] temp=new Points[2];
         try{
@@ -328,7 +314,6 @@ public class Kanonymity {
         temp[1]=p2;
         return temp;
     }
-
     public void partitionCentralLine(Points p, int numCut){
         unqualified=new int[p.num/k];
         unqualifiedRegionNum=0;
@@ -377,7 +362,6 @@ public class Kanonymity {
         doPartitionCentralLine(p1,numCut+1);
         doPartitionCentralLine(p2,numCut+1);
     }
-
     public void calDistance(){                                 //计算区域内所有点距离中点的距离和
         distance=new double[numRegion];
         for(int i=0;i<numRegion;i++){
@@ -391,7 +375,6 @@ public class Kanonymity {
             sumDistance+=distance[i];
         }
     }
-
     public void calArea(){
         area=new double[numRegion];
         for(int i=0;i<numRegion;i++){
@@ -399,6 +382,14 @@ public class Kanonymity {
                     *(region.get(i).ymax-region.get(i).ymin);
             sumArea+=area[i];
         }
+    }
+    public void areaBUDE(){                             //为BUDE特加的
+        numRegion=1;
+        area=new double[1];
+        region.add(p);
+        sumArea=area[0]=(p.xmax-p.xmin)*(p.ymax-p.ymin);
+        //distance=new double[1];
+
     }
     /*public void roundPartition2(Points p){//分为⌈d/2⌉+⌊r/2⌋和⌊d/2⌋+⌈r/2⌉
         int d=p.num/k;

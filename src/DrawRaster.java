@@ -19,33 +19,24 @@ class DrawRaster extends JFrame {
         };
         String title="2008-12-14 5：00-16：00";*/
 
-        String title="20081027";
-        Raster test = new Raster(50, importFile.file(title));
-        //test.screening(30,90,116.23,200);
-        //test.screening(39.955,40.036,116.315,116.36);
-        /*String title="random";
-        String doc="/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/random1.xls";
-
-        Raster test=new Raster(15,doc);*/
-        //test.screening(40.974,41.948,140.00,140.97);
-
-        /*Raster test=new Raster(173, DrawPoint.file(title, trajectory));
-        //test.print();
-        test.partition();
-        System.out.println((double)(test.mtk+test.ltk)/(double)test.ek);
-        test.testShow();*/
-        //System.out.println(test.p.num);
-        //new DrawRaster(test, title);
-        // Raster test=new Raster(10,200);             //论文图1
+        /*Raster t=new Raster(50,importFile.file("20081024"));
+        t.dbscan(0.0005,10);
+        t.partition();
+        new DrawRaster(t,"2008年10月24日");*/
+        String title="20081026";
+        Raster t1 = new Raster(50, importFile.file(title));
+       // t1.screen(30,90,116.27,200);
         //test.screening(30,90,116.35,200);
-        //test.partition();
-        //test.testShow();
-        //test.dbscan((double)0.0005,10);
-       // test.partition();
-        test.BUDE();
-        test.testShow();
-        new DrawRaster(test,title);
-
+        //t1.dbscan(0.005,10);
+        new DrawRaster(t1,title);
+        t1.partition();
+        /*Raster t2=new Raster(50, importFile.file(title));
+       // t2.screen(30,90,116.27,200);
+        t2.dbscan(0.0005,10);
+        t2.partition();
+        System.out.printf("BUDE:%f\n",t1.averageArea);
+        System.out.printf("my:%f\n",t2.averageArea);
+        new DrawRaster(t2,title);*/
     }
 
 
@@ -65,37 +56,45 @@ class DrawRaster extends JFrame {
 
 
     public DrawRaster( Raster r,String s) {
-        this.setTitle(s + "k=" + String.valueOf(r.k));
-        int rwx=800;                                                    //x的宽度
-        int rwy=(int)(rwx/(r.p.xmax-r.p.xmin)*(r.p.ymax-r.p.ymin));     //同比例下的y的宽度
+        this.setTitle(s + "  k=" + String.valueOf(r.k));
+        //int rwx=800;                                                    //x的宽度
+        //int rwy=(int)(rwx/(r.p.xmax-r.p.xmin)*(r.p.ymax-r.p.ymin));     //同比例下的y的宽度
+        int rwy=800;
+        int rwx=(int)(rwy/(r.p.ymax-r.p.ymin)*(r.p.xmax-r.p.xmin));
         Container p = getContentPane();
-        setBounds(100, 50, 1100, 1100);
-        setVisible(true);
-        p.setBackground(rectColor);
-        p.setBackground(Color.white);
-        setLayout(null);
-        setResizable(false);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JButton rp=new JButton("paint");
-        rp.setBounds(950,55,100,50);
+        String[] sg= {"位置分布","聚类结果","合并结果","分割结果"};
+        JComboBox<String> jcb = new JComboBox<String>(sg);
+        jcb.setBorder(BorderFactory.createLineBorder(Color.red, 3));
+        JButton pButton=new JButton("paint");
         ActionListener a=new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-              //  paint(jg,r,rwx,rwy);
-               // paintCluster(jg,r,rwx,rwy);
-                //paintPicture1(jg,r,rwx,rwy);
-                paintPicture2(jg,r,rwx,rwy);
+                int i=jcb.getSelectedIndex();
+                switch (i){
+                    case 0:paintPicture1(jg,r,rwx,rwy);break;
+                    case 1:paintCluster(jg,r,rwx,rwy);break;
+                    case 2:paintPicture2(jg,r,rwx,rwy);break;
+                    case 3:paint(jg,r,rwx,rwy);break;
+
+                }
             }
         };
-        rp.addActionListener(a);
-        this.add(rp);
+        pButton.addActionListener(a);
+        JPanel jp = new JPanel();
+        jp.add(jcb);
+        jp.add(pButton);
+        p.add(BorderLayout.EAST,jp);
+        setBounds(100, 50, rwx+400, 900);
+        setVisible(true);
+       // p.setBackground(rectColor);
+        p.setBackground(Color.white);
+        p.setLayout(new BorderLayout());
+        setResizable(false);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+
         // 获取专门用于在窗口界面上绘图的对象
         jg = this.getGraphics();
-        //paintPicture1(jg,r,rwx,rwy);
-        //paintPicture2(jg,r,rwx,rwy);
-        //paintCluster(jg,r,rwx,rwy);
-        //paint(jg,r,rwx,rwy);
-        //paintTest(jg,r);
         System.out.println("over");
     }
     public void paintCluster(Graphics g,Raster r,int rwx,int rwy){
