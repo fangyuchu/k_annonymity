@@ -38,21 +38,19 @@ public class test {
         t.BUDE();
         t.testShow();
         System.out.println(t.successRateBUDE());*/
-        int result = 0;
-        File file = null;
-        String path = null;
-        JFileChooser fileChooser = new JFileChooser();
-        FileSystemView fsv = FileSystemView.getFileSystemView();  //注意了，这里重要的一句
-        System.out.println(fsv.getHomeDirectory());                //得到桌面路径
-        fileChooser.setCurrentDirectory(fsv.getHomeDirectory());
-        fileChooser.setDialogTitle("请选择要上传的文件...");
-        fileChooser.setApproveButtonText("确定");
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        //result = fileChooser.showOpenDialog(chatFrame);
-        if (JFileChooser.APPROVE_OPTION == result) {
-            path=fileChooser.getSelectedFile().getPath();
-            System.out.println("path: "+path);
+        Raster[] t=new Raster[5];
+        for(int i=0;i<t.length;i++){
+            t[i]=new Raster(50,importFile.file("20081024"));
+            double density=(t[i].p.xmax-t[i].p.xmin)*(t[i].p.ymax-t[i].p.ymin)/t[i].p.num;
+            double pA=20*density; //初始值为k=20时的面积
+            t[0].dbscan(0.005,10);
+            t[i].changeGridSize(pA*Math.pow((1-0.1),10*i));
+            t[i].partition();
+            System.out.println(t[i].sumArea);
+            new DrawRaster(t[i],Integer.toString(i));
         }
+        //t.ExperimentOnGrid(0.1);
+
 
         //File f=new File("D:/实验室/k匿名划分数据/20081026");
         //a.getFileAndDirectory(f);

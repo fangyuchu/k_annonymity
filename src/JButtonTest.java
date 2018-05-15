@@ -60,7 +60,7 @@ public class JButtonTest extends JFrame{
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO Auto-generated method stub
+
                 //弹出对话框
                 JOptionPane.showMessageDialog(null, "弹出对话框");
             }
@@ -75,7 +75,6 @@ public class JButtonTest extends JFrame{
     }
 
     public static void main(String[] args) {
-        // TODO Auto-generated method stub
         JButtonTest jb=new JButtonTest();
     }
 

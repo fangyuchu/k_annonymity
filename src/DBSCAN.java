@@ -59,7 +59,7 @@ public class DBSCAN {
             if(visit[i]){
                 continue;
             }
-            System.out.println(i);
+           // System.out.println(i);
             visit[i]=true;
             ArrayList<Integer> neighborPts=findPoint(p.assemble[i]);
             if(neighborPts.size()<minPts){

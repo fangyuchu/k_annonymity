@@ -563,7 +563,11 @@ public class Raster {
         return CV;
     }
     public void dbscan(double E, int minPts){
-        stateCluster=true;
+        if(stateCluster==true){
+            return;
+        }else {
+            stateCluster = true;
+        }
         DBSCAN d=new DBSCAN(p,E,minPts);
         d.runDB();
     }
@@ -725,6 +729,54 @@ public class Raster {
     }
     public void Draw(String title){
         new DrawRaster(this,title);
+    }
+    public void ExperimentOnGrid(double step){
+        //step为每次栅格面积增大百分之多少
+        statePartition=false;
+        density=(p.xmax-p.xmin)*(p.ymax-p.ymin)/p.num;
+        pA=20*density; //初始值为k=20时的面积
+        dbscan(0.005,10);
+        for(int x=0;x<50;x++) {
+            pA*=(1+step);
+            changeGridSize(pA);
+            partition();
+            System.out.println(sumArea);
+        }
+    }
+    public void changeGridSize(double a){
+        pA=a;
+        double len = Math.sqrt(pA);
+        int row = (int) Math.ceil((p.ymax - p.ymin) / len);
+        int col = (int) Math.ceil((p.xmax - p.xmin) / len);
+        pixel = null;
+        pixel = new Points[row][];
+        for (int i = 0; i < row; i++) {
+            pixel[i] = new Points[col];
+            for (int j = 0; j < col; j++) {
+                pixel[i][j] = new Points();
+            }
+        }
+        for (int i = 0; i < p.num; i++) {
+            int r = (int) ((p.assemble[i].y() - p.ymin) / len);
+            int c = (int) ((p.assemble[i].x() - p.xmin) / len);
+            pixel[r][c].linkAdd(p.assemble[i], "special");
+        }
+        for (int i = 0; i < pixel.length; i++) {
+            for (int j = 0; j < pixel[0].length; j++) {
+                pixel[i][j].reset();
+            }
+        }
+        visit = new boolean[pixel.length][pixel[0].length];
+        index = new int[pixel.length][pixel[0].length];
+        kResult = new ArrayList<>();
+        mtk = ltk = ek = 0;
+        for (int i = 0; i < pixel.length; i++) {
+            for (int j = 0; j < pixel[0].length; j++) {
+                if (pixel[i][j].num > 2 * k) mtk++;
+                else if (pixel[i][j].num != 0 && pixel[i][j].num < k) ltk++;
+                else if (pixel[i][j].num >= k && pixel[i][j].num <= 2 * k) ek++;
+            }
+        }
     }
     /*public void testShowTrend(){
     ArrayList<Double> kTrend=new ArrayList<>();

@@ -23,7 +23,6 @@ public class FileChooser extends JFrame implements ActionListener{
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-        // TODO Auto-generated method stub  
         JFileChooser jfc=new JFileChooser();
         jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES );
         jfc.showDialog(new JLabel(), "选择");

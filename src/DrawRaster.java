@@ -91,8 +91,6 @@ class DrawRaster extends JFrame {
         p.setLayout(new BorderLayout());
         setResizable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-
         // 获取专门用于在窗口界面上绘图的对象
         jg = this.getGraphics();
         System.out.println("over");
