@@ -38,6 +38,20 @@ public class test {
         t.BUDE();
         t.testShow();
         System.out.println(t.successRateBUDE());*/
+
+        String a =new String("aba");
+        a=a.replace('a','b');
+        System.out.println(a);
+
+        String fileUrl="/pdf/test.pdf";
+        fileUrl= fileUrl.replace("/", "\\");
+        System.out.println("fileUrl "+fileUrl);
+
+        String Str = new String("hello");
+        System.out.print("返回值 :" );
+        System.out.println(Str.replace('o', 'T'));
+
+        /*改变栅格大小的实验
         Raster[] t=new Raster[5];
         for(int i=0;i<t.length;i++){
             t[i]=new Raster(50,importFile.file("20081024"));
@@ -48,7 +62,12 @@ public class test {
             t[i].partition();
             System.out.println(t[i].sumArea);
             new DrawRaster(t[i],Integer.toString(i));
-        }
+        }*/
+
+
+
+
+
         //t.ExperimentOnGrid(0.1);
 
 
