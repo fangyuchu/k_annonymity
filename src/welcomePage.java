@@ -132,8 +132,7 @@ public class WelcomePage extends JFrame {
         gl.setConstraints(epsilon,gbs);
         gl.setConstraints(minPts,gbs);
         jp.setBorder(BorderFactory.createLineBorder(Color.red, 3));
-        //jp.setBounds(width/9,width/5,(int)(width/1.4),width/5);
-        //System.out.println();
+        jp.setBounds(width/9,width/5,(int)(width/1.4),width/5);
         return jp;
     }
     public JPanel headPhoto(){
