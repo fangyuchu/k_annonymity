@@ -787,6 +787,7 @@ public class Raster {
         mtk=ek=ltk=0;
     }
 }*/
+    //test
     /*public void writeResult(String trajectory){
         File file =new File("/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/result"+trajectory);
         //如果文件夹不存在则创建
