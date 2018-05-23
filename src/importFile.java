@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created by fangyc on 17/04/2018.
  */
 public class importFile {
-    static String route="/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/";
+    static String route="D:/实验室/k匿名划分数据/";
     //文件的系统路径
     //mac:  "/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/"
     //windows:"D:/实验室/k匿名划分数据/"

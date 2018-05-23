@@ -23,13 +23,13 @@ class DrawRaster extends JFrame {
         t.dbscan(0.0005,10);
         t.partition();
         new DrawRaster(t,"2008年10月24日");*/
-        String title="2008-10-23 8：00-12：00";
+        String title="2008-12-14 5：00-16：00";
         Raster t1 = new Raster(50, importFile.file(title));
        // t1.screen(30,90,116.27,200);
         //test.screening(30,90,116.35,200);
         //t1.dbscan(0.005,10);
-        t1.dbscan(0.0005,10);
-        System.out.println(1);
+       // t1.dbscan(0.0005,10);
+        //System.out.println(1);
         t1.partition();
         new DrawRaster(t1,title);
 
@@ -63,12 +63,15 @@ class DrawRaster extends JFrame {
         space=(int)(height*0.11);
         rwy=(height-space);
         rwx=(int)(rwy/(r.p.ymax-r.p.ymin)*(r.p.xmax-r.p.xmin));
-        width=rwx*2;
+        width=(int)(rwx*1.8);
+        if(width>screenWidth){                                                          //点框宽度大于屏幕时，特殊处理
+            width=(int)(screenWidth*0.8);
+            rwx=(int)(width*0.8);
+            rwy=(int)(rwx/(r.p.xmax-r.p.xmin)*(r.p.ymax-r.p.ymin));
+        }
         Container p = getContentPane();
         String[] sg= {"位置分布","聚类结果","合并结果","分割结果"};
         JComboBox<String> jcb = new JComboBox<String>(sg);
-        jcb.setBorder(BorderFactory.createLineBorder(Color.red, 3));
-        JButton pButton=new JButton("paint");
         JFrame jf=this;
         ActionListener a=new ActionListener() {
             @Override
@@ -85,11 +88,14 @@ class DrawRaster extends JFrame {
 
             }
         };
+        JButton pButton=new JButton("paint");
         pButton.addActionListener(a);
         JPanel jp = new JPanel();
         jp.add(jcb);
         jp.add(pButton);
-        p.add(BorderLayout.EAST,jp);
+        jp.setBounds((int)(rwx+1.5*space),0,width-(int)(rwx+1.5*space),height);          //选择的panel为绝对位置
+        p.setLayout(null);
+        p.add(jp);
         setBounds((screenWidth-width)/2,(screenHeight-height)/2,width,height);
         setVisible(true);
         p.setBackground(Color.white);
@@ -98,7 +104,6 @@ class DrawRaster extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         // 获取专门用于在窗口界面上绘图的对象
         jg = this.getGraphics();
-        System.out.println("over");
     }
     public void paintCluster(Graphics g,Raster r){
         try{

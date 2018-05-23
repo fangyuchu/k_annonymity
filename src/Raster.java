@@ -89,6 +89,10 @@ public class Raster {
                 else if(pixel[i][j].num>=k&&pixel[i][j].num<=2*k)ek++;
             }
         }
+        sumArea=0;
+        sumDistance=0;
+        cutNum=0;
+        unionNum=0;
     }
     public void screen(double xmi,double xma,double ymi,double yma){
         p.screening(xmi,xma,ymi,yma);
@@ -854,11 +858,12 @@ public class Raster {
         System.out.println(test.k);*/
         //需不需要记录分割的数量和合并的数量，栅格面积小并没有明显改变运行速度
         Raster test = new Raster(100, importFile.file(title));
+        System.out.println(test.p.num);
         //test.screen(30,90,116.35,200);
         test.dbscan(0.005,10);
-        System.out.println("k sumArea sumDistance");
+        System.out.println("k pixelNum peopleNum ek cutNum uninonNum sumArea sumDistance pointNum");
         //System.out.println("k f(k) cv");
-        for(int k=10;k<=200;k++){
+        for(int k=10;k<=test.p.num/20;k++){
             test.k=k;
             test.init();
             //test.screening(30,90,116.23,200);
@@ -868,8 +873,9 @@ public class Raster {
             double cv=test.calAreaCV();
             int peopleNum=test.ek+test.mtk+test.ltk;
             int pixelNum=(test.pixel.length*test.pixel[0].length);
-            //System.out.printf("%d %f %f\n",k,eqNum,cv);
-            System.out.printf("%d %f %f\n",k,test.sumArea,test.sumDistance);
+            System.out.printf("%d %d %d %d %d %d %f %f %d\n",k,pixelNum,peopleNum,test.ek,test.cutNum,test.unionNum,test.sumArea,test.sumDistance,test.p.num);
+            //System.out.printf("%d %f %f %f %f\n",k,eqNum,cv,test.sumArea,test.sumDistance);
+            //System.out.printf("%d %f %f\n",k,test.sumArea,test.sumDistance);
             //System.out.printf("%d,%f,%f,%d,%d,%d,%d,%d\n",k,eqNum,cv,test.cutNum,test.unionNum,test.cutNum+test.unionNum,test.regionNum,test.pixel.length*test.pixel[0].length);
         }
         //test.testShow();
