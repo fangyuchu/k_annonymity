@@ -270,27 +270,29 @@ class DrawRaster extends JFrame {
             xb=yb=space/2;
             xu=space/2+(int)((r.pixel[0].length*len)/xWidth*rwx);
             yu=space/2+(int)((r.pixel.length*len)/yWidth*rwy);
-            g.setColor(Color.cyan);
             float[] dash={5,5}; //短划线图案
             stokeLine = new BasicStroke(1,BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER, 10.0f,dash,0.0f); //实例化新画刷
             g2d.setStroke(stokeLine); //设置新的画刷
             g.setFont(new Font("宋体",Font.BOLD,10));    //改变字体大小
             for(int i=0;i<=r.pixel.length;i++){
                 y=space/2+(int)((i*len)/yWidth*rwy);
+                g.setColor(Color.cyan);
                 g.drawLine(xb,y,xu,y);
                 String sy=Double.toString(r.p.ymin+i*len);
+                g.setColor(Color.black);
                 g.drawString(sy.substring(0,Math.min(6,sy.length())),xu+5,y);
             }
             for(int i=0;i<=r.pixel[0].length;i++){
                 x=space/2+(int)((i*len)/xWidth*rwx);
+                g.setColor(Color.cyan);
                 g.drawLine(x,yb,x,yu);
                 String sx=Double.toString(r.p.xmin + i * len);
+                g.setColor(Color.black);
                 g.drawString(sx.substring(0, Math.min(6,sx.length())), x - 20, yb - 5);
             }
             int radius=8;//点的半径r
+            g.setColor(Color.cyan);
             for(int i=0;i<r.kResult.size();i++){
-               //g.setColor(color[(i)%color.length]);
-              // g.drawString(Integer.toString(i),space/2+((int)((r.kResult.get(i).p.assemble[0].x()-r.p.xmin)/(xWidth)*rw))-radius/2,space/2+(int)((r.kResult.get(i).p.assemble[0].y()-r.p.ymin)/(yWidth)*rw)-radius/2);
                for(int j=0;j<r.kResult.get(i).p.num;j++){
                    g.drawOval(space/2+((int)((r.kResult.get(i).p.assemble[j].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,space/2+(int)((r.kResult.get(i).p.assemble[j].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
                }

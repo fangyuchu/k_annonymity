@@ -6,9 +6,10 @@ import java.util.ArrayList;
  * Created by fangyc on 17/04/2018.
  */
 public class importFile {
-    static String route="D:/实验室/k匿名划分数据/";
+    static String route="/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/";
     //文件的系统路径
     //mac:  "/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/"
+    //windows:"D:/实验室/k匿名划分数据/"
     importFile(String title,String trajectory){
     }
     public static String file(String title,String s){
@@ -40,6 +41,6 @@ public class importFile {
         return f.toArray(new String[0]);
     }
     public static boolean checkxls(String s){                              //检查文件是否是.xls文件
-        return s.substring(s.length()-3,s.length()-1).equals(".xls");
+        return s.substring(s.length()-4,s.length()).equals(".xls");        //subString()中两个参数为【 ）
     }
 }
