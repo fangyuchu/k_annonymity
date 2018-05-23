@@ -19,18 +19,21 @@ class DrawRaster extends JFrame {
         };
         String title="2008-12-14 5：00-16：00";*/
 
-        /*Raster t=new Raster(50,importFile.file("20081024"));
+        /*Raster t=new Raster(space/2,importFile.file("20081024"));
         t.dbscan(0.0005,10);
         t.partition();
         new DrawRaster(t,"2008年10月24日");*/
-        String title="20081026";
+        String title="2008-10-23 8：00-12：00";
         Raster t1 = new Raster(50, importFile.file(title));
        // t1.screen(30,90,116.27,200);
         //test.screening(30,90,116.35,200);
         //t1.dbscan(0.005,10);
-        new DrawRaster(t1,title);
+        t1.dbscan(0.0005,10);
+        System.out.println(1);
         t1.partition();
-        /*Raster t2=new Raster(50, importFile.file(title));
+        new DrawRaster(t1,title);
+
+        /*Raster t2=new Raster(space/2, importFile.file(title));
        // t2.screen(30,90,116.27,200);
         t2.dbscan(0.0005,10);
         t2.partition();
@@ -40,43 +43,46 @@ class DrawRaster extends JFrame {
     }
 
 
-    private static final int sx = 50;//小方格位置宽度
-    private static final int sy = 50;//小方格位置高度
-    //private static final int w = 10;
-    //private static final int rw = 650;
     private Graphics jg;
-    private Color rectColor = new Color(0xf5f5f5);
-    public JPanel j;
+    int height;                         //边框高度为屏幕高度的0.9
+    int width;                          //边框宽度,为点框宽度的2倍
+    int rwx;                            //点框宽度，根据rwy计算得出
+    int rwy;                            //点框高度，为height-space
+    int space;                          //点框和边框之间的距离，为边框高度的0.11
     /**
      * DrawSee构造方法
      */
 
     Color[] color = {Color.RED,Color.darkGray, Color.GREEN, Color.ORANGE
             , Color.PINK, Color.YELLOW, Color.MAGENTA};
-
-
     public DrawRaster( Raster r,String s) {
         this.setTitle(s + "  k=" + String.valueOf(r.k));
-        //int rwx=800;                                                    //x的宽度
-        //int rwy=(int)(rwx/(r.p.xmax-r.p.xmin)*(r.p.ymax-r.p.ymin));     //同比例下的y的宽度
-        int rwy=800;
-        int rwx=(int)(rwy/(r.p.ymax-r.p.ymin)*(r.p.xmax-r.p.xmin));
+        int screenHeight=(int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+        int screenWidth=(int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+        height=(int)(screenHeight*0.9);                                                 //边框高度为屏幕高度的0.9
+        space=(int)(height*0.11);
+        rwy=(height-space);
+        rwx=(int)(rwy/(r.p.ymax-r.p.ymin)*(r.p.xmax-r.p.xmin));
+        width=rwx*2;
         Container p = getContentPane();
         String[] sg= {"位置分布","聚类结果","合并结果","分割结果"};
         JComboBox<String> jcb = new JComboBox<String>(sg);
         jcb.setBorder(BorderFactory.createLineBorder(Color.red, 3));
         JButton pButton=new JButton("paint");
+        JFrame jf=this;
         ActionListener a=new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                jf.update(jg);
                 int i=jcb.getSelectedIndex();
                 switch (i){
-                    case 0:paintPicture1(jg,r,rwx,rwy);break;
-                    case 1:paintCluster(jg,r,rwx,rwy);break;
-                    case 2:paintPicture2(jg,r,rwx,rwy);break;
-                    case 3:paint(jg,r,rwx,rwy);break;
+                    case 0:paintPicture1(jg,r);break;
+                    case 1:paintCluster(jg,r);break;
+                    case 2:paintPicture2(jg,r);break;
+                    case 3:paint(jg,r);break;
 
                 }
+
             }
         };
         pButton.addActionListener(a);
@@ -84,18 +90,17 @@ class DrawRaster extends JFrame {
         jp.add(jcb);
         jp.add(pButton);
         p.add(BorderLayout.EAST,jp);
-        setBounds(100, 50, rwx+400, 900);
+        setBounds((screenWidth-width)/2,(screenHeight-height)/2,width,height);
         setVisible(true);
-       // p.setBackground(rectColor);
         p.setBackground(Color.white);
         p.setLayout(new BorderLayout());
         setResizable(false);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         // 获取专门用于在窗口界面上绘图的对象
         jg = this.getGraphics();
         System.out.println("over");
     }
-    public void paintCluster(Graphics g,Raster r,int rwx,int rwy){
+    public void paintCluster(Graphics g,Raster r){
         try{
             Graphics2D   g2d   =   (   Graphics2D   )g;
             g.setFont(new Font("Arial",Font.BOLD,11));
@@ -104,21 +109,21 @@ class DrawRaster extends JFrame {
             double yWidth=r.p.ymax-r.p.ymin;
             double len=Math.sqrt(r.pA);
             int x,y,xb,xu,yb,yu;
-            xb=yb=50;
-            xu=50+(int)((r.pixel[0].length*len)/xWidth*rwx);
-            yu=50+(int)((r.pixel.length*len)/yWidth*rwy);
+            xb=yb=space/2;
+            xu=space/2+(int)((r.pixel[0].length*len)/xWidth*rwx);
+            yu=space/2+(int)((r.pixel.length*len)/yWidth*rwy);
             g.setColor(Color.black);
             float[] dash={5,5}; //短划线图案
             stokeLine = new BasicStroke(1,BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER, 10.0f,dash,0.0f); //实例化新画刷
             g2d.setStroke(stokeLine); //设置新的画刷
             g.setFont(new Font("宋体",Font.BOLD,10));    //改变字体大小
             for(int i=0;i<=r.pixel.length;i++){
-                y=50+(int)((i*len)/yWidth*rwy);
+                y=space/2+(int)((i*len)/yWidth*rwy);
                 g.drawLine(xb,y,xu,y);
                 g.drawString(Double.toString(r.p.ymin+i*len).substring(0,6),xu+5,y);
             }
             for(int i=0;i<=r.pixel[0].length;i++){
-                x=50+(int)((i*len)/xWidth*rwx);
+                x=space/2+(int)((i*len)/xWidth*rwx);
                 g.drawLine(x,yb,x,yu);
                 g.drawString(Double.toString(r.p.xmin+i*len).substring(0,6),x-20,yb-5);
             }
@@ -126,19 +131,14 @@ class DrawRaster extends JFrame {
             stokeLine=new BasicStroke((float)0.5);
             g2d.setStroke(stokeLine);
             for(int i=0;i<r.p.num;i++){
-                //g.setColor(color[r.cluster[i]%color.length]);
                 g.setColor(color[r.p.assemble[i].cluster%color.length]);
-                g.drawOval(50+((int)((r.p.assemble[i].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,50+(int)((r.p.assemble[i].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
+                g.drawOval(space/2+((int)((r.p.assemble[i].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,space/2+(int)((r.p.assemble[i].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
             }
-            g.drawLine(50,50,50,50+rwy);                 //画出点的边界
-            g.drawLine(50+rwx,50,50+rwx,50+rwy);
-            g.drawLine(50,50,50+rwx,50);
-            g.drawLine(50,50+rwy,50+rwx,50+rwy);
         }catch (Exception e){
             e.printStackTrace();
         }
     }
-    public void paintPicture1(Graphics g,Raster r,int rwx,int rwy){             //论文图1
+    public void paintPicture1(Graphics g,Raster r){             //论文图1
         try{
             Graphics2D   g2d   =   (   Graphics2D   )g;
             g.setFont(new Font("Arial",Font.BOLD,11));
@@ -147,21 +147,21 @@ class DrawRaster extends JFrame {
             double yWidth=r.p.ymax-r.p.ymin;
             double len=Math.sqrt(r.pA);
             int x,y,xb,xu,yb,yu;
-            xb=yb=50;
-            xu=50+(int)((r.pixel[0].length*len)/xWidth*rwx);
-            yu=50+(int)((r.pixel.length*len)/yWidth*rwy);
+            xb=yb=space/2;
+            xu=space/2+(int)((r.pixel[0].length*len)/xWidth*rwx);
+            yu=space/2+(int)((r.pixel.length*len)/yWidth*rwy);
             g.setColor(Color.black);
             float[] dash={5,5}; //短划线图案
             stokeLine = new BasicStroke(1,BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER, 10.0f,dash,0.0f); //实例化新画刷
             g2d.setStroke(stokeLine); //设置新的画刷
             g.setFont(new Font("宋体",Font.BOLD,10));    //改变字体大小
             for(int i=0;i<=r.pixel.length;i++){
-                y=50+(int)((i*len)/yWidth*rwy);
+                y=space/2+(int)((i*len)/yWidth*rwy);
                 g.drawLine(xb,y,xu,y);
                 g.drawString(Double.toString(r.p.ymin+i*len).substring(0,6),xu+5,y);
             }
             for(int i=0;i<=r.pixel[0].length;i++){
-                x=50+(int)((i*len)/xWidth*rwx);
+                x=space/2+(int)((i*len)/xWidth*rwx);
                 g.drawLine(x,yb,x,yu);
                 g.drawString(Double.toString(r.p.xmin+i*len).substring(0,6),x-20,yb-5);
             }
@@ -169,17 +169,17 @@ class DrawRaster extends JFrame {
             stokeLine=new BasicStroke((float)0.5);
             g2d.setStroke(stokeLine);
             for(int i=0;i<r.p.num;i++){
-                g.drawOval(50+((int)((r.p.assemble[i].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,50+(int)((r.p.assemble[i].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
+                g.drawOval(space/2+((int)((r.p.assemble[i].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,space/2+(int)((r.p.assemble[i].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
             }
-            g.drawLine(50,50,50,50+rwy);                 //画出点的边界
-            g.drawLine(50+rwx,50,50+rwx,50+rwy);
-            g.drawLine(50,50,50+rwx,50);
-            g.drawLine(50,50+rwy,50+rwx,50+rwy);
+            g.drawLine(space/2,space/2,space/2,space/2+rwy);                 //画出点的边界
+            g.drawLine(space/2+rwx,space/2,space/2+rwx,space/2+rwy);
+            g.drawLine(space/2,space/2,space/2+rwx,space/2);
+            g.drawLine(space/2,space/2+rwy,space/2+rwx,space/2+rwy);
         }catch (Exception e){
             e.printStackTrace();
         }
     }
-    public void paintPicture2(Graphics g,Raster r,int rwx,int rwy){     //论文图2，展示合并后的栅格
+    public void paintPicture2(Graphics g,Raster r){     //论文图2，展示合并后的栅格
         try{
             Graphics2D   g2d   =   (   Graphics2D   )g;
             g.setFont(new Font("Arial",Font.BOLD,11));
@@ -188,21 +188,21 @@ class DrawRaster extends JFrame {
             double yWidth=r.p.ymax-r.p.ymin;
             double len=Math.sqrt(r.pA);
             int x,y,xb,xu,yb,yu;
-            xb=yb=50;
-            xu=50+(int)((r.pixel[0].length*len)/xWidth*rwx);
-            yu=50+(int)((r.pixel.length*len)/yWidth*rwy);
+            xb=yb=space/2;
+            xu=space/2+(int)((r.pixel[0].length*len)/xWidth*rwx);
+            yu=space/2+(int)((r.pixel.length*len)/yWidth*rwy);
             g.setColor(Color.black);
             float[] dash={5,5}; //短划线图案
             stokeLine = new BasicStroke(1,BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER, 10.0f,dash,0.0f); //实例化新画刷
             g2d.setStroke(stokeLine); //设置新的画刷
             g.setFont(new Font("宋体",Font.BOLD,10));    //改变字体大小
             for(int i=0;i<=r.pixel.length;i++){
-                y=50+(int)((i*len)/yWidth*rwy);
+                y=space/2+(int)((i*len)/yWidth*rwy);
                 g.drawLine(xb,y,xu,y);
                 g.drawString(Double.toString(r.p.ymin+i*len).substring(0,6),xu+5,y);
             }
             for(int i=0;i<=r.pixel[0].length;i++){
-                x=50+(int)((i*len)/xWidth*rwx);
+                x=space/2+(int)((i*len)/xWidth*rwx);
                 g.drawLine(x,yb,x,yu);
                 g.drawString(Double.toString(r.p.xmin+i*len).substring(0,6),x-20,yb-5);
             }
@@ -211,7 +211,7 @@ class DrawRaster extends JFrame {
             g2d.setStroke(stokeLine);
             g.setColor(Color.CYAN);
             for(int i=0;i<r.p.num;i++){
-                g.drawOval(50+((int)((r.p.assemble[i].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,50+(int)((r.p.assemble[i].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
+                g.drawOval(space/2+((int)((r.p.assemble[i].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,space/2+(int)((r.p.assemble[i].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
             }
             for(int ind=1;ind<r.ind;ind++){
                 boolean find=false;
@@ -223,10 +223,10 @@ class DrawRaster extends JFrame {
                             row = col = 1;
                             while (i+row<r.index.length&&r.index[i + row][j] == ind) row++;
                             while (j+col<r.index[0].length&&r.index[i][j + col] == ind) col++;
-                            int y1=50+(int)((i*len)/yWidth*rwy);
-                            int y2=50+(int)(((i+row)*len)/yWidth*rwy);
-                            int x1=50+(int)((j*len)/xWidth*rwx);
-                            int x2=50+(int)(((j+col)*len)/xWidth*rwx);
+                            int y1=space/2+(int)((i*len)/yWidth*rwy);
+                            int y2=space/2+(int)(((i+row)*len)/yWidth*rwy);
+                            int x1=space/2+(int)((j*len)/xWidth*rwx);
+                            int x2=space/2+(int)(((j+col)*len)/xWidth*rwx);
                             stokeLine=new BasicStroke((float)1);
                             g2d.setStroke(stokeLine);
                             g.setColor(Color.black);
@@ -239,10 +239,10 @@ class DrawRaster extends JFrame {
                             g2d.setStroke(stokeLine); //设置新的画刷
                             for(int clear=1;clear<row;clear++){
                                // g.drawLine(x1,y1+(int)((clear*len)/yWidth*rwy),x2,y1+(int)((clear*len)/yWidth*rwy));
-                                g.drawLine(x1,50+(int)((i+clear)*len/yWidth*rwy),x2,50+(int)((i+clear)*len/yWidth*rwy));
+                                g.drawLine(x1,space/2+(int)((i+clear)*len/yWidth*rwy),x2,space/2+(int)((i+clear)*len/yWidth*rwy));
                             }
                             for(int clear=1;clear<col;clear++){
-                                g.drawLine(50+(int)((j+clear)*len/xWidth*rwx),y1,50+(int)((j+clear)*len/xWidth*rwx),y2);
+                                g.drawLine(space/2+(int)((j+clear)*len/xWidth*rwx),y1,space/2+(int)((j+clear)*len/xWidth*rwx),y2);
                             }
                             break;
                         }
@@ -257,7 +257,7 @@ class DrawRaster extends JFrame {
         }
 
     }
-    public void paint(Graphics g,Raster r,int rwx,int rwy){
+    public void paint(Graphics g,Raster r){
         try{
             Graphics2D   g2d   =   (   Graphics2D   )g;
             BasicStroke stokeLine;
@@ -267,22 +267,22 @@ class DrawRaster extends JFrame {
             double yWidth=r.p.ymax-r.p.ymin;
             double len=Math.sqrt(r.pA);
             int x,y,xb,xu,yb,yu;
-            xb=yb=50;
-            xu=50+(int)((r.pixel[0].length*len)/xWidth*rwx);
-            yu=50+(int)((r.pixel.length*len)/yWidth*rwy);
+            xb=yb=space/2;
+            xu=space/2+(int)((r.pixel[0].length*len)/xWidth*rwx);
+            yu=space/2+(int)((r.pixel.length*len)/yWidth*rwy);
             g.setColor(Color.cyan);
             float[] dash={5,5}; //短划线图案
             stokeLine = new BasicStroke(1,BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER, 10.0f,dash,0.0f); //实例化新画刷
             g2d.setStroke(stokeLine); //设置新的画刷
             g.setFont(new Font("宋体",Font.BOLD,10));    //改变字体大小
             for(int i=0;i<=r.pixel.length;i++){
-                y=50+(int)((i*len)/yWidth*rwy);
+                y=space/2+(int)((i*len)/yWidth*rwy);
                 g.drawLine(xb,y,xu,y);
                 String sy=Double.toString(r.p.ymin+i*len);
                 g.drawString(sy.substring(0,Math.min(6,sy.length())),xu+5,y);
             }
             for(int i=0;i<=r.pixel[0].length;i++){
-                x=50+(int)((i*len)/xWidth*rwx);
+                x=space/2+(int)((i*len)/xWidth*rwx);
                 g.drawLine(x,yb,x,yu);
                 String sx=Double.toString(r.p.xmin + i * len);
                 g.drawString(sx.substring(0, Math.min(6,sx.length())), x - 20, yb - 5);
@@ -290,14 +290,14 @@ class DrawRaster extends JFrame {
             int radius=8;//点的半径r
             for(int i=0;i<r.kResult.size();i++){
                //g.setColor(color[(i)%color.length]);
-              // g.drawString(Integer.toString(i),50+((int)((r.kResult.get(i).p.assemble[0].x()-r.p.xmin)/(xWidth)*rw))-radius/2,50+(int)((r.kResult.get(i).p.assemble[0].y()-r.p.ymin)/(yWidth)*rw)-radius/2);
+              // g.drawString(Integer.toString(i),space/2+((int)((r.kResult.get(i).p.assemble[0].x()-r.p.xmin)/(xWidth)*rw))-radius/2,space/2+(int)((r.kResult.get(i).p.assemble[0].y()-r.p.ymin)/(yWidth)*rw)-radius/2);
                for(int j=0;j<r.kResult.get(i).p.num;j++){
-                   g.drawOval(50+((int)((r.kResult.get(i).p.assemble[j].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,50+(int)((r.kResult.get(i).p.assemble[j].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
+                   g.drawOval(space/2+((int)((r.kResult.get(i).p.assemble[j].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,space/2+(int)((r.kResult.get(i).p.assemble[j].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
                }
             }
             for(int i=0;i<r.kResult.size();i++){
                 for(int j=0;j<r.kResult.get(i).numRegion;j++){
-                    paintKRegionRectangle(jg,r.kResult.get(i).region.get(j),r.p.xmax,r.p.xmin,r.p.ymax,r.p.ymin,rwx,rwy);
+                    paintKRegionRectangle(jg,r.kResult.get(i).region.get(j),r.p.xmax,r.p.xmin,r.p.ymax,r.p.ymin);
                 }
             }
         }catch (Exception e){
@@ -305,7 +305,7 @@ class DrawRaster extends JFrame {
         }
 
     }
-    public void paintTest(Graphics g,Raster r,int rwx,int rwy){             //论文作图用的，试一下就知道
+    public void paintTest(Graphics g,Raster r){             //论文作图用的，试一下就知道
         try{
             Graphics2D   g2d   =   (   Graphics2D   )g;
             BasicStroke stokeLine;
@@ -315,29 +315,29 @@ class DrawRaster extends JFrame {
             double yWidth=r.p.ymax-r.p.ymin;
             double len=Math.sqrt(r.pA);
             int x,y,xb,xu,yb,yu;
-            xb=yb=50;
-            xu=50+(int)((r.pixel[0].length*len)/xWidth*rwx);
-            yu=50+(int)((r.pixel.length*len)/yWidth*rwy);
+            xb=yb=space/2;
+            xu=space/2+(int)((r.pixel[0].length*len)/xWidth*rwx);
+            yu=space/2+(int)((r.pixel.length*len)/yWidth*rwy);
             g.setColor(Color.black);
             stokeLine   =   new   BasicStroke(  (float)0.5 );
             g2d.setStroke(   stokeLine   );
             g.setFont(new Font("宋体",Font.BOLD,10));    //改变字体大小
             for(int i=0;i<=r.pixel.length;i++){
-                y=50+(int)((i*len)/yWidth*rwy);
+                y=space/2+(int)((i*len)/yWidth*rwy);
                 g.drawLine(xb,y,xu,y);
                 g.drawString(Double.toString(r.p.ymin+i*len).substring(0,6),xu+5,y);
             }
             for(int i=0;i<=r.pixel[0].length;i++){
-                x=50+(int)((i*len)/xWidth*rwx);
+                x=space/2+(int)((i*len)/xWidth*rwx);
                 g.drawLine(x,yb,x,yu);
                 g.drawString(Double.toString(r.p.xmin+i*len).substring(0,6),x-20,yb-5);
             }
             int radius=10;//点的半径r
             for(int i=0;i<r.kResult.size();i++){
                 //g.setColor(color[(i)%color.length]);
-                // g.drawString(Integer.toString(i),50+((int)((r.kResult.get(i).p.assemble[0].x()-r.p.xmin)/(xWidth)*rw))-radius/2,50+(int)((r.kResult.get(i).p.assemble[0].y()-r.p.ymin)/(yWidth)*rw)-radius/2);
+                // g.drawString(Integer.toString(i),space/2+((int)((r.kResult.get(i).p.assemble[0].x()-r.p.xmin)/(xWidth)*rw))-radius/2,space/2+(int)((r.kResult.get(i).p.assemble[0].y()-r.p.ymin)/(yWidth)*rw)-radius/2);
                 for(int j=0;j<r.kResult.get(i).p.num;j++){
-                    g.drawOval(50+((int)((r.kResult.get(i).p.assemble[j].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,50+(int)((r.kResult.get(i).p.assemble[j].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
+                    g.drawOval(space/2+((int)((r.kResult.get(i).p.assemble[j].x()-r.p.xmin)/(xWidth)*rwx))-radius/2,space/2+(int)((r.kResult.get(i).p.assemble[j].y()-r.p.ymin)/(yWidth)*rwy)-radius/2,radius,radius);
                 }
                 //System.out.print(i);
             }
@@ -345,7 +345,7 @@ class DrawRaster extends JFrame {
             e.printStackTrace();
         }
     }
-    public void paintKRegionRectangle(Graphics g,Points p,double regionXmax,double regionXmin,double regionYmax,double regionYmin,int rwx,int rwy) {
+    public void paintKRegionRectangle(Graphics g,Points p,double regionXmax,double regionXmin,double regionYmax,double regionYmin) {
         try{
             Graphics2D   g2d   =   (   Graphics2D   )g;
             BasicStroke stokeLine;
@@ -353,10 +353,10 @@ class DrawRaster extends JFrame {
             g2d.setStroke(   stokeLine   );
             double xWidth=regionXmax-regionXmin;
             double yWidth=regionYmax-regionYmin;
-            int xmin=50+(int)((p.xmin-regionXmin)/xWidth*rwx);//区域边界的点，真实数据的画法
-            int ymin=50+(int)((p.ymin-regionYmin)/yWidth*rwy);
-            int xmax=50+(int)((p.xmax-regionXmin)/xWidth*rwx);
-            int ymax=50+(int)((p.ymax-regionYmin)/yWidth*rwy);
+            int xmin=space/2+(int)((p.xmin-regionXmin)/xWidth*rwx);//区域边界的点，真实数据的画法
+            int ymin=space/2+(int)((p.ymin-regionYmin)/yWidth*rwy);
+            int xmax=space/2+(int)((p.xmax-regionXmin)/xWidth*rwx);
+            int ymax=space/2+(int)((p.ymax-regionYmin)/yWidth*rwy);
             g.setColor(Color.BLACK);
             // 绘制外层矩形框
            // g.drawRect(sx, sy, rw, rw);
@@ -364,7 +364,7 @@ class DrawRaster extends JFrame {
             for(int i=0;i<p.num;i++){
                 //g.setColor(Color.red);
                 //g.setColor(color[(p.assemble[i].belonging)%color.length]);
-                g.drawOval(50+((int)((p.getX(i)-regionXmin)/(xWidth)*rw))-r/2,50+(int)((p.getY(i)-regionYmin)/(yWidth)*rw)-r/2,r,r);//以点为圆心，r为半径画圆
+                g.drawOval(space/2+((int)((p.getX(i)-regionXmin)/(xWidth)*rw))-r/2,space/2+(int)((p.getY(i)-regionYmin)/(yWidth)*rw)-r/2,r,r);//以点为圆心，r为半径画圆
             }*/
             g.setColor(Color.BLACK);
             g.drawLine(xmin,ymin,xmax,ymin);//划出边界线，线穿过边界点的圆心

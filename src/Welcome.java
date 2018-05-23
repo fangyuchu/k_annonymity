@@ -108,7 +108,7 @@ public class Welcome extends JFrame {
         JTextField k=new JTextField(5);
         numberInput(k);
         JTextField epsilon=new JTextField(5);
-        numberInput(epsilon);
+        //numberInput(epsilon);
         JTextField minPts=new JTextField(5);
         numberInput(minPts);
         jp.add(jd);
@@ -136,13 +136,77 @@ public class Welcome extends JFrame {
         gl.setConstraints(minPts,gbs);
         return jp;
     }
+    public JPanel run(JPanel sf,JPanel ip){
+        JPanel jp=new JPanel();
+        GridLayout gl=new GridLayout(2,1,5,5);
+        jp.setLayout(gl);
+        JLabel st=new JLabel("就绪",JLabel.CENTER);
+       // st.setBorder(BorderFactory.createLineBorder(Color.red));
+        st.setFont(fMandarin);
+        JButton ok=new JButton("确认");
+        ok.setFont(fMandarin);
+        ActionListener a=new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JTextField jf=(JTextField)ip.getComponent(9);
+                if(!checkInput(jf))return;
+                int k=Integer.valueOf(jf.getText());
+                jf=(JTextField)ip.getComponent(11);
+                if(!checkInput(jf))return;
+                double epsilon=Double.valueOf(jf.getText());
+                jf=(JTextField)ip.getComponent(13);
+                if(!checkInput(jf))return;
+                int minPts=Integer.valueOf(jf.getText());
+                jf=(JTextField)ip.getComponent(1);
+                double ymin=Double.valueOf(jf.getText());
+                jf=(JTextField)ip.getComponent(3);
+                double ymax=Double.valueOf(jf.getText());
+                jf=(JTextField)ip.getComponent(5);
+                double xmin=Double.valueOf(jf.getText());
+                jf=(JTextField)ip.getComponent(7);
+                double xmax=Double.valueOf(jf.getText());
+                JTextField route=(JTextField) sf.getComponent(1);
+                if(!checkInput(route)){
+                    sf.getComponent(0).setForeground(Color.red);
+                    return;
+                }
+                st.setText("运行中...");
+                Runnable r=new Runnable() {
+                    @Override
+                    public void run() {
+                        Raster t=new Raster(k,importFile.file(route.getText()));
+                        t.screen(xmin,xmax,ymin,ymax);
+                        t.dbscan(epsilon,minPts);
+                        t.partition();
+                        new DrawRaster(t,route.getText());
+                        st.setText("运行完成");
+                    }
+                };
+                SwingUtilities.invokeLater(r);
+            }
+        };
+        jp.add(st);
+        ok.addActionListener(a);
+        jp.add(ok);
+        return jp;
+    }
+    public boolean checkInput(JTextField jt){
+        //若有输入，返回true；否则提示后返回false
+        String warning="请输入！！！";
+        if(jt.getText().equals("")||jt.getText().equals(warning)){
+            jt.setText(warning);
+            defaultText(jt,warning);
+            return false;
+        }
+        return true;
+    }
     public void numberInput(JTextField jt){
-        //使jt只能输入数字
+        //使jt只能输入数字，或小数点
         KeyListener k=new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
                 int keyChar = e.getKeyChar();
-                if (keyChar >= KeyEvent.VK_0 && keyChar <= KeyEvent.VK_9) {
+                if ((keyChar >= KeyEvent.VK_0 && keyChar <= KeyEvent.VK_9)||keyChar==KeyEvent.VK_PERIOD) {
 
                 } else {
                     e.consume();
@@ -179,67 +243,6 @@ public class Welcome extends JFrame {
             }
         };
         jt.addFocusListener(f);
-    }
-
-    public JPanel run(JPanel sf,JPanel ip){
-        JPanel jp=new JPanel();
-        GridLayout gl=new GridLayout(2,1,5,5);
-        jp.setLayout(gl);
-        JLabel st=new JLabel("就绪",JLabel.CENTER);
-       // st.setBorder(BorderFactory.createLineBorder(Color.red));
-        st.setFont(fMandarin);
-        JButton ok=new JButton("确认");
-        ok.setFont(fMandarin);
-        ActionListener a=new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JTextField jf=(JTextField)ip.getComponent(9);
-                if(!checkInput(jf))return;
-                int k=Integer.valueOf(jf.getText());
-                jf=(JTextField)ip.getComponent(11);
-                if(!checkInput(jf))return;
-                double epsilon=Double.valueOf(jf.getText());
-                jf=(JTextField)ip.getComponent(13);
-                if(!checkInput(jf))return;
-                int minPts=Integer.valueOf(jf.getText());
-                jf=(JTextField)ip.getComponent(1);
-                double ymin=Double.valueOf(jf.getText());
-                jf=(JTextField)ip.getComponent(3);
-                double ymax=Double.valueOf(jf.getText());
-                jf=(JTextField)ip.getComponent(5);
-                double xmin=Double.valueOf(jf.getText());
-                jf=(JTextField)ip.getComponent(7);
-                double xmax=Double.valueOf(jf.getText());
-                JTextField route=(JTextField) sf.getComponent(1);
-                if(!checkInput(route)){
-                    sf.getComponent(0).setForeground(Color.red);
-                    return;
-                }
-
-                //TODO：st不会改变
-                st.setText("运行中...");
-                Raster t=new Raster(k,importFile.file(route.getText()));
-                t.screen(xmin,xmax,ymin,ymax);
-                t.dbscan(epsilon,minPts);
-                t.partition();
-                new DrawRaster(t,route.getName());
-                st.setText("运行完成");
-            }
-        };
-        ok.addActionListener(a);
-        jp.add(ok);
-        jp.add(st);
-        return jp;
-    }
-    public boolean checkInput(JTextField jt){
-        //若有输入，返回true；否则提示后返回false
-        String warning="请输入！！！";
-        if(jt.getText().equals("")||jt.getText().equals(warning)){
-            jt.setText(warning);
-            defaultText(jt,warning);
-            return false;
-        }
-        return true;
     }
     public JPanel headPhoto(){
         int width=800;
