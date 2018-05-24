@@ -851,14 +851,14 @@ public class Raster {
         //String title="2008-10-23 8：00-12：00";
         //String title="20081024";
         //String title="20081025"; excel表中不对，新增了别的数据了
-        String title="2008-12-14 5：00-16：00"; //screening(30,90,116.23,200)
+        String title="20081027"; //screening(30,90,116.23,200)
 
         /*Raster test=new Raster(200, DrawPoint.file(title, trajectory));
         test.findK(10,200);
         System.out.println(test.k);*/
         //需不需要记录分割的数量和合并的数量，栅格面积小并没有明显改变运行速度
         Raster test = new Raster(100, importFile.file(title));
-        System.out.println(test.p.num);
+        //System.out.println(test.p.num);
         //test.screen(30,90,116.35,200);
         test.dbscan(0.005,10);
         System.out.println("k pixelNum peopleNum ek cutNum uninonNum sumArea sumDistance pointNum");

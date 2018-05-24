@@ -39,17 +39,34 @@ public class test {
         t.testShow();
         System.out.println(t.successRateBUDE());*/
 
-        String a =new String("aba");
-        a=a.replace('a','b');
-        System.out.println(a);
 
-        String fileUrl="/pdf/test.pdf";
-        fileUrl= fileUrl.replace("/", "\\");
-        System.out.println("fileUrl "+fileUrl);
+        //对比dbscan效果的实验
+        Raster t=new Raster(50,importFile.file("20081024"));
+        long startTime=System.currentTimeMillis();
+        t.dbscan(0.005,10);
+        long endTime=System.currentTimeMillis();
+        System.out.printf("dbscan时间：");
+        System.out.println(endTime-startTime);
+        System.out.printf("k runTime sumArea sumDistance runTimeDB sumAreaDB sumDistanceDB\n");
+        for(int k=10;k<200;k++) {
+            t.k=k;
+            t.init();
+            t.stateCluster=false;
+            startTime=System.currentTimeMillis();
+            t.partition();
+            endTime=System.currentTimeMillis();
+            System.out.printf("%d ",k);
+            System.out.print(endTime-startTime);
+            System.out.printf(" %f %f ",t.sumArea,t.sumDistance);
+            t.init();
+            t.stateCluster=true;
+            startTime=System.currentTimeMillis();
+            t.partition();
+            endTime=System.currentTimeMillis();
+            System.out.print(endTime-startTime);
+            System.out.printf(" %f %f\n",t.sumArea,t.sumDistance);
 
-        String Str = new String("hello");
-        System.out.print("返回值 :" );
-        System.out.println(Str.replace('o', 'T'));
+        }
 
         /*改变栅格大小的实验
         Raster[] t=new Raster[5];
