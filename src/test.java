@@ -41,7 +41,7 @@ public class test {
 
 
         //对比dbscan效果的实验
-        Raster t=new Raster(50,importFile.file("20081024"));
+        Raster t=new Raster(50,importFile.file("20081027"));
         long startTime=System.currentTimeMillis();
         t.dbscan(0.005,10);
         long endTime=System.currentTimeMillis();

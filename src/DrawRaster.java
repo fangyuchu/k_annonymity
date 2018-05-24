@@ -23,10 +23,10 @@ class DrawRaster extends JFrame {
         t.dbscan(0.0005,10);
         t.partition();
         new DrawRaster(t,"2008年10月24日");*/
-        String title="20081026";
+        String title="20081025";
         Raster t1 = new Raster(50, importFile.file(title));
-       // t1.screen(30,90,116.27,200);
-        t1.screening(30,90,116.35,200);
+        t1.screen(30,90,116.28,200);                      //20081025
+        //t1.screening(30,90,116.35,200);                 //20081026
         //t1.dbscan(0.005,10);
        // t1.dbscan(0.0005,10);
         //System.out.println(1);
@@ -93,9 +93,9 @@ class DrawRaster extends JFrame {
         JPanel jp = new JPanel();
         jp.add(jcb);
         jp.add(pButton);
-        jp.setBounds((int)(rwx+1.5*space),0,width-(int)(rwx+1.5*space),height);          //选择的panel为绝对位置
-        p.setLayout(null);
-        p.add(jp);
+        //jp.setBounds((int)(rwx+1.5*space),0,width-(int)(rwx+1.5*space),height);          //选择的panel为绝对位置
+        //p.setLayout(null);
+        p.add(BorderLayout.EAST,jp);
         setBounds((screenWidth-width)/2,(screenHeight-height)/2,width,height);
         setVisible(true);
         p.setBackground(Color.white);

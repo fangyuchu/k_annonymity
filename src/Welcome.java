@@ -21,10 +21,12 @@ public class Welcome extends JFrame {
 
         JPanel sf=selectFile(width);
         JPanel ip=inputParameter(width);
-        JPanel ok=run(sf,ip);
+        JPanel db=dbscanParameter();
+        JPanel ok=run(sf,ip,db);
 
         this.add(sf);
         this.add(ip);
+        this.add(db);
         this.add(ok);
 
         gbs.fill=GridBagConstraints.BOTH;
@@ -34,6 +36,7 @@ public class Welcome extends JFrame {
         gl.setConstraints(sf,gbs);
         gbs.weightx=0;
         gl.setConstraints(ip,gbs);
+        gl.setConstraints(db,gbs);
 
         setBounds((int)(screensize.getWidth()/2-width/2),height/4,width,width);             //居中显示窗口，边长大小为屏幕高度的一半
         setVisible(true);
@@ -101,16 +104,8 @@ public class Welcome extends JFrame {
         numberInput(wdmax);
         JLabel kL=new JLabel("k:");
         kL.setFont(fEnglish);
-        JLabel epsilonL=new JLabel("epsilon:");
-        epsilonL.setFont(fEnglish);
-        JLabel minPtsL=new JLabel("minPts:");
-        minPtsL.setFont(fEnglish);
         JTextField k=new JTextField(5);
         numberInput(k);
-        JTextField epsilon=new JTextField(5);
-        //numberInput(epsilon);
-        JTextField minPts=new JTextField(5);
-        numberInput(minPts);
         jp.add(jd);
         jp.add(jdmin);
         jp.add(h1);
@@ -121,10 +116,6 @@ public class Welcome extends JFrame {
         jp.add(wdmax);
         jp.add(kL);
         jp.add(k);
-        jp.add(epsilonL);
-        jp.add(epsilon);
-        jp.add(minPtsL);
-        jp.add(minPts);
         GridBagConstraints gbs=new GridBagConstraints();
         gbs.insets=new Insets(5,5,5,5);
         gbs.fill=GridBagConstraints.BOTH;
@@ -132,11 +123,64 @@ public class Welcome extends JFrame {
         gl.setConstraints(jdmax,gbs);
         gl.setConstraints(wdmax,gbs);
         gl.setConstraints(k,gbs);
+        return jp;
+    }
+    public JPanel dbscanParameter(){
+        GridBagLayout gl=new GridBagLayout();
+        JPanel jp=new JPanel();
+        jp.setLayout(gl);
+        //参数部分
+        JLabel epsilonL=new JLabel("epsilon:");
+        epsilonL.setFont(fEnglish);
+        JLabel minPtsL=new JLabel("minPts:");
+        minPtsL.setFont(fEnglish);
+        JTextField epsilon=new JTextField(10);
+        numberInput(epsilon);
+        JTextField minPts=new JTextField(10);
+        numberInput(minPts);
+        epsilon.setEditable(false);                                 //初始默认不dbscan，不可输入
+        minPts.setEditable(false);
+        //单选框部分
+        ButtonGroup btg=new ButtonGroup();
+        JRadioButton nodb=new JRadioButton("快速栅格合并",true);
+        nodb.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                epsilon.setEditable(false);
+                minPts.setEditable(false);
+            }
+        });
+        JRadioButton db=new JRadioButton("基于密度聚类的栅格合并");
+        db.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                epsilon.setEditable(true);
+                minPts.setEditable(true);
+            }
+        });
+        btg.add(nodb);
+        btg.add(db);
+        JPanel selectDB=new JPanel();
+        selectDB.setLayout(new GridLayout(2,1));
+        selectDB.add(nodb);
+        selectDB.add(db);
+        jp.add(selectDB);
+        jp.add(epsilonL);
+        jp.add(epsilon);
+        jp.add(minPtsL);
+        jp.add(minPts);
+        GridBagConstraints gbs=new GridBagConstraints();
+        gbs.insets=new Insets(5,50,5,5);
+        gbs.fill=GridBagConstraints.BOTH;
+        gbs.gridheight=2;                                   //单选框占两行
+        gl.setConstraints(selectDB,gbs);
+        gbs.gridheight=1;
+        gbs.gridwidth=GridBagConstraints.REMAINDER;
         gl.setConstraints(epsilon,gbs);
         gl.setConstraints(minPts,gbs);
         return jp;
     }
-    public JPanel run(JPanel sf,JPanel ip){
+    public JPanel run(JPanel sf,JPanel ip,JPanel db){
         JPanel jp=new JPanel();
         GridLayout gl=new GridLayout(2,1,5,5);
         jp.setLayout(gl);
@@ -148,15 +192,10 @@ public class Welcome extends JFrame {
         ActionListener a=new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JTextField jf=(JTextField)ip.getComponent(9);
+                JTextField jf;
+                jf=(JTextField)ip.getComponent(9);
                 if(!checkInput(jf))return;
                 int k=Integer.valueOf(jf.getText());
-                jf=(JTextField)ip.getComponent(11);
-                if(!checkInput(jf))return;
-                double epsilon=Double.valueOf(jf.getText());
-                jf=(JTextField)ip.getComponent(13);
-                if(!checkInput(jf))return;
-                int minPts=Integer.valueOf(jf.getText());
                 jf=(JTextField)ip.getComponent(1);
                 double ymin=Double.valueOf(jf.getText());
                 jf=(JTextField)ip.getComponent(3);
@@ -170,13 +209,30 @@ public class Welcome extends JFrame {
                     sf.getComponent(0).setForeground(Color.red);
                     return;
                 }
+                double epsilon;
+                int minPts;
+                JPanel selection=(JPanel) db.getComponent(0);               //获取单选框面板
+                JRadioButton nodb=(JRadioButton)selection.getComponent(0);  //不dbscan的选项
+                if(!nodb.isSelected()) {                                    //上述选项没被选中，既需要dbscan
+                    jf = (JTextField) db.getComponent(2);
+                    if (!checkInput(jf)) return;
+                    epsilon = Double.valueOf(jf.getText());
+                    jf = (JTextField) db.getComponent(4);
+                    if (!checkInput(jf)) return;
+                    minPts = Integer.valueOf(jf.getText());
+                }else{
+                    epsilon=0;                                              //两参数置为0，说明不需要dbscan
+                    minPts=0;
+                }
                 st.setText("运行中...");
                 Runnable r=new Runnable() {
                     @Override
                     public void run() {
                         Raster t=new Raster(k,importFile.file(route.getText()));
                         t.screen(xmin,xmax,ymin,ymax);
-                        t.dbscan(epsilon,minPts);
+                        if(!(epsilon==0&&minPts==0)) {
+                            t.dbscan(epsilon, minPts);
+                        }
                         t.partition();
                         new DrawRaster(t,route.getText());
                         st.setText("运行完成");
