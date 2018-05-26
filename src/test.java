@@ -55,7 +55,7 @@ public class test {
         t.testShow();
         System.out.println(t.successRateBUDE());*/
 
-/*
+
         //对比dbscan效果的实验
         for(int j=0;j<importFile.files.length;j++) {
             String f=importFile.files[j];
@@ -69,9 +69,9 @@ public class test {
             long startTime = System.currentTimeMillis();
             t.dbscan(0.6, 10);
             long endTime = System.currentTimeMillis();
-            System.out.printf("dbscan时间：");
+            System.out.println("dbscanTime");
             System.out.println(endTime - startTime);
-            System.out.printf("k runTime sumArea sumDistance runTimeDB sumAreaDB sumDistanceDB\n");
+            System.out.printf("k runTime sumArea sumDistance averageArea averageDistance runTimeDB sumAreaDB sumDistanceDB averageAreaDB averageDistanceDB\n");
             for (int k = 10; k < 200; k++) {
                 t.k = k;
                 t.init();
@@ -81,18 +81,18 @@ public class test {
                 endTime = System.currentTimeMillis();
                 System.out.printf("%d ", k);
                 System.out.print(endTime - startTime);
-                System.out.printf(" %f %f ", t.sumArea, t.sumDistance);
+                System.out.printf(" %.10f %.10f %.10f %.10f", t.sumArea, t.sumDistance,t.averageArea,t.averageDistance);
                 t.init();
                 t.stateCluster = true;
                 startTime = System.currentTimeMillis();
                 t.partition();
                 endTime = System.currentTimeMillis();
                 System.out.print(endTime - startTime);
-                System.out.printf(" %f %f\n", t.sumArea, t.sumDistance);
+                System.out.printf(" %.10f %.10f %.10f %.10f\n", t.sumArea, t.sumDistance,t.averageArea,t.averageDistance);
 
             }
         }
-*/
+
         /*
         //改变栅格大小的实验
         for(int j=0;j<importFile.files.length;j++) {
@@ -121,7 +121,7 @@ public class test {
             }
         }
         */
-
+/*
         //聚类参数实验
         //改变epsilon的实验
         for(int j=0;j<importFile.files.length;j++) {
@@ -176,6 +176,7 @@ public class test {
                 System.out.println(toTime-startTime);
             }
         }
+        */
 
 
 

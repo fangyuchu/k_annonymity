@@ -9,9 +9,9 @@ public class importFile {
     static String[] files={"20081024","20081025","20081026","20081027","2008-12-14 5：00-16：00","2008-12-3 0：00-12：00","2008-10-23 8：00-12：00"};
     static String route="D:/实验室/k匿名划分数据/";
     //文件的系统路径
-    //mac:  "/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/"
-    //windows:"D:/实验室/k匿名划分数据/"
-    //linux:"/home/liaodong/RamDisk/拷贝/"
+    //mac:  "/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/";
+    //windows:"D:/实验室/k匿名划分数据/";
+    //linux:"/home/liaodong/RamDisk/拷贝/";
     importFile(String title,String trajectory){
     }
     public static String file(String title,String s){
