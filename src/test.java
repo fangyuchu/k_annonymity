@@ -41,33 +41,40 @@ public class test {
 
 /*
         //对比dbscan效果的实验
-        Raster t=new Raster(50,importFile.file("20081025"));
-        t.screen(30,90,116.28,200);                      //20081025
-        //t.screening(30,90,116.35,200);                 //20081026
-        long startTime=System.currentTimeMillis();
-        t.dbscan(0.005,10);
-        long endTime=System.currentTimeMillis();
-        System.out.printf("dbscan时间：");
-        System.out.println(endTime-startTime);
-        System.out.printf("k runTime sumArea sumDistance runTimeDB sumAreaDB sumDistanceDB\n");
-        for(int k=10;k<200;k++) {
-            t.k=k;
-            t.init();
-            t.stateCluster=false;
-            startTime=System.currentTimeMillis();
-            t.partition();
-            endTime=System.currentTimeMillis();
-            System.out.printf("%d ",k);
-            System.out.print(endTime-startTime);
-            System.out.printf(" %f %f ",t.sumArea,t.sumDistance);
-            t.init();
-            t.stateCluster=true;
-            startTime=System.currentTimeMillis();
-            t.partition();
-            endTime=System.currentTimeMillis();
-            System.out.print(endTime-startTime);
-            System.out.printf(" %f %f\n",t.sumArea,t.sumDistance);
+        for(int j=0;j<importFile.files.length;j++) {
+            String f=importFile.files[j];
+            System.out.println(f);
+            Raster t = new Raster(50, importFile.file(f));
+            if(f.equals("20081025")){
+                t.screen(30,90,116.28,200);
+            }else if(f.equals("20081026")){
+                t.screening(30,90,116.35,200);
+            }
+            long startTime = System.currentTimeMillis();
+            t.dbscan(0.6, 10);
+            long endTime = System.currentTimeMillis();
+            System.out.printf("dbscan时间：");
+            System.out.println(endTime - startTime);
+            System.out.printf("k runTime sumArea sumDistance runTimeDB sumAreaDB sumDistanceDB\n");
+            for (int k = 10; k < 200; k++) {
+                t.k = k;
+                t.init();
+                t.stateCluster = false;
+                startTime = System.currentTimeMillis();
+                t.partition();
+                endTime = System.currentTimeMillis();
+                System.out.printf("%d ", k);
+                System.out.print(endTime - startTime);
+                System.out.printf(" %f %f ", t.sumArea, t.sumDistance);
+                t.init();
+                t.stateCluster = true;
+                startTime = System.currentTimeMillis();
+                t.partition();
+                endTime = System.currentTimeMillis();
+                System.out.print(endTime - startTime);
+                System.out.printf(" %f %f\n", t.sumArea, t.sumDistance);
 
+            }
         }
 */
         //改变栅格大小的实验
@@ -80,11 +87,11 @@ public class test {
             }else if(f.equals("20081026")){
                 t.screening(30,90,116.35,200);
             }
-            double density = (t.p.xmax - t.p.xmin) * (t.p.ymax - t.p.ymin) / t.p.num;
+            double density = (t.p.xmax - t.p.xmin)*Raster.lat * (t.p.ymax - t.p.ymin)*Raster.lon / t.p.num;
             double pA = 20 * density; //初始值为k=20时的面积
             System.out.println("originalGridSize");
             System.out.printf("%.10f\n",50*density);
-            t.dbscan(0.005, 10);
+            t.dbscan(0.6, 10);
             System.out.println("k regionNum gridSize sumArea averageArea sumDistance averageDistance");
             for (int i = 0; i < 20; i++) {
                 double step = 0.1;        //每次增大step

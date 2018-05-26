@@ -16,7 +16,6 @@ public class DBSCAN {
             this.p=p;
             this.E=E;
             this.minPts=minPts;
-            //distance=new double[p.num][p.num];
             visit=new boolean[p.num];
             index=new int[p.num];
         }catch (Exception e){
@@ -39,7 +38,7 @@ public class DBSCAN {
         }
     }
     public Double calDistance(Points.Point a, Points.Point b){                 //翻译两点之间点欧氏距离
-        return Math.pow(Math.pow(a.x()-b.x(),2)+Math.pow(a.y()-b.y(),2),0.5);
+        return Math.pow(Math.pow((a.x()-b.x())*Raster.lat,2)+Math.pow((a.y()-b.y())*Raster.lon,2),0.5);
     }
     public void runDB(){
         /*C = 0
@@ -105,7 +104,6 @@ public class DBSCAN {
             }
         }
     }
-
     public ArrayList<Integer> findPoint(Points.Point center){
         //找到center点直接密度可达的点,返回其在assemble中的下标
         // returnall points within P's eps-neighborhood (including P)

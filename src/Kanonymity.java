@@ -260,6 +260,8 @@ public class Kanonymity {
         partitionCentroid(p2,numCut+1);
     }
     public void partitionCentralLineK(Points p,int numCut){
+        double lat=40000/360;                                           //纬度一度的距离
+        double lon=lat*Math.cos(2*Math.PI*40/360);                      //经度一度的距离
         if(p.num<2*k){
             copy(p);
             return;
@@ -267,7 +269,7 @@ public class Kanonymity {
         Points p1;//划分为p1,p2两个区域
         Points p2;
         Points[] temp;
-        if((p.xmax-p.xmin)>(p.ymax-p.ymin)) {
+        if((p.xmax-p.xmin)*lat>(p.ymax-p.ymin)*lon) {
             temp=p.cutAt(p,(p.xmax+p.xmin)/2,0);
             p1=temp[0];
             p2=temp[1];
@@ -394,10 +396,12 @@ public class Kanonymity {
         }
     }
     public void areaBUDE(){                             //为BUDE特加的
+        double lat=40000/360;                                           //纬度一度的距离
+        double lon=lat*Math.cos(2*Math.PI*40/360);                      //经度一度的距离
         numRegion=1;
         area=new double[1];
         region.add(p);
-        sumArea=area[0]=(p.xmax-p.xmin)*(p.ymax-p.ymin);
+        sumArea=area[0]=(p.xmax-p.xmin)*(p.ymax-p.ymin)*lat*lon;
         //distance=new double[1];
 
     }

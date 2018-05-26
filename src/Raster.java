@@ -27,6 +27,10 @@ public class Raster {
     int unionNum=0;                               //合并的栅格数(先合并，后又被吞并的栅格算多次)
     boolean stateCluster=false;                   //聚类操作后变为true
     boolean statePartition=false;                 //划分操作后变为true
+    //纬度1度，距离差40000/360（km）=111.111km
+    //经度1度，距离差111.111*cos40(km),其中40为大约的纬度值
+    static double lat=40000/360;                                           //纬度一度的距离
+    static double lon=lat*Math.cos(2*Math.PI*40/360);                      //经度一度的距离
     public Raster(int k,String  s[]){
         try{
             this.k=k;
@@ -57,11 +61,11 @@ public class Raster {
     public void init(){
         //stateCluster不会改变！！！
         mtk=ek=ltk=0;
-        density=(p.xmax-p.xmin)*(p.ymax-p.ymin)/p.num;
+        density=(p.xmax-p.xmin)*lat*(p.ymax-p.ymin)*lon/p.num;
         pA=k*density; //pA=k*area/num; k/num需要取整
         double len=Math.sqrt(pA);
-        int row=(int)Math.ceil((p.ymax-p.ymin)/len);
-        int col=(int)Math.ceil((p.xmax-p.xmin)/len);
+        int row=(int)Math.ceil((p.ymax-p.ymin)*lon/len);
+        int col=(int)Math.ceil((p.xmax-p.xmin)*lat/len);
         pixel=null;
         pixel=new Points[row][];
         for(int i=0;i<row;i++){
@@ -71,8 +75,8 @@ public class Raster {
             }
         }
         for(int i=0;i<p.num;i++){
-            int r=(int)((p.assemble[i].y()-p.ymin)/len);
-            int c=(int)((p.assemble[i].x()-p.xmin)/len);
+            int r=(int)((p.assemble[i].y()-p.ymin)*lon/len);
+            int c=(int)((p.assemble[i].x()-p.xmin)*lat/len);
             pixel[r][c].linkAdd(p.assemble[i],"special");
         }
         for(int i=0;i<pixel.length;i++){
@@ -743,11 +747,12 @@ public class Raster {
         new DrawRaster(this,title);
     }
     public void changeGridSize(double a){
+        //a必须为以平方km做单位
         pA=a;
         mtk=ek=ltk=0;
         double len = Math.sqrt(pA);
-        int row = (int) Math.ceil((p.ymax - p.ymin) / len);
-        int col = (int) Math.ceil((p.xmax - p.xmin) / len);
+        int row = (int) Math.ceil((p.ymax - p.ymin)*lon / len);
+        int col = (int) Math.ceil((p.xmax - p.xmin)*lat / len);
         pixel = null;
         pixel = new Points[row][];
         for (int i = 0; i < row; i++) {
@@ -757,8 +762,8 @@ public class Raster {
             }
         }
         for (int i = 0; i < p.num; i++) {
-            int r = (int) ((p.assemble[i].y() - p.ymin) / len);
-            int c = (int) ((p.assemble[i].x() - p.xmin) / len);
+            int r = (int) ((p.assemble[i].y() - p.ymin)*lon / len);
+            int c = (int) ((p.assemble[i].x() - p.xmin)*lat / len);
             pixel[r][c].linkAdd(p.assemble[i], "special");
         }
         for (int i = 0; i < pixel.length; i++) {
