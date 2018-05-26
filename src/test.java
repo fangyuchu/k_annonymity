@@ -39,9 +39,11 @@ public class test {
         t.testShow();
         System.out.println(t.successRateBUDE());*/
 
-
+/*
         //对比dbscan效果的实验
-        Raster t=new Raster(50,importFile.file("20081027"));
+        Raster t=new Raster(50,importFile.file("20081025"));
+        t.screen(30,90,116.28,200);                      //20081025
+        //t.screening(30,90,116.35,200);                 //20081026
         long startTime=System.currentTimeMillis();
         t.dbscan(0.005,10);
         long endTime=System.currentTimeMillis();
@@ -67,19 +69,29 @@ public class test {
             System.out.printf(" %f %f\n",t.sumArea,t.sumDistance);
 
         }
-
-        /*改变栅格大小的实验
-        Raster[] t=new Raster[5];
-        for(int i=0;i<t.length;i++){
-            t[i]=new Raster(50,importFile.file("20081024"));
-            double density=(t[i].p.xmax-t[i].p.xmin)*(t[i].p.ymax-t[i].p.ymin)/t[i].p.num;
-            double pA=20*density; //初始值为k=20时的面积
-            t[0].dbscan(0.005,10);
-            t[i].changeGridSize(pA*Math.pow((1-0.1),10*i));
-            t[i].partition();
-            System.out.println(t[i].sumArea);
-            new DrawRaster(t[i],Integer.toString(i));
-        }*/
+*/
+        //改变栅格大小的实验
+        for(int j=0;j<importFile.files.length;j++) {
+            String f=importFile.files[j];
+            System.out.println(f);
+            Raster t = new Raster(10, importFile.file(f));
+            if(f.equals("20081025")){
+                t.screen(30,90,116.28,200);
+            }else if(f.equals("20081026")){
+                t.screening(30,90,116.35,200);
+            }
+            double density = (t.p.xmax - t.p.xmin) * (t.p.ymax - t.p.ymin) / t.p.num;
+            double pA = t.k * density; //初始值为k时的面积
+            t.dbscan(0.005, 10);
+            System.out.println("k gridSize sumArea averageArea sumDistance");
+            for (int i = 0; i < 5; i++) {
+                double step = 0.2;        //每次增大step
+                double gridSize = pA * Math.pow(1 + step, i);
+                t.changeGridSize(gridSize);
+                t.partition();
+                System.out.printf("%d %f %f %f %f", t.k, gridSize, t.sumArea, t.averageArea, t.sumDistance);
+            }
+        }
 
 
 

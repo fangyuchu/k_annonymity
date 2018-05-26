@@ -6,6 +6,7 @@ import java.util.ArrayList;
  * Created by fangyc on 17/04/2018.
  */
 public class importFile {
+    static String[] files={"20081024","20081025","20081026","20081027","2008-12-14 5：00-16：00","2008-12-3 0：00-12：00","2008-10-23 8：00-12：00"};
     static String route="D:/实验室/k匿名划分数据/";
     //文件的系统路径
     //mac:  "/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/"

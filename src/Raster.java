@@ -54,7 +54,8 @@ public class Raster {
         init();
     }
     public void init(){
-        statePartition=false;
+        //stateCluster不会改变！！！
+        mtk=ek=ltk=0;
         density=(p.xmax-p.xmin)*(p.ymax-p.ymin)/p.num;
         pA=k*density; //pA=k*area/num; k/num需要取整
         double len=Math.sqrt(pA);
@@ -89,10 +90,14 @@ public class Raster {
                 else if(pixel[i][j].num>=k&&pixel[i][j].num<=2*k)ek++;
             }
         }
+        ind=1;
+        statePartition=false;
         sumArea=0;
+        averageArea=0;
         sumDistance=0;
         cutNum=0;
         unionNum=0;
+        regionNum=0;
     }
     public void screen(double xmi,double xma,double ymi,double yma){
         p.screening(xmi,xma,ymi,yma);
@@ -749,6 +754,7 @@ public class Raster {
     }
     public void changeGridSize(double a){
         pA=a;
+        mtk=ek=ltk=0;
         double len = Math.sqrt(pA);
         int row = (int) Math.ceil((p.ymax - p.ymin) / len);
         int col = (int) Math.ceil((p.xmax - p.xmin) / len);
@@ -781,6 +787,14 @@ public class Raster {
                 else if (pixel[i][j].num >= k && pixel[i][j].num <= 2 * k) ek++;
             }
         }
+        ind=1;
+        statePartition=false;
+        sumArea=0;
+        averageArea=0;
+        sumDistance=0;
+        cutNum=0;
+        unionNum=0;
+        regionNum=0;
     }
     /*public void testShowTrend(){
     ArrayList<Double> kTrend=new ArrayList<>();
@@ -866,7 +880,6 @@ public class Raster {
         for(int k=10;k<=test.p.num/20;k++){
             test.k=k;
             test.init();
-            //test.screening(30,90,116.23,200);
             test.partition();
             //是不是应该算k的栅格占总体栅格数的比例？
             double eqNum=(double)(test.mtk+test.ltk)/(double)test.ek;
