@@ -89,7 +89,7 @@ public class test {
                 double gridSize = pA * Math.pow(1 + step, i);
                 t.changeGridSize(gridSize);
                 t.partition();
-                System.out.printf("%d %f %f %f %f", t.k, gridSize, t.sumArea, t.averageArea, t.sumDistance);
+                System.out.printf("%d %f %f %f %f\n", t.k, gridSize, t.sumArea, t.averageArea, t.sumDistance);
             }
         }
 
