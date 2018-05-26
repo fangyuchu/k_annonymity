@@ -83,7 +83,7 @@ public class test {
             double density = (t.p.xmax - t.p.xmin) * (t.p.ymax - t.p.ymin) / t.p.num;
             double pA = 20 * density; //初始值为k=20时的面积
             System.out.println("originalGridSize");
-            System.out.printf("%.10f",50*density);
+            System.out.printf("%.10f\n",50*density);
             t.dbscan(0.005, 10);
             System.out.println("k regionNum gridSize sumArea averageArea sumDistance averageDistance");
             for (int i = 0; i < 20; i++) {
