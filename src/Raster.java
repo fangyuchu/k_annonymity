@@ -16,6 +16,7 @@ public class Raster {
     public ArrayList<Kanonymity> kResult;
     public ArrayList<Points> region;                //划分后的区域点集合数组
     public double sumDistance=0;
+    public double averageDistance=0;
     public double sumArea=0;                        //划分后区域的面积和
     public double averageArea=0;                    //划分后区域的平均面积
     public int regionNum=0;                         //划分后区域的数量
@@ -95,6 +96,7 @@ public class Raster {
         sumArea=0;
         averageArea=0;
         sumDistance=0;
+        averageDistance=0;
         cutNum=0;
         unionNum=0;
         regionNum=0;
@@ -221,7 +223,8 @@ public class Raster {
             regionNum+=kResult.get(i).region.size();
             sumArea+=kResult.get(i).sumArea;
         }
-        averageArea=sumArea/kResult.size();
+        averageArea=sumArea/regionNum;
+        averageDistance=sumDistance/regionNum;
     }
     public ArrayList<Integer> findClusterInPixel(int i,int j){              //找到pixel[i][j]中的点包含在哪些聚类中
         try {
@@ -739,19 +742,6 @@ public class Raster {
     public void Draw(String title){
         new DrawRaster(this,title);
     }
-    public void ExperimentOnGrid(double step){
-        //step为每次栅格面积增大百分之多少
-        statePartition=false;
-        density=(p.xmax-p.xmin)*(p.ymax-p.ymin)/p.num;
-        pA=20*density; //初始值为k=20时的面积
-        dbscan(0.005,10);
-        for(int x=0;x<50;x++) {
-            pA*=(1+step);
-            changeGridSize(pA);
-            partition();
-            System.out.println(sumArea);
-        }
-    }
     public void changeGridSize(double a){
         pA=a;
         mtk=ek=ltk=0;
@@ -792,6 +782,7 @@ public class Raster {
         sumArea=0;
         averageArea=0;
         sumDistance=0;
+        averageDistance=0;
         cutNum=0;
         unionNum=0;
         regionNum=0;

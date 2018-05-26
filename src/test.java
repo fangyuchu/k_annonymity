@@ -74,22 +74,24 @@ public class test {
         for(int j=0;j<importFile.files.length;j++) {
             String f=importFile.files[j];
             System.out.println(f);
-            Raster t = new Raster(10, importFile.file(f));
+            Raster t = new Raster(50, importFile.file(f));
             if(f.equals("20081025")){
                 t.screen(30,90,116.28,200);
             }else if(f.equals("20081026")){
                 t.screening(30,90,116.35,200);
             }
             double density = (t.p.xmax - t.p.xmin) * (t.p.ymax - t.p.ymin) / t.p.num;
-            double pA = t.k * density; //初始值为k时的面积
+            double pA = 20 * density; //初始值为k=20时的面积
+            System.out.println("originalGridSize");
+            System.out.printf("%.10f",50*density);
             t.dbscan(0.005, 10);
-            System.out.println("k gridSize sumArea averageArea sumDistance");
-            for (int i = 0; i < 5; i++) {
-                double step = 0.2;        //每次增大step
+            System.out.println("k regionNum gridSize sumArea averageArea sumDistance averageDistance");
+            for (int i = 0; i < 20; i++) {
+                double step = 0.1;        //每次增大step
                 double gridSize = pA * Math.pow(1 + step, i);
                 t.changeGridSize(gridSize);
                 t.partition();
-                System.out.printf("%d %f %f %f %f\n", t.k, gridSize, t.sumArea, t.averageArea, t.sumDistance);
+                System.out.printf("%d %d %.10f %.10f %.10f %.10f %.10f\n", t.k,t.regionNum, gridSize, t.sumArea, t.averageArea, t.sumDistance,t.averageDistance);
             }
         }
 
