@@ -363,23 +363,33 @@ public class Kanonymity {
         doPartitionCentralLine(p2,numCut+1);
     }
     public void calDistance(){                                 //计算区域内所有点距离中点的距离和
+        //改为实际算法
+        //纬度1度，距离差40000/360（km）=111.111km
+        //经度1度，距离差111.111*cos40(km),其中40为大约的纬度值
+        double lat=40000/360;                                           //纬度一度的距离
+        double lon=lat*Math.cos(2*Math.PI*40/360);                      //经度一度的距离
         distance=new double[numRegion];
         for(int i=0;i<numRegion;i++){
             double x=(region.get(i).xmax+region.get(i).xmin)/2;
             double y=(region.get(i).ymax+region.get(i).ymin)/2;
             distance[i]=0.0;
             for(int j=0;j<region.get(i).num;j++){
-                distance[i]+=Math.pow(Math.pow(region.get(i).getX(j)-x,2)
-                        +Math.pow(region.get(i).getY(j)-y,2),0.5);
+                distance[i]+=Math.pow(Math.pow((region.get(i).getX(j)-x)*lat,2)
+                        +Math.pow((region.get(i).getY(j)-y)*lon,2),0.5);
             }
             sumDistance+=distance[i];
         }
     }
     public void calArea(){
+        //改为实际算法
+        //纬度1度，距离差40000/360（km）=111.111km
+        //经度1度，距离差111.111*cos40(km),其中40为大约的纬度值
         area=new double[numRegion];
+        double lat=40000/360;                                           //纬度一度的距离
+        double lon=lat*Math.cos(2*Math.PI*40/360);                      //经度一度的距离
         for(int i=0;i<numRegion;i++){
-            area[i]=(region.get(i).xmax-region.get(i).xmin)
-                    *(region.get(i).ymax-region.get(i).ymin);
+            area[i]=(region.get(i).xmax-region.get(i).xmin)*lat
+                    *(region.get(i).ymax-region.get(i).ymin)*lon;
             sumArea+=area[i];
         }
     }

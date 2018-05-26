@@ -23,14 +23,15 @@ class DrawRaster extends JFrame {
         t.dbscan(0.0005,10);
         t.partition();
         new DrawRaster(t,"2008年10月24日");*/
-        String title="20081025";
+        String title="20081024";
         Raster t1 = new Raster(50, importFile.file(title));
-        t1.screen(30,90,116.28,200);                      //20081025
+        t1.partition();
+       // t1.screen(30,90,116.28,200);                      //20081025
         //t1.screening(30,90,116.35,200);                 //20081026
         //t1.dbscan(0.005,10);
        // t1.dbscan(0.0005,10);
         //System.out.println(1);
-        t1.partition();
+       // t1.partition();
         new DrawRaster(t1,title);
 
         /*Raster t2=new Raster(space/2, importFile.file(title));

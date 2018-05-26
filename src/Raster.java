@@ -15,8 +15,8 @@ public class Raster {
     boolean[][] visit;                              //是否处理过
     public ArrayList<Kanonymity> kResult;
     public ArrayList<Points> region;                //划分后的区域点集合数组
-    public double sumDistance=0;
-    public double averageDistance=0;
+    public double sumDistance=0;                    //所有人匿名后原始位置与中点的距离和
+    public double averageDistance=0;                //每个人匿名后原始位置与中点的平均距离
     public double sumArea=0;                        //划分后区域的面积和
     public double averageArea=0;                    //划分后区域的平均面积
     public int regionNum=0;                         //划分后区域的数量
@@ -224,7 +224,7 @@ public class Raster {
             sumArea+=kResult.get(i).sumArea;
         }
         averageArea=sumArea/regionNum;
-        averageDistance=sumDistance/regionNum;
+        averageDistance=sumDistance/p.num;
     }
     public ArrayList<Integer> findClusterInPixel(int i,int j){              //找到pixel[i][j]中的点包含在哪些聚类中
         try {
