@@ -93,7 +93,7 @@ class DrawRaster extends JFrame {
 
             }
         };
-        JButton pButton=new JButton("drawPartition");
+        JButton pButton=new JButton("绘制");
         pButton.addActionListener(a);
         JPanel jp = new JPanel();
         jp.add(jcb);

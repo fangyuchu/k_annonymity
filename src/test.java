@@ -89,9 +89,11 @@ public class test {
             }
             double density = (t.p.xmax - t.p.xmin)*Raster.lat * (t.p.ymax - t.p.ymin)*Raster.lon / t.p.num;
             double pA = 20 * density; //初始值为k=20时的面积
-            System.out.println("originalGridSize");
-            System.out.printf("%.10f\n",50*density);
             t.dbscan(0.6, 10);
+            t.partition();
+            System.out.println("originalGridSize");
+            System.out.println("k regionNum gridSize sumArea averageArea sumDistance averageDistance");
+            System.out.printf("%d %d %.10f %.10f %.10f %.10f %.10f\n", t.k,t.regionNum, t.pA, t.sumArea, t.averageArea, t.sumDistance,t.averageDistance);
             System.out.println("k regionNum gridSize sumArea averageArea sumDistance averageDistance");
             for (int i = 0; i < 20; i++) {
                 double step = 0.1;        //每次增大step
