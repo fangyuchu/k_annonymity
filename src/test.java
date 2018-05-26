@@ -3,6 +3,7 @@ import javax.swing.filechooser.FileSystemView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.io.File;
+import java.util.Scanner;
 
 /**
  * Created by fangyc on 19/04/2017.
@@ -26,6 +27,21 @@ public class test {
         }
         System.out.println("目录文件数目为："+countDirectory);
         System.out.println("普通文件数目为："+countFile);
+    }
+
+    public static double countNoise(Raster r){
+        if(r.stateCluster==false){
+            try {
+                throw new Exception("还没聚类");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        double count=0;
+        for(int i=0;i<r.p.num;i++){
+            if(r.p.assemble[i].cluster==0)count++;
+        }
+        return count;
     }
 
     public static void main(String[] args){
@@ -77,6 +93,7 @@ public class test {
             }
         }
 */
+        /*
         //改变栅格大小的实验
         for(int j=0;j<importFile.files.length;j++) {
             String f=importFile.files[j];
@@ -103,7 +120,62 @@ public class test {
                 System.out.printf("%d %d %.10f %.10f %.10f %.10f %.10f\n", t.k,t.regionNum, gridSize, t.sumArea, t.averageArea, t.sumDistance,t.averageDistance);
             }
         }
+        */
 
+        //聚类参数实验
+        //改变epsilon的实验
+        for(int j=0;j<importFile.files.length;j++) {
+            String f = importFile.files[j];
+            System.out.println(f);
+            Raster t = new Raster(50, importFile.file(f));
+            if (f.equals("20081025")) {
+                t.screen(30, 90, 116.28, 200);
+            } else if (f.equals("20081026")) {
+                t.screening(30, 90, 116.35, 200);
+            }
+            System.out.println("k epsilon minpts sumArea averageArea sumDistance averageDistance clusterNum regionNum pointNum noiseNum dbscanTime totalTime");
+            for(double e=0.2;e<1.5;e=e+0.05){
+                t.init();
+                t.stateCluster=false;
+                long startTime=System.currentTimeMillis();
+                t.dbscan(e,10);
+                long dbstTime=System.currentTimeMillis();
+                t.partition();
+                long toTime= System.currentTimeMillis();
+                double noiseNum=countNoise(t);
+                System.out.printf("%d %f %d %.10f %.10f %.10f %.10f %d %d %d %.0f ",t.k,e,10,t.sumArea,t.averageArea,t.sumDistance,t.averageDistance,t.clusterNum,t.regionNum,t.p.num,noiseNum);
+                System.out.print(dbstTime-startTime);
+                System.out.printf(" ");
+                System.out.println(toTime-startTime);
+            }
+        }
+        System.out.println("1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 ");
+        //改变minpts的实验
+        for(int j=0;j<importFile.files.length;j++) {
+            String f = importFile.files[j];
+            System.out.println(f);
+            Raster t = new Raster(50, importFile.file(f));
+            if (f.equals("20081025")) {
+                t.screen(30, 90, 116.28, 200);
+            } else if (f.equals("20081026")) {
+                t.screening(30, 90, 116.35, 200);
+            }
+            System.out.println("k epsilon minpts sumArea averageArea sumDistance averageDistance clusterNum regionNum pointNum noiseNum dbscanTime totalTime");
+            for(int minpts=5;minpts<=50;minpts=minpts+5){
+                t.init();
+                t.stateCluster=false;
+                long startTime=System.currentTimeMillis();
+                t.dbscan(0.6,minpts);
+                long dbstTime=System.currentTimeMillis();
+                t.partition();
+                long toTime= System.currentTimeMillis();
+                double noiseNum=countNoise(t);
+                System.out.printf("%d %f %d %.10f %.10f %.10f %.10f %d %d %d %.0f ",t.k,0.6,minpts,t.sumArea,t.averageArea,t.sumDistance,t.averageDistance,t.clusterNum,t.regionNum,t.p.num,noiseNum);
+                System.out.print(dbstTime-startTime);
+                System.out.printf(" ");
+                System.out.println(toTime-startTime);
+            }
+        }
 
 
 

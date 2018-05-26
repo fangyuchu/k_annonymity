@@ -27,6 +27,7 @@ public class Raster {
     int unionNum=0;                               //合并的栅格数(先合并，后又被吞并的栅格算多次)
     boolean stateCluster=false;                   //聚类操作后变为true
     boolean statePartition=false;                 //划分操作后变为true
+    int clusterNum;
     //纬度1度，距离差40000/360（km）=111.111km
     //经度1度，距离差111.111*cos40(km),其中40为大约的纬度值
     static double lat=40000/360;                                           //纬度一度的距离
@@ -586,6 +587,7 @@ public class Raster {
         }
         DBSCAN d=new DBSCAN(p,E,minPts);
         d.runDB();
+        clusterNum=d.ind;
     }
     public void BUDE(){
         init();
