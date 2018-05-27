@@ -45,17 +45,7 @@ public class test {
     }
 
     public static void main(String[] args){
-        //HashMap<Integer,Integer> test=new HashMap<>();
-        //test.put(1,2);
-       // Integer a=test.get(1);
-        //Integer b=test.get(2);
-       // test a=new test();
-        /*Raster t=new Raster(50,importFile.file("2008-12-14 5：00-16：00"));
-        t.BUDE();
-        t.testShow();
-        System.out.println(t.successRateBUDE());*/
-
-
+/*
         //对比dbscan效果的实验
         for(int j=0;j<importFile.files.length;j++) {
             String f=importFile.files[j];
@@ -81,7 +71,7 @@ public class test {
                 endTime = System.currentTimeMillis();
                 System.out.printf("%d ", k);
                 System.out.print(endTime - startTime);
-                System.out.printf(" %.10f %.10f %.10f %.10f", t.sumArea, t.sumDistance,t.averageArea,t.averageDistance);
+                System.out.printf(" %.10f %.10f %.10f %.10f ", t.sumArea, t.sumDistance,t.averageArea,t.averageDistance);
                 t.init();
                 t.stateCluster = true;
                 startTime = System.currentTimeMillis();
@@ -92,7 +82,7 @@ public class test {
 
             }
         }
-
+*/
         /*
         //改变栅格大小的实验
         for(int j=0;j<importFile.files.length;j++) {
@@ -178,6 +168,51 @@ public class test {
         }
         */
 
+        //与BUDE对比实验
+        for(int j=0;j<importFile.files.length;j++) {
+            String f = importFile.files[j];
+            System.out.println(f);
+            Raster t = new Raster(50, importFile.file(f));
+            if (f.equals("20081025")) {
+                t.screen(30, 90, 116.28, 200);
+            } else if (f.equals("20081026")) {
+                t.screening(30, 90, 116.35, 200);
+            }
+            long startTime = System.currentTimeMillis();
+            t.dbscan(0.6, 10);
+            long endTime = System.currentTimeMillis();
+            System.out.println("dbscanTime");
+            System.out.println(endTime - startTime);
+            System.out.println("runTimeDB sumAreaDB averageAreaDB sumDistanceDB averageDistanceDB regionNumDB runTimeQ sumAreaQ averageAreaQ sumDistanceQ averageDistanceQ regionNumQ runTimeBUDE sumAreaBUDE averageAreaBUDE sumDistanceBUDE averageDistanceBUDE regionNumBUDE");
+            for(int k=10;k<200;k++){
+                t.k=k;
+                t.stateCluster=true;
+                startTime = System.currentTimeMillis();
+                t.init();
+                t.partition();
+                endTime = System.currentTimeMillis();
+                System.out.print(endTime-startTime);
+                System.out.printf(" %f %f %f %f %d ",t.sumArea,t.averageArea,t.sumDistance,t.averageDistance,t.regionNum);
+                t.stateCluster=false;
+                startTime = System.currentTimeMillis();
+                t.init();
+                t.partition();
+                endTime = System.currentTimeMillis();
+                System.out.print(endTime-startTime);
+                System.out.printf(" %f %f %f %f %d ",t.sumArea,t.averageArea,t.sumDistance,t.averageDistance,t.regionNum);
+                startTime = System.currentTimeMillis();
+                t.BUDE();
+                endTime = System.currentTimeMillis();
+                System.out.print(endTime-startTime);
+                System.out.printf(" %f %f %f %f %d\n",t.sumArea,t.averageArea,t.sumDistance,t.averageDistance,t.regionNum);
+
+            }
+
+
+
+
+
+        }
 
 
 

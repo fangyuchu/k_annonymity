@@ -405,6 +405,22 @@ public class Kanonymity {
         //distance=new double[1];
 
     }
+    public void distanceBUDE(){
+        double lat=40000/360;                                           //纬度一度的距离
+        double lon=lat*Math.cos(2*Math.PI*40/360);                      //经度一度的距离
+        numRegion=1;
+        distance=new double[1];
+        for(int i=0;i<numRegion;i++){
+            double x=(region.get(i).xmax+region.get(i).xmin)/2;
+            double y=(region.get(i).ymax+region.get(i).ymin)/2;
+            distance[i]=0.0;
+            for(int j=0;j<region.get(i).num;j++){
+                distance[i]+=Math.pow(Math.pow((region.get(i).getX(j)-x)*lat,2)
+                        +Math.pow((region.get(i).getY(j)-y)*lon,2),0.5);
+            }
+            sumDistance+=distance[i];
+        }
+    }
     /*public void roundPartition2(Points p){//分为⌈d/2⌉+⌊r/2⌋和⌊d/2⌋+⌈r/2⌉
         int d=p.num/k;
         int r=p.num-k*d;

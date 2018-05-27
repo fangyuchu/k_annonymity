@@ -625,11 +625,15 @@ public class Raster {
                 }
             }
         }
+        regionNum=kResult.size();
         for(int i=0;i<kResult.size();i++){
             kResult.get(i).areaBUDE();
             sumArea+=kResult.get(i).sumArea;
+            kResult.get(i).distanceBUDE();
+            sumDistance+=kResult.get(i).sumDistance;
         }
         averageArea=sumArea/kResult.size();
+        averageDistance=sumDistance/p.num;
     }
     public void reunionBUDE(int i,int j){
         boolean find=true;
@@ -734,6 +738,7 @@ public class Raster {
         return temp;
     }
     public double successRateBUDE(){
+        //计算BUDE匿名率
         int f=0;
         for(int i=0;i<pixel.length;i++){
             for(int j=0;j<pixel[0].length;j++){
