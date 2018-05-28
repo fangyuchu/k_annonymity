@@ -45,6 +45,7 @@ public class test {
     }
 
     public static void main(String[] args){
+        /*
         //输出数据集信息
         System.out.println("日期 xmax xmin ymax ymin 区域面积 人数 ");
         for(int j=0;j<importFile.files.length;j++) {
@@ -58,7 +59,7 @@ public class test {
             double area=(t.p.xmax-t.p.xmin)*(t.p.ymax-t.p.ymin)*Raster.lat*Raster.lon;
             System.out.printf("%s %f %f %f %f %f %d\n",f,t.p.xmax,t.p.xmin,t.p.ymax,t.p.ymin,area,t.p.num);
         }
-        int klj=0;
+        */
 /*
         //对比dbscan效果的实验
         for(int j=0;j<importFile.files.length;j++) {
@@ -128,17 +129,32 @@ public class test {
 /*
         //聚类参数实验
         //改变epsilon的实验
+        System.out.println("改变epsilon实验");
         for(int j=0;j<importFile.files.length;j++) {
             String f = importFile.files[j];
             System.out.println(f);
-            Raster t = new Raster(50, importFile.file(f));
+            Raster t = new Raster(150, importFile.file(f));
             if (f.equals("20081025")) {
-                t.screen(30, 90, 116.28, 200);
+                t.screening(30, 90, 116.28, 200);
             } else if (f.equals("20081026")) {
                 t.screening(30, 90, 116.35, 200);
             }
             System.out.println("k epsilon minpts sumArea averageArea sumDistance averageDistance clusterNum regionNum pointNum noiseNum dbscanTime totalTime");
-            for(double e=0.2;e<1.5;e=e+0.05){
+            for(double e=0.005;e<0.05;e=e+0.005){
+                t.init();
+                t.stateCluster=false;
+                long startTime=System.currentTimeMillis();
+                t.dbscan(e,10);
+                long dbstTime=System.currentTimeMillis();
+                t.partition();
+                long toTime= System.currentTimeMillis();
+                double noiseNum=countNoise(t);
+                System.out.printf("%d %f %d %.10f %.10f %.10f %.10f %d %d %d %.0f ",t.k,e,10,t.sumArea,t.averageArea,t.sumDistance,t.averageDistance,t.clusterNum,t.regionNum,t.p.num,noiseNum);
+                System.out.print(dbstTime-startTime);
+                System.out.printf(" ");
+                System.out.println(toTime-startTime);
+            }
+            for(double e=0.05;e<1.5;e=e+0.05){
                 t.init();
                 t.stateCluster=false;
                 long startTime=System.currentTimeMillis();
@@ -153,19 +169,35 @@ public class test {
                 System.out.println(toTime-startTime);
             }
         }
-        System.out.println("1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 ");
+*/
+
         //改变minpts的实验
+        System.out.println("改变minpts实验");
         for(int j=0;j<importFile.files.length;j++) {
             String f = importFile.files[j];
             System.out.println(f);
-            Raster t = new Raster(50, importFile.file(f));
+            Raster t = new Raster(150, importFile.file(f));
             if (f.equals("20081025")) {
-                t.screen(30, 90, 116.28, 200);
+                t.screening(30, 90, 116.28, 200);
             } else if (f.equals("20081026")) {
                 t.screening(30, 90, 116.35, 200);
             }
             System.out.println("k epsilon minpts sumArea averageArea sumDistance averageDistance clusterNum regionNum pointNum noiseNum dbscanTime totalTime");
-            for(int minpts=5;minpts<=50;minpts=minpts+5){
+            for(int minpts=10;minpts<=150;minpts=minpts+10){
+                t.init();
+                t.stateCluster=false;
+                long startTime=System.currentTimeMillis();
+                t.dbscan(0.6,minpts);
+                long dbstTime=System.currentTimeMillis();
+                t.partition();
+                long toTime= System.currentTimeMillis();
+                double noiseNum=countNoise(t);
+                System.out.printf("%d %f %d %.10f %.10f %.10f %.10f %d %d %d %.0f ",t.k,0.6,minpts,t.sumArea,t.averageArea,t.sumDistance,t.averageDistance,t.clusterNum,t.regionNum,t.p.num,noiseNum);
+                System.out.print(dbstTime-startTime);
+                System.out.printf(" ");
+                System.out.println(toTime-startTime);
+            }
+            for(int minpts=180;minpts<=400;minpts=minpts+30){
                 t.init();
                 t.stateCluster=false;
                 long startTime=System.currentTimeMillis();
@@ -180,8 +212,9 @@ public class test {
                 System.out.println(toTime-startTime);
             }
         }
-        */
 
+
+/*
         //与BUDE对比实验
         for(int j=0;j<importFile.files.length;j++) {
             String f = importFile.files[j];
@@ -219,15 +252,28 @@ public class test {
                 endTime = System.currentTimeMillis();
                 System.out.print(endTime-startTime);
                 System.out.printf(" %f %f %f %f %d\n",t.sumArea,t.averageArea,t.sumDistance,t.averageDistance,t.regionNum);
-
             }
-
-
-
-
-
+*/
+        /*
+        //BUDE补充计算匿名率
+        for(int j=0;j<importFile.files.length;j++) {
+            String f = importFile.files[j];
+            System.out.println(f);
+            Raster t = new Raster(50, importFile.file(f));
+            if (f.equals("20081025")) {
+                t.screening(30, 90, 116.28, 200);
+            } else if (f.equals("20081026")) {
+                t.screening(30, 90, 116.35, 200);
+            }
+            System.out.println("successRate");
+            for(int k=10;k<200;k++){
+                t.k=k;
+                t.init();
+                t.BUDE();
+                System.out.println(t.successRateBUDE());
+            }
         }
-
+*/
 
 
         //t.ExperimentOnGrid(0.1);

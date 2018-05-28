@@ -118,7 +118,7 @@ class DrawRaster extends JFrame {
             g2d.setStroke(stokeLine);
             for(int i=0;i<r.p.num;i++){
                 if(r.p.assemble[i].cluster==0){
-                    g.setColor(Color.RED);
+                    g.setColor(Color.RED);                                          //噪声标记为红色
                 }else {
                     g.setColor(color[r.p.assemble[i].cluster % color.length]);
                 }
