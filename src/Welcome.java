@@ -229,7 +229,7 @@ public class Welcome extends JFrame {
                     @Override
                     public void run() {
                         Raster t=new Raster(k,importFile.file(route.getText()));
-                        t.screen(xmin,xmax,ymin,ymax);
+                        t.screening(xmin,xmax,ymin,ymax);
                         if(!(epsilon==0&&minPts==0)) {
                             t.dbscan(epsilon, minPts);
                         }

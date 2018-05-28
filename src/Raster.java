@@ -106,10 +106,6 @@ public class Raster {
         unionNum=0;
         regionNum=0;
     }
-    public void screen(double xmi,double xma,double ymi,double yma){
-        p.screening(xmi,xma,ymi,yma);
-        init();
-    }
     public void print(){
         for(int i=0;i<p.num;i++){
             System.out.printf("%f\n%f\n",p.assemble[i].x(),p.assemble[i].y());

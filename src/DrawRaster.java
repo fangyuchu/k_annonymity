@@ -24,12 +24,14 @@ class DrawRaster extends JFrame {
         t.partition();
         new DrawRaster(t,"2008年10月24日");*/
         String title="20081024";
-        Raster t1 = new Raster(10, importFile.file(title));
-        t1.dbscan(0.6,10);
+        Raster t1 = new Raster(50, importFile.file(title));
+        //t1.screening(30, 90, 116.28, 200);
+        t1.dbscan(0.05,50);
         t1.partition();
        // t1.screen(30,90,116.28,200);                      //20081025
         //t1.screening(30,90,116.35,200);                 //20081026
         new DrawRaster(t1,title);
+
 
         /*Raster t2=new Raster(space/2, importFile.file(title));
        // t2.screen(30,90,116.27,200);
@@ -56,7 +58,7 @@ class DrawRaster extends JFrame {
      * DrawSee构造方法
      */
 
-    Color[] color = {Color.RED,Color.darkGray, Color.GREEN, Color.ORANGE
+    Color[] color = {Color.darkGray, Color.GREEN, Color.ORANGE
             , Color.PINK, Color.YELLOW, Color.MAGENTA};
     public DrawRaster( Raster r,String s) {
         xWidth=(r.p.xmax-r.p.xmin)*Raster.lat;      //regionXmax-regionXmin;
@@ -98,8 +100,6 @@ class DrawRaster extends JFrame {
         JPanel jp = new JPanel();
         jp.add(jcb);
         jp.add(pButton);
-        //jp.setBounds((int)(rwx+1.5*space),0,width-(int)(rwx+1.5*space),height);          //选择的panel为绝对位置
-        //p.setLayout(null);
         p.add(BorderLayout.EAST,jp);
         setBounds((screenWidth-width)/2,(screenHeight-height)/2,width,height);
         setVisible(true);
@@ -114,11 +114,14 @@ class DrawRaster extends JFrame {
         try{
             Graphics2D   g2d   =   (   Graphics2D   )g;
             drawPixel(g,r,Color.black);
-            
             BasicStroke stokeLine=new BasicStroke((float)0.5);
             g2d.setStroke(stokeLine);
             for(int i=0;i<r.p.num;i++){
-                g.setColor(color[r.p.assemble[i].cluster%color.length]);
+                if(r.p.assemble[i].cluster==0){
+                    g.setColor(Color.RED);
+                }else {
+                    g.setColor(color[r.p.assemble[i].cluster % color.length]);
+                }
                 g.drawOval(space/2+((int)((r.p.assemble[i].x()-r.p.xmin)*Raster.lat/(xWidth)*rwx))-radius/2,space/2+(int)((r.p.assemble[i].y()-r.p.ymin)*Raster.lon/(yWidth)*rwy)-radius/2,radius,radius);
             }
         }catch (Exception e){

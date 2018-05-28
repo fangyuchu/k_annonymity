@@ -45,6 +45,20 @@ public class test {
     }
 
     public static void main(String[] args){
+        //输出数据集信息
+        System.out.println("日期 xmax xmin ymax ymin 区域面积 人数 ");
+        for(int j=0;j<importFile.files.length;j++) {
+            String f = importFile.files[j];
+            Raster t = new Raster(50, importFile.file(f));
+            if (f.equals("20081025")) {
+                t.screening(30, 90, 116.28, 200);
+            } else if (f.equals("20081026")) {
+                t.screening(30, 90, 116.35, 200);
+            }
+            double area=(t.p.xmax-t.p.xmin)*(t.p.ymax-t.p.ymin)*Raster.lat*Raster.lon;
+            System.out.printf("%s %f %f %f %f %f %d\n",f,t.p.xmax,t.p.xmin,t.p.ymax,t.p.ymin,area,t.p.num);
+        }
+        int klj=0;
 /*
         //对比dbscan效果的实验
         for(int j=0;j<importFile.files.length;j++) {
@@ -174,7 +188,7 @@ public class test {
             System.out.println(f);
             Raster t = new Raster(50, importFile.file(f));
             if (f.equals("20081025")) {
-                t.screen(30, 90, 116.28, 200);
+                t.screening(30, 90, 116.28, 200);
             } else if (f.equals("20081026")) {
                 t.screening(30, 90, 116.35, 200);
             }
