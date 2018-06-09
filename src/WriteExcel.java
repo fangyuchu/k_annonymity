@@ -32,7 +32,7 @@ public class WriteExcel {
         inp.close();
     }
     public static void writeResult(String title,String method, double numK,
-                                   double numPoints, double numRegion,double distance,
+                                   double numPoints, double regionNum,double distance,
                                    double area)throws Exception{  //写划分后的效果
         //要写入的文件名
         String s="/Users/fangyc/Documents/lab/trajectory/k匿名划分数据/result.xls";
@@ -50,7 +50,7 @@ public class WriteExcel {
         write(s,String.valueOf(numPoints),row,i++);
         write(s,String.valueOf(numK),row,i++);
         write(s,method,row,i++);
-        write(s,String.valueOf(numRegion),row,i++);
+        write(s,String.valueOf(regionNum),row,i++);
         write(s,String.valueOf(area*1000000),row,i++);
         write(s,String.valueOf(distance),row,i++);
     }
@@ -88,7 +88,7 @@ public class WriteExcel {
         WriteExcel.write(doc,String.valueOf(k.k),lastRowNum,1);
         WriteExcel.write(doc,"sumDistance:",lastRowNum,6);
         WriteExcel.write(doc,String.valueOf(k.sumDistance),lastRowNum,7);
-        for(int i=0;i<k.numRegion;i++) {                                //i表示第几个区域
+        for(int i=0;i<k.regionNum;i++) {                                //i表示第几个区域
             WriteExcel.write(doc, "region:", lastRowNum +1, 0);
             WriteExcel.write(doc, String.valueOf(i+1), lastRowNum, 1);  //习惯中区域数从1开始
             WriteExcel.write(doc,"属于",lastRowNum,3);

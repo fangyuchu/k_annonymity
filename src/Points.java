@@ -52,11 +52,6 @@ public class Points {
         }
         reset();
     }
-    /*public Points(String[] s){
-        for(int i=0;i<s.length;i++){
-
-        }
-    }*/
     public double getX(int i){
         return assemble[i].point[0];
     }
@@ -369,13 +364,6 @@ public class Points {
             return (p.point[0]==point[0]&&p.point[1]==point[1]&&p.belonging==belonging);
         }
     }
-    /*public int search(Point aim){                     //默认所有点纵坐标相同
-    int place=search(aim.y(),1);
-    if(!assemble[place].equal(aim)){
-        throw new NoSuchElementException();
-    }
-    return place;
-}*/
     public static void main(String[] args) {
         long startRun = System.currentTimeMillis();
         String[] trajectory={"002-5：00-11：00","003-5：00-15：00"  //要计算的轨迹

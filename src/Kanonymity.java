@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class Kanonymity {
     public int k;
-    public int numRegion;               //区域数量
+    public int regionNum;               //区域数量
     public Points p;                         //点集合
     public ArrayList<Points> region;                //划分后的区域点集合数组
     public double distance[] = null;              //元素为某匿名区域中的点离该区域中点的欧式距离和
@@ -21,14 +21,14 @@ public class Kanonymity {
     public Kanonymity(int k,Points p){
         this.p=p;
         this.k=k;
-        this.numRegion=0;
+        this.regionNum=0;
         region=new ArrayList<>();
         roads =new Roads();
     }
     public Kanonymity(int k,int num){
         p=new Points(num);
         this.k=k;
-        this.numRegion=0;
+        this.regionNum=0;
         region=new ArrayList<>();
         roads =new Roads();
     }
@@ -36,7 +36,7 @@ public class Kanonymity {
         try {
             p = new Points(ReadExcel.readCell(s));
             this.k=k;
-            this.numRegion=0;
+            this.regionNum=0;
             region=new ArrayList<>();
             roads=new Roads();
         }catch(Exception e){}
@@ -48,7 +48,7 @@ public class Kanonymity {
                 p.add(ReadExcel.readCell(s[i]),i);
             }
             this.k=k;
-            this.numRegion=0;
+            this.regionNum=0;
             region=new ArrayList<>();
             roads=new Roads();
         }catch (Exception e){
@@ -57,7 +57,7 @@ public class Kanonymity {
         }
     }
     public void print(){//                       将刚刚划分好的点区域输出
-        for(int i=0;i<numRegion;i++) {
+        for(int i=0;i<regionNum;i++) {
             System.out.printf("region %d \n", i+1);
             try{
                 System.out.printf("distance %f \n", distance[i]);
@@ -70,10 +70,10 @@ public class Kanonymity {
     }
     public void copy(Points p){//将划分好的点对象赋给re数组
         region.add(p);
-        numRegion++;
+        regionNum++;
     }
     public void delete(){
-        this.numRegion=0;
+        this.regionNum=0;
         region=new ArrayList<>();
         roads=new Roads();
         distance=null;
@@ -327,9 +327,9 @@ public class Kanonymity {
         if(p.num<2*k){
             copy(p);
             if(p.num<k){
-                //System.out.printf("region %d has less than %d points.\n",numRegion,k);
-                unqualified[unqualifiedRegionNum]=numRegion;
-                unqualifiedPointNum+=region.get(numRegion-1).num;
+                //System.out.printf("region %d has less than %d points.\n",regionNum,k);
+                unqualified[unqualifiedRegionNum]=regionNum;
+                unqualifiedPointNum+=region.get(regionNum-1).num;
                 unqualifiedRegionNum++;
             }
             return;
@@ -370,8 +370,8 @@ public class Kanonymity {
         //经度1度，距离差111.111*cos40(km),其中40为大约的纬度值
         double lat=40000/360;                                           //纬度一度的距离
         double lon=lat*Math.cos(2*Math.PI*40/360);                      //经度一度的距离
-        distance=new double[numRegion];
-        for(int i=0;i<numRegion;i++){
+        distance=new double[regionNum];
+        for(int i=0;i<regionNum;i++){
             double x=(region.get(i).xmax+region.get(i).xmin)/2;
             double y=(region.get(i).ymax+region.get(i).ymin)/2;
             distance[i]=0.0;
@@ -386,10 +386,10 @@ public class Kanonymity {
         //改为实际算法
         //纬度1度，距离差40000/360（km）=111.111km
         //经度1度，距离差111.111*cos40(km),其中40为大约的纬度值
-        area=new double[numRegion];
+        area=new double[regionNum];
         double lat=40000/360;                                           //纬度一度的距离
         double lon=lat*Math.cos(2*Math.PI*40/360);                      //经度一度的距离
-        for(int i=0;i<numRegion;i++){
+        for(int i=0;i<regionNum;i++){
             area[i]=(region.get(i).xmax-region.get(i).xmin)*lat
                     *(region.get(i).ymax-region.get(i).ymin)*lon;
             sumArea+=area[i];
@@ -398,7 +398,7 @@ public class Kanonymity {
     public void areaBUDE(){                             //为BUDE特加的
         double lat=40000/360;                                           //纬度一度的距离
         double lon=lat*Math.cos(2*Math.PI*40/360);                      //经度一度的距离
-        numRegion=1;
+        regionNum=1;
         area=new double[1];
         region.add(p);
         sumArea=area[0]=(p.xmax-p.xmin)*(p.ymax-p.ymin)*lat*lon;
@@ -408,9 +408,9 @@ public class Kanonymity {
     public void distanceBUDE(){
         double lat=40000/360;                                           //纬度一度的距离
         double lon=lat*Math.cos(2*Math.PI*40/360);                      //经度一度的距离
-        numRegion=1;
+        regionNum=1;
         distance=new double[1];
-        for(int i=0;i<numRegion;i++){
+        for(int i=0;i<regionNum;i++){
             double x=(region.get(i).xmax+region.get(i).xmin)/2;
             double y=(region.get(i).ymax+region.get(i).ymin)/2;
             distance[i]=0.0;
@@ -476,7 +476,7 @@ public class Kanonymity {
         new DrawSee(k,title+"地理中线再平衡");
         //k.partitionAverage(k.p,1);
         /*
-        System.out.println(k.numRegion);
+        System.out.println(k.regionNum);
         System.out.println(k.numCuttingLine);
         System.out.printf("%f,%f",k.cuttingLine[0][0],k.cuttingLine[0][1]);*/
         //k.region[1].output();

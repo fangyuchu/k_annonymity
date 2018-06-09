@@ -114,11 +114,11 @@ class DrawSee extends JFrame {
         jg =  this.getGraphics();
 
         paintCuttingLine(jg,k);
-        for(int i=0;i<k.numRegion;i++) {
+        for(int i=0;i<k.regionNum;i++) {
             paintRegionRectangle(jg, k.region.get(i),k.p.xmax,k.p.xmin,k.p.ymax,k.p.ymin);
         }
         try{
-            for(int i=0;i<k.numRegion;i++){
+            for(int i=0;i<k.regionNum;i++){
                 if(k.unqualified[i]==0){
                     break;
                 }

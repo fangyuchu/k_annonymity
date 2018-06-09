@@ -26,7 +26,8 @@ class DrawRaster extends JFrame {
         String title="20081024";
         Raster t1 = new Raster(50, importFile.file(title));
         //t1.screening(30, 90, 116.28, 200);
-        t1.dbscan(0.05,50);
+        //t1.dbscan(0.05,50);
+        t1.dbscan(0.6,10);
         t1.partition();
        // t1.screen(30,90,116.28,200);                      //20081025
         //t1.screening(30,90,116.35,200);                 //20081026
@@ -218,7 +219,7 @@ class DrawRaster extends JFrame {
                }
             }
             for(int i=0;i<r.kResult.size();i++){
-                for(int j=0;j<r.kResult.get(i).numRegion;j++){
+                for(int j=0;j<r.kResult.get(i).regionNum;j++){
                     drawKRegionRectangle(jg,r.kResult.get(i).region.get(j),r.p.xmin,r.p.ymin);
                 }
             }

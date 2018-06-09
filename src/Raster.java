@@ -11,7 +11,7 @@ public class Raster {
     public int k;                                   //k值
     public Points[][] pixel;                        //像素矩阵
     public int[][] index;                           //指引合并后的结果，0表示未合并
-    public int ind=1;                              //自增的索引
+    public int ind=1;                               //自增的索引
     boolean[][] visit;                              //是否处理过
     public ArrayList<Kanonymity> kResult;
     public ArrayList<Points> region;                //划分后的区域点集合数组
@@ -20,13 +20,13 @@ public class Raster {
     public double sumArea=0;                        //划分后区域的面积和
     public double averageArea=0;                    //划分后区域的平均面积
     public int regionNum=0;                         //划分后区域的数量
-    int mtk;                                      //more than 2k,多于2k的栅格个数
-    int ltk;                                      //less than k
-    int ek;                                       //equal k，在k到2k之间的栅格个数
-    int cutNum=0;                                 //分割的次数
-    int unionNum=0;                               //合并的栅格数(先合并，后又被吞并的栅格算多次)
-    boolean stateCluster=false;                   //聚类操作后变为true
-    boolean statePartition=false;                 //划分操作后变为true
+    int mtk;                                        //more than 2k,多于2k的栅格个数
+    int ltk;                                        //less than k
+    int ek;                                         //equal k，在k到2k之间的栅格个数
+    int cutNum=0;                                   //分割的次数
+    int unionNum=0;                                 //合并的栅格数(先合并，后又被吞并的栅格算多次)
+    boolean stateCluster=false;                     //聚类操作后变为true
+    boolean statePartition=false;                   //划分操作后变为true
     int clusterNum;
     //纬度1度，距离差40000/360（km）=111.111km
     //经度1度，距离差111.111*cos40(km),其中40为大约的纬度值
@@ -227,30 +227,6 @@ public class Raster {
         averageArea=sumArea/regionNum;
         averageDistance=sumDistance/p.num;
     }
-    public ArrayList<Integer> findClusterInPixel(int i,int j){              //找到pixel[i][j]中的点包含在哪些聚类中
-        try {
-            if (!stateCluster) {
-                throw new Exception("尚未聚类过");
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        ArrayList<Integer> clus=new ArrayList<>();
-        for(int k=0;k<pixel[i][j].num;k++){
-            if(clus.indexOf(pixel[i][j].assemble[k].cluster)==-1){
-                clus.add(pixel[i][j].assemble[k].cluster);
-            }
-        }
-        return clus;
-    }
-    public boolean comparePixelCluster(ArrayList<Integer>a,ArrayList<Integer>b){    //比较a，b两个pixel中是否有相同聚类的点，是为true
-        for(int i=0;i<a.size();i++){
-            if(b.indexOf(a.get(i))!=-1){
-                return true;
-            }
-        }
-        return false;
-    }
     public void reunion(int i,int j){
         boolean find=false;
         boolean flag=true;
@@ -448,35 +424,34 @@ public class Raster {
                     }
                 }
             }catch (Exception e){
-                try {
-                    while(!checkSum(stCoor[0], stCoor[1], row, col)) {
-                        //右边无法扩展，且左上不能满足要求但情况
-                        stCoor[0] = i;
-                        stCoor[1] = j;
-                        row = col = 1;
-                        //向右下搜索，先下再右
-                        int x = i;
-                        int y = j+1;
-                        boolean bingo=false;
-                        for(;y<pixel.length&&!bingo;y++) {
-                            for(x=i;x>=0;x--) {
-                                if(visit[x][y]||pixel[x][y].num+pixel[i][j].num>=k){
-                                    bingo=true;
-                                    break;
-                                }
-                            }
-                        }
-                        int[] temp = findIndex(x,y);
-                        while(temp[0]!=stCoor[0]||temp[1]!=stCoor[1]||temp[2]!=stCoor[0]+row-1||temp[3]!=stCoor[1]+col-1) {
-                            row = Math.max(stCoor[0] + row - 1, temp[2]) - Math.min(stCoor[0], temp[0]) + 1;
-                            col = Math.max(stCoor[1] + col - 1, temp[3]) - Math.min(stCoor[1], temp[1]) + 1;
-                            stCoor[0] = Math.min(stCoor[0], temp[0]);
-                            stCoor[1] = Math.min(stCoor[1], temp[1]);
-                            temp = checkIndex(stCoor[0], stCoor[1], row, col);
+                /***************************************************************************
+                 * 当上一步中搜索到最左上角仍不能满足条件时
+                 * 若程序运行到这，说明&pixel[i][j]右上方必有合并过的大栅格
+                 * 因此向右上角搜索
+                 * 且这次搜索可以覆盖之前已经合并过的栅格
+                 ***************************************************************************/
+                stCoor[0] = i;
+                stCoor[1] = j;
+                row = col = 1;
+                //向右上搜索，先上再右
+                int x = i;
+                int y = j+1;
+                find=false;
+                for(;y<pixel[0].length&&!find;y++) {
+                    for(x=i;x>=0;x--) {
+                        if(visit[x][y]||pixel[x][y].num+pixel[i][j].num>=k){            //找到了已合并过的大栅格中的某个小栅格
+                            find=true;
+                            break;
                         }
                     }
-                }catch (Exception e1){
-                    System.out.printf("oops");
+                }
+                int[] temp = findIndex(x,y);                                            //得到已合并过的大栅格的位置及大小
+                while(temp[0]!=stCoor[0]||temp[1]!=stCoor[1]||temp[2]!=stCoor[0]+row-1||temp[3]!=stCoor[1]+col-1) {     //不断扩张
+                    row = Math.max(stCoor[0] + row - 1, temp[2]) - Math.min(stCoor[0], temp[0]) + 1;
+                    col = Math.max(stCoor[1] + col - 1, temp[3]) - Math.min(stCoor[1], temp[1]) + 1;
+                    stCoor[0] = Math.min(stCoor[0], temp[0]);
+                    stCoor[1] = Math.min(stCoor[1], temp[1]);
+                    temp = checkIndex(stCoor[0], stCoor[1], row, col);
                 }
             }
 
@@ -541,6 +516,30 @@ public class Raster {
         while(j1<pixel[0].length&&index[i1][j1]==index[i][j])j1++;
         res[3]=--j1;
         return res;
+    }
+    public ArrayList<Integer> findClusterInPixel(int i,int j){              //找到pixel[i][j]中的点包含在哪些聚类中
+        try {
+            if (!stateCluster) {
+                throw new Exception("尚未聚类过");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        ArrayList<Integer> clus=new ArrayList<>();
+        for(int k=0;k<pixel[i][j].num;k++){
+            if(clus.indexOf(pixel[i][j].assemble[k].cluster)==-1){
+                clus.add(pixel[i][j].assemble[k].cluster);
+            }
+        }
+        return clus;
+    }
+    public boolean comparePixelCluster(ArrayList<Integer>a,ArrayList<Integer>b){    //比较a，b两个pixel中是否有相同聚类的点，是为true
+        for(int i=0;i<a.size();i++){
+            if(b.indexOf(a.get(i))!=-1){
+                return true;
+            }
+        }
+        return false;
     }
     public void testShow(){                         //展示合并后栅格的情况
         for(int i=0;i<index.length;i++){
@@ -864,35 +863,18 @@ public class Raster {
         //String title="2008-10-23 8：00-12：00";
         //String title="20081024";
         //String title="20081025"; excel表中不对，新增了别的数据了
-        String title="20081027"; //screening(30,90,116.23,200)
 
-        /*Raster test=new Raster(200, DrawPoint.file(title, trajectory));
-        test.findK(10,200);
-        System.out.println(test.k);*/
-        //需不需要记录分割的数量和合并的数量，栅格面积小并没有明显改变运行速度
-        Raster test = new Raster(100, importFile.file(title));
-        //System.out.println(test.p.num);
-        //test.screen(30,90,116.35,200);
-        test.dbscan(0.005,10);
-        System.out.println("k pixelNum peopleNum ek cutNum uninonNum sumArea sumDistance pointNum");
-        //System.out.println("k f(k) cv");
-        for(int k=10;k<=test.p.num/20;k++){
-            test.k=k;
-            test.init();
-            test.partition();
-            //是不是应该算k的栅格占总体栅格数的比例？
-            double eqNum=(double)(test.mtk+test.ltk)/(double)test.ek;
-            double cv=test.calAreaCV();
-            int peopleNum=test.ek+test.mtk+test.ltk;
-            int pixelNum=(test.pixel.length*test.pixel[0].length);
-            System.out.printf("%d %d %d %d %d %d %f %f %d\n",k,pixelNum,peopleNum,test.ek,test.cutNum,test.unionNum,test.sumArea,test.sumDistance,test.p.num);
-            //System.out.printf("%d %f %f %f %f\n",k,eqNum,cv,test.sumArea,test.sumDistance);
-            //System.out.printf("%d %f %f\n",k,test.sumArea,test.sumDistance);
-            //System.out.printf("%d,%f,%f,%d,%d,%d,%d,%d\n",k,eqNum,cv,test.cutNum,test.unionNum,test.cutNum+test.unionNum,test.regionNum,test.pixel.length*test.pixel[0].length);
-        }
         //test.testShow();
 
-
+        for(int j=0;j<importFile.files.length;j++) {
+            String f = importFile.files[j];
+            System.out.println(f);
+            for(int k=10;k<500;k++) {
+                System.out.println(k);
+                Raster t = new Raster(50, importFile.file(f));
+                t.partition();
+            }
+        }
 
         //int k=200;
         /*for(int k=40;k<500;k=k+20) {
